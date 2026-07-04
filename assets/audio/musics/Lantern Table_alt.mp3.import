@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://clq6kjx56uiax"
+path="res://.godot/imported/Lantern Table_alt.mp3-8a078cb05c62fe0eaee93cb171f07bd6.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/musics/Lantern Table_alt.mp3"
+dest_files=["res://.godot/imported/Lantern Table_alt.mp3-8a078cb05c62fe0eaee93cb171f07bd6.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,72 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/components/confirm_dialog.gd" id="1_confirm_dialog"]
+
+; Voile sombre semi-transparent derrière le panneau (voir docs/DECISIONS.md
+; ADR-017) : un `Panel` + `StyleBoxFlat` est utilisé plutôt qu'un `ColorRect`,
+; ce dernier ne se dessinant pas de façon fiable une fois niché dans un
+; `CanvasLayer` en exécutable exporté (bug constaté à l'export Windows,
+; absent en éditeur).
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backdrop"]
+bg_color = Color(0, 0, 0, 0.55)
+
+; Panneau sombre à bordure or (voir docs/TECHNICAL_DESIGN.md, palette pixel
+; art ADR-008) : contraste fort avec le feutre vert de la table en arrière-plan.
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.129, 0.129, 0.157, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.831, 0.686, 0.216, 1)
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+
+[node name="ConfirmDialog" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+visible = false
+script = ExtResource("1_confirm_dialog")
+
+[node name="Backdrop" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_backdrop")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -90.0
+offset_right = 220.0
+offset_bottom = 90.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Content" type="VBoxContainer" parent="Panel"]
+theme_override_constants/separation = 20
+
+[node name="MessageLabel" type="Label" parent="Panel/Content"]
+theme_override_colors/font_color = Color(0.961, 0.941, 0.902, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Voulez-vous quitter la partie en cours ?"
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/Content"]
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="BtnConfirmYes" type="Button" parent="Panel/Content/Buttons"]
+custom_minimum_size = Vector2(100, 40)
+text = "Oui"
+
+[node name="BtnConfirmNo" type="Button" parent="Panel/Content/Buttons"]
+custom_minimum_size = Vector2(100, 40)
+text = "Non"
+
+[connection signal="pressed" from="Panel/Content/Buttons/BtnConfirmYes" to="." method="_on_btn_confirm_yes_pressed"]
+[connection signal="pressed" from="Panel/Content/Buttons/BtnConfirmNo" to="." method="_on_btn_confirm_no_pressed"]

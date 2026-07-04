@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2q8v6y4jxvqa"]
+
+[ext_resource type="Script" path="res://scenes/bootstrap/bootstrap.gd" id="1_bootstrap"]
+
+[node name="Bootstrap" type="Node"]
+script = ExtResource("1_bootstrap")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer"]
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 640.0
+offset_bottom = 80.0
+text = "Dame de Pique - Bootstrap..."
+horizontal_alignment = 0
+vertical_alignment = 1

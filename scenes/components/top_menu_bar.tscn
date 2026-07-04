@@ -1,0 +1,126 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/components/top_menu_bar.gd" id="1_top_menu_bar"]
+[ext_resource type="Texture2D" path="res://assets/sprites/8bit-color-retro-pixel-art-buttons-interface-menu-icons-old-video-game-symbols.png" id="2_ui_sprites"]
+
+; Feuille de sprites boutons (voir docs/DECISIONS.md ADR-009 pour le détail de la
+; grille). Seuls les 2 boutons ronds "unis" (sans texte/icône incrustés) sont
+; réutilisés ici, pour les boutons icône (hamburger, réglages) : les autres
+; sprites (pilules et badges) portent du texte/icônes anglais incrustés dans
+; l'image et ne correspondent pas aux libellés français des autres boutons.
+[sub_resource type="AtlasTexture" id="AtlasTexture_hamburger"]
+atlas = ExtResource("2_ui_sprites")
+region = Rect2(603, 49, 144, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_settings"]
+atlas = ExtResource("2_ui_sprites")
+region = Rect2(603, 592, 144, 128)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hamburger"]
+content_margin_left = 6.0
+content_margin_top = 6.0
+content_margin_right = 6.0
+content_margin_bottom = 6.0
+texture = SubResource("AtlasTexture_hamburger")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_settings"]
+content_margin_left = 6.0
+content_margin_top = 6.0
+content_margin_right = 6.0
+content_margin_bottom = 6.0
+texture = SubResource("AtlasTexture_settings")
+
+; Fond bois de la barre (voir docs/DECISIONS.md ADR-017) : un `Panel` +
+; `StyleBoxFlat` est utilisé plutôt qu'un `ColorRect`, ce dernier ne se
+; dessinant pas de façon fiable une fois niché dans un `CanvasLayer` en
+; exécutable exporté (bug constaté à l'export Windows, absent en éditeur).
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
+bg_color = Color(0.294, 0.212, 0.125, 1)
+
+; `custom_minimum_size.y` fixe la hauteur (voir docs/DECISIONS.md ADR-017) :
+; en exécutable exporté, l'`offset_bottom` seul ne suffit pas à garantir la
+; hauteur d'un `Control` racine de scène instanciée sous un `CanvasLayer`
+; (bug constaté à l'export Windows où la hauteur calculée retombe à 0, alors
+; qu'elle est correcte en éditeur/scène directe) ; `custom_minimum_size`
+; force un plancher de taille toujours respecté par le moteur, quelle que
+; soit l'issue du calcul d'ancre.
+[node name="TopMenuBar" type="Control"]
+anchor_right = 1.0
+offset_bottom = 64.0
+custom_minimum_size = Vector2(0, 64)
+script = ExtResource("1_top_menu_bar")
+
+[node name="Background" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_background")
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="Bar" type="HBoxContainer" parent="Margin"]
+theme_override_constants/separation = 16
+
+[node name="LeftButtons" type="HBoxContainer" parent="Margin/Bar"]
+theme_override_constants/separation = 6
+
+[node name="BtnHamburger" type="Button" parent="Margin/Bar/LeftButtons"]
+custom_minimum_size = Vector2(46, 42)
+tooltip_text = "Menu"
+theme_override_styles/normal = SubResource("StyleBoxTexture_hamburger")
+text = "☰"
+
+[node name="BtnHelp" type="Button" parent="Margin/Bar/LeftButtons"]
+text = "AIDE"
+
+[node name="BtnScores" type="Button" parent="Margin/Bar/LeftButtons"]
+text = "SCORES"
+
+[node name="CenterInfo" type="VBoxContainer" parent="Margin/Bar"]
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="TurnLabel" type="Label" parent="Margin/Bar/CenterInfo"]
+horizontal_alignment = 1
+text = "Tour : Vous"
+
+[node name="ScoreLabel" type="Label" parent="Margin/Bar/CenterInfo"]
+horizontal_alignment = 1
+text = "Manche 1 · Scores — Vous (0) · Adversaire 1 (0) · Adversaire 2 (0) · Adversaire 3 (0)"
+
+[node name="RightButtons" type="HBoxContainer" parent="Margin/Bar"]
+theme_override_constants/separation = 6
+
+[node name="BtnNew" type="Button" parent="Margin/Bar/RightButtons"]
+text = "NOUVEAU"
+
+[node name="BtnToggleMusic" type="Button" parent="Margin/Bar/RightButtons"]
+tooltip_text = "Activer/couper la musique"
+text = "MUSIQUE : ON"
+
+[node name="BtnNextMusic" type="Button" parent="Margin/Bar/RightButtons"]
+tooltip_text = "Piste suivante"
+text = "SUIVANT"
+
+[node name="BtnMenu" type="Button" parent="Margin/Bar/RightButtons"]
+text = "MENU"
+
+[node name="BtnSettings" type="Button" parent="Margin/Bar/RightButtons"]
+custom_minimum_size = Vector2(46, 42)
+tooltip_text = "Réglages"
+theme_override_styles/normal = SubResource("StyleBoxTexture_settings")
+text = "⚙"
+
+[connection signal="pressed" from="Margin/Bar/LeftButtons/BtnHamburger" to="." method="_on_btn_hamburger_pressed"]
+[connection signal="pressed" from="Margin/Bar/LeftButtons/BtnHelp" to="." method="_on_btn_help_pressed"]
+[connection signal="pressed" from="Margin/Bar/LeftButtons/BtnScores" to="." method="_on_btn_scores_pressed"]
+[connection signal="pressed" from="Margin/Bar/RightButtons/BtnNew" to="." method="_on_btn_new_pressed"]
+[connection signal="pressed" from="Margin/Bar/RightButtons/BtnToggleMusic" to="." method="_on_btn_toggle_music_pressed"]
+[connection signal="pressed" from="Margin/Bar/RightButtons/BtnNextMusic" to="." method="_on_btn_next_music_pressed"]
+[connection signal="pressed" from="Margin/Bar/RightButtons/BtnMenu" to="." method="_on_btn_menu_pressed"]
+[connection signal="pressed" from="Margin/Bar/RightButtons/BtnSettings" to="." method="_on_btn_settings_pressed"]

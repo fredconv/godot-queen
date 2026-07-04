@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bmq62qmf1w7jw"
+path="res://.godot/imported/Card Dealing multiple.wav-9697b8b0e154df8cf3f6b58015ebaee5.sample"
+
+[deps]
+
+source_file="res://assets/audio/Card Dealing multiple.wav"
+dest_files=["res://.godot/imported/Card Dealing multiple.wav-9697b8b0e154df8cf3f6b58015ebaee5.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

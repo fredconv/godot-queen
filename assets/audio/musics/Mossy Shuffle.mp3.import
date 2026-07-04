@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bnteo22cuu5bq"
+path="res://.godot/imported/Mossy Shuffle.mp3-6f2fdbd29233722b4054338a9bccd0fe.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/musics/Mossy Shuffle.mp3"
+dest_files=["res://.godot/imported/Mossy Shuffle.mp3-6f2fdbd29233722b4054338a9bccd0fe.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

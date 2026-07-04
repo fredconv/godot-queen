@@ -1,0 +1,161 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/table.gd" id="1_table"]
+[ext_resource type="PackedScene" path="res://scenes/components/top_menu_bar.tscn" id="2_topbar"]
+[ext_resource type="PackedScene" path="res://scenes/components/player_seat.tscn" id="3_seat"]
+[ext_resource type="Theme" path="res://resources/themes/pixel_theme.tres" id="4_pixel_theme"]
+[ext_resource type="PackedScene" path="res://scenes/components/confirm_dialog.tscn" id="5_confirm_dialog"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.25)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="Table" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("4_pixel_theme")
+script = ExtResource("1_table")
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.043, 0.369, 0.173, 1)
+
+[node name="PlayerSeats" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="SeatTop" parent="PlayerSeats" instance=ExtResource("3_seat")]
+anchor_right = 1.0
+offset_left = 24.0
+offset_top = 18.0
+offset_right = -24.0
+offset_bottom = 182.0
+orientation = 0
+player_name = "Adversaire 1"
+character_id = 1
+hand_card_count = 8
+
+[node name="SeatLeft" parent="PlayerSeats" instance=ExtResource("3_seat")]
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -170.0
+offset_right = 330.0
+offset_bottom = 170.0
+orientation = 2
+player_name = "Adversaire 2"
+character_id = 2
+hand_card_count = 8
+
+[node name="SeatRight" parent="PlayerSeats" instance=ExtResource("3_seat")]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -330.0
+offset_top = -170.0
+offset_right = -8.0
+offset_bottom = 170.0
+orientation = 3
+player_name = "Adversaire 3"
+character_id = 3
+hand_card_count = 8
+
+[node name="SeatBottom" parent="PlayerSeats" instance=ExtResource("3_seat")]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 100.0
+offset_top = -160.0
+offset_right = 260.0
+offset_bottom = -16.0
+orientation = 1
+player_name = "Vous"
+character_id = 0
+hand_card_count = 0
+show_hand_back = false
+
+[node name="TrickArea" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -165.0
+offset_top = -204.0
+offset_right = 165.0
+offset_bottom = 204.0
+mouse_filter = 2
+
+[node name="TrickCardTop" type="Panel" parent="TrickArea"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -45.0
+offset_top = 34.0
+offset_right = 45.0
+offset_bottom = 162.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="TrickCardBottom" type="Panel" parent="TrickArea"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -45.0
+offset_top = -128.0
+offset_right = 45.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="TrickCardLeft" type="Panel" parent="TrickArea"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_right = 90.0
+offset_top = -64.0
+offset_bottom = 64.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="TrickCardRight" type="Panel" parent="TrickArea"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -90.0
+offset_top = -64.0
+offset_bottom = 64.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="HumanHandArea" type="Control" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -230.0
+mouse_filter = 2
+
+[node name="PlayerBottomHand" type="Control" parent="HumanHandArea"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+; CanvasLayer dédié au chrome UI (barre de menu + dialogue de confirmation) :
+; garantit qu'il se dessine toujours au-dessus du reste de la table (fond,
+; sièges, plis, main) quel que soit l'ordre des autres nœuds, y compris à
+; l'export (voir docs/DECISIONS.md ADR-015).
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="TopMenuBar" parent="UILayer" instance=ExtResource("2_topbar")]
+anchor_right = 1.0
+
+[node name="ConfirmDialog" parent="UILayer" instance=ExtResource("5_confirm_dialog")]
+anchor_right = 1.0
+anchor_bottom = 1.0

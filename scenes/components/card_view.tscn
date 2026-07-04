@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/components/card_view.gd" id="1_card_view"]
+[ext_resource type="PackedScene" path="res://scenes/components/corner_brackets.tscn" id="2_corner_brackets"]
+
+[node name="CardView" type="Control"]
+custom_minimum_size = Vector2(56, 80)
+offset_right = 56.0
+offset_bottom = 80.0
+script = ExtResource("1_card_view")
+
+[node name="Visual" type="Control" parent="."]
+offset_right = 56.0
+offset_bottom = 80.0
+mouse_filter = 2
+
+[node name="Texture" type="TextureRect" parent="Visual"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture_filter = 1
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SelectionHighlight" parent="Visual" instance=ExtResource("2_corner_brackets")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false

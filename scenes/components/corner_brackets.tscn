@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/components/corner_brackets.gd" id="1_corner_brackets"]
+
+[node name="CornerBrackets" type="Control"]
+mouse_filter = 2
+script = ExtResource("1_corner_brackets")

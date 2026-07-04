@@ -1,0 +1,20 @@
+# Godot 4+ specific ignores
+.godot/
+
+# Export / build artifacts
+/android/
+/ios/
+export/
+*.apk
+*.aab
+*.zip
+*.exe
+*.pck
+
+# Mono (C#)
+.mono/
+data_*/
+mono_crash.*.json
+
+# Rapports de tests GdUnit4 (générés localement, voir docs/TEST_PLAN.md)
+reports/

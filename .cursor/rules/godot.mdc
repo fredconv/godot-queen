@@ -1,0 +1,105 @@
+---
+description: Dame de pique — conventions Godot 4.x (jeu de cartes)
+alwaysApply: true
+---
+
+# Dame de pique — règles projet
+
+Jeu de cartes « Dame de pique » (Hearts) en Godot 4.7, rendu GL Compatibility.
+
+## Stack
+
+- Godot 4.7 (GL Compatibility, D3D12 sur Windows)
+- GDScript par défaut ; C# uniquement si explicitement demandé
+- Scène principale : `scenes/bootstrap/bootstrap.tscn` (`run/main_scene`)
+
+## Architecture
+
+Arborescence du projet :
+
+```
+scenes/
+  bootstrap/     # scène d'entrée (Bootstrap), vérifie les autoloads
+  menus/         # menu principal, écrans de fin de manche/partie
+  table/         # scène de table de jeu (plateau, mains, plis)
+  components/    # composants de scène réutilisables (carte visuelle, jeton score...)
+
+scripts/
+  core/               # utilitaires génériques, types de base partagés
+  gameplay/cards/     # logique liée aux cartes (deck, tri, comparaison)
+  rules/              # règles pures du jeu (validation de coup, calcul de score)
+  match/              # orchestration d'une manche/partie (MatchManager, PAS un autoload)
+  ai/                 # stratégie des joueurs IA
+  services/           # autoloads (GameEvents, SaveService, AudioService, ConfigService, DebugService)
+  ui/                 # logique des écrans (contrôleurs de menu, HUD)
+  components/         # scripts de composants réutilisables
+
+resources/
+  data/          # ressources de données (.tres)
+  themes/        # thèmes UI Godot
+
+assets/
+  cards/  audio/  fonts/  vfx/
+
+tests/
+  unit/          # tests unitaires (GdUnit4)
+  integration/   # tests d'intégration (GdUnit4)
+
+docs/            # GDD, TECHNICAL_DESIGN, ROADMAP, DECISIONS, TEST_PLAN
+```
+
+- Une responsabilité par scène/script ; pas de god objects.
+- Signaux Godot (via l'autoload `GameEvents`) pour découpler UI, logique de jeu et entrées joueur.
+- `class_name` pour les types partagés (Card, Player, Round…) placés dans `scripts/core/` ou `scripts/gameplay/cards/`.
+- **`MatchManager` (orchestration d'une manche/partie) n'est volontairement PAS un autoload** : son cycle de vie est lié à la scène de table (voir `docs/DECISIONS.md`).
+- Séparer strictement : règles pures (`scripts/rules/`, sans nœud Godot) / orchestration avec état (`scripts/match/`) / présentation (`scenes/`, `scripts/ui/`).
+
+## Autoloads (services transverses uniquement)
+
+| Autoload        | Script                                  | Rôle                                      |
+|------------------|------------------------------------------|--------------------------------------------|
+| `GameEvents`     | `scripts/services/game_events.gd`       | Bus de signaux global                      |
+| `SaveService`    | `scripts/services/save_service.gd`      | Sauvegarde locale (`user://`)              |
+| `AudioService`   | `scripts/services/audio_service.gd`     | Lecture sons/musiques                      |
+| `ConfigService`  | `scripts/services/config_service.gd`    | Options utilisateur (volume, langue)       |
+| `DebugService`   | `scripts/services/debug_service.gd`     | Logging centralisé, flag debug             |
+
+Ne pas ajouter de nouvel autoload sans justification : un autoload doit être un **service transverse sans état de partie**, jamais un conteneur de logique de gameplay.
+
+## Conventions GDScript
+
+- Typage explicite (`var score: int = 0`, `-> void`)
+- `@export` pour les paramètres éditeur ; `@onready` pour les `$NodePath`
+- `snake_case` fichiers/fonctions/variables ; `PascalCase` classes/nodes nommés
+- Identifiants de code (variables, fonctions, fichiers, classes, signaux) en **anglais** ; commentaires et documentation en français (voir `docs/DECISIONS.md` — ADR-003)
+- Pas de `print()` : utiliser `DebugService` (wrapper autour de `push_warning()` / `push_error()`)
+- Chemins `res://` ; pas de chemins absolus Windows dans le code
+
+## Jeu de cartes (Hearts)
+
+- 4 joueurs, 52 cartes, 13 cartes par main
+- Objectif : éviter les points (Cœur = 1 pt, Dame de pique = 13 pts)
+- Règles à respecter : pas de Cœur tant qu'aucun n'a été défoncé ; Dame de pique interdite au premier pli si possible ; « shooting the moon » = 0 pt pour le joueur, 26 pts pour les autres
+- Séparer clairement : mélange/distribution (`scripts/gameplay/cards/`), validation des coups (`scripts/rules/`), orchestration de manche (`scripts/match/`), calcul des scores (`scripts/rules/`), IA adversaires (`scripts/ai/`)
+- Détail complet des règles : `docs/GDD.md`
+
+## Tests
+
+- Framework : **GdUnit4** (à installer à l'étape 2 de `docs/ROADMAP.md`, pas encore présent en étape 1)
+- Tests unitaires (`tests/unit/`) sur la logique pure (règles, scoring, deck)
+- Tests d'intégration (`tests/integration/`) sur l'orchestration de manche/partie complète
+- Détail de la stratégie : `docs/TEST_PLAN.md`
+
+## MCP Godot (Coding-Solo)
+
+- Lancer/arrêter le projet via MCP ; ne pas dupliquer la logique éditeur en CLI sans raison
+- Préférer créer/modifier scènes et scripts via les outils MCP quand disponibles
+- `GODOT_PATH` doit pointer vers l'exécutable Godot 4.7 (voir `.cursor/mcp.json`)
+
+## À ne pas faire
+
+- Ne pas ajouter de dépendances lourdes sans justification
+- Ne pas committer `.godot/` ni exports binaires
+- Ne pas mélanger logique UI et règles du jeu dans un seul script monolithique
+- Ne pas transformer `MatchManager` en autoload
+- Ne pas écrire de logique de gameplay dans `scripts/services/`
