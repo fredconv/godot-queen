@@ -204,6 +204,43 @@ func play_card(player_index: int, card: CardModel) -> PlayResult:
 func is_match_over() -> bool:
 	return phase == Phase.MATCH_END
 
+## Points bruts capturés par chaque joueur dans la manche en cours (somme des
+## cartes à points dans `_tricks_taken`, sans ajustement « shoot the moon »).
+## Utilisé par l'UI pour afficher la progression avant la fin de manche.
+func get_current_hand_raw_scores() -> Array[int]:
+	var scores: Array[int] = []
+	for player_index in range(HeartsRules.PLAYER_COUNT):
+		var points := 0
+		for card in _tricks_taken[player_index]:
+			points += HeartsRules.card_points(card)
+		scores.append(points)
+	return scores
+
+## Nombre de Cœurs capturés par chaque joueur dans la manche en cours.
+func get_current_hand_hearts_captured() -> Array[int]:
+	var counts: Array[int] = []
+	for player_index in range(HeartsRules.PLAYER_COUNT):
+		var heart_count := 0
+		for card in _tricks_taken[player_index]:
+			if card.is_heart():
+				heart_count += 1
+		counts.append(heart_count)
+	return counts
+
+## Scores à afficher à côté des avatars : cumul de partie + progression de la
+## manche en cours tant que `phase == PLAYING` ; sinon le cumul seul (fin de
+## manche ou de partie, les points de la manche sont déjà intégrés au cumul).
+func get_display_scores() -> Array[int]:
+	var cumulative := score_manager.get_scores()
+	if phase != Phase.PLAYING:
+		return cumulative
+
+	var hand_scores := get_current_hand_raw_scores()
+	var display: Array[int] = []
+	for player_index in range(HeartsRules.PLAYER_COUNT):
+		display.append(cumulative[player_index] + hand_scores[player_index])
+	return display
+
 ## Index du joueur ayant le score cumulé le plus bas. Pertinent seulement une
 ## fois `is_match_over()` vrai.
 func get_match_winner() -> int:

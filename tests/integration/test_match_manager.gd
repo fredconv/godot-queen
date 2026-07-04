@@ -159,3 +159,38 @@ func test_leader_holding_two_of_clubs_must_be_the_actual_holder() -> void:
 
 	var leader: int = match_manager.current_player
 	assert_bool(match_manager.hands[leader].contains(CardModel.new(Suit.CLUBS, Rank.TWO))).is_true()
+
+
+# --- Scores affichés pendant la manche (progression + cumul) ----------------
+
+func test_display_scores_include_current_hand_progress_while_playing() -> void:
+	var match_manager := MatchManager.new()
+	match_manager.start_new_hand(42)
+	for player_index in range(HeartsRules.PLAYER_COUNT):
+		match_manager.set_ai_player(player_index, AiPlayer.new(RandomLegalStrategy.new(), 42 + player_index))
+
+	var saw_hand_progress := false
+	while match_manager.phase == MatchManager.Phase.PLAYING:
+		var result := match_manager.play_ai_turn()
+		assert_bool(result.success).is_true()
+		if result.trick_completed and match_manager.phase == MatchManager.Phase.PLAYING:
+			var display := match_manager.get_display_scores()
+			var cumulative := match_manager.score_manager.get_scores()
+			var hand_raw := match_manager.get_current_hand_raw_scores()
+			for player_index in range(HeartsRules.PLAYER_COUNT):
+				assert_int(display[player_index]).is_equal(cumulative[player_index] + hand_raw[player_index])
+			var hand_total := 0
+			for score in hand_raw:
+				hand_total += score
+			if hand_total > 0:
+				saw_hand_progress = true
+
+	assert_bool(saw_hand_progress).is_true()
+
+
+func test_display_scores_equal_cumulative_after_hand_end() -> void:
+	var match_manager := MatchManager.new()
+	_play_full_hand(match_manager, 55)
+
+	assert_int(match_manager.phase).is_equal(MatchManager.Phase.HAND_END)
+	assert_array(match_manager.get_display_scores()).is_equal(match_manager.score_manager.get_scores())
