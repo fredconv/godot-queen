@@ -49,7 +49,7 @@ Cible en priorité les fonctions **pures**, sans dépendance à une scène insta
   - détermination du vainqueur d'un pli.
   - calcul du score d'une manche (Cœurs = 1 pt, Dame de Pique = 13 pts).
   - détection du « shooting the moon » (0 pt pour le joueur, 26 pts pour les autres).
-- **IA** (`scripts/ai/`) : l'IA ne propose jamais un coup invalide (test croisé avec les règles).
+- **IA** (`scripts/ai/`, `tests/unit/test_ai_player.gd`) : l'IA ne propose jamais un coup invalide (test croisé avec `RuleEngine`/`MatchManager` sur des manches complètes simulées), déterminisme par seed (même seed → même choix à état identique), comportements ciblés de `HeuristicStrategy` (évite d'entamer avec une carte à points quand une alternative existe, défausse en priorité la Dame de Pique puis les Cœurs hauts quand elle ne peut pas suivre la couleur, "ducke" ou minimise la carte gagnante quand elle le peut).
 
 ## Tests d'intégration (GdUnit4) — `tests/integration/`
 
@@ -58,6 +58,7 @@ Cible les interactions entre plusieurs modules, avec un `MatchManager` instanci�
 - Déroulement complet d'une manche : distribution → 13 plis joués → calcul du score → émission des signaux attendus (`GameEvents`).
 - Déroulement complet d'une partie : plusieurs manches jusqu'à ce qu'un joueur atteigne le score seuil, désignation correcte du vainqueur.
 - Vérification que `SaveService` persiste et recharge correctement un état de partie/configuration.
+- Simulation complète pilotée par 4 IA (`tests/integration/test_match_ai_simulation.gd`) : manche complète sans erreur (plusieurs seeds), partie complète jusqu'au seuil de points, déterminisme de bout en bout (même seed → même score final, même vainqueur) — voir docs/DECISIONS.md ADR-019.
 
 ## Tests end-to-end (Playwright)
 

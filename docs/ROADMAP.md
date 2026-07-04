@@ -27,16 +27,23 @@ Suivi des étapes de développement. Chaque étape doit être validée avant de 
 - Tests unitaires (`tests/unit/test_rule_engine.gd`), 33 cas, tous verts (57 au total avec l'étape 2, voir `docs/TEST_PLAN.md`).
 - Pas de gestion de la passe de cartes (3 cartes) ni d'orchestration de manche à cette étape : réservé à l'étape 4 (`MatchManager`).
 
-## Étape 4 — Orchestration de partie (`MatchManager`)
+## Étape 4 — Orchestration de partie (`MatchManager`) ✅ (en cours de validation)
 
-- `MatchManager` (nœud non-autoload) : cycle de vie d'une manche/partie complète.
-- Intégration avec `GameEvents` pour notifier les changements d'état.
-- Tests d'intégration (`tests/integration/`) sur un déroulement de manche complet.
+- `TrickManager` (`scripts/match/trick_manager.gd`) : état du pli en cours (cartes posées, couleur demandée), délègue la résolution du vainqueur à `RuleEngine.get_trick_winner()`.
+- `ScoreManager` (`scripts/match/score_manager.gd`) : scores cumulés des 4 joueurs sur une partie (plusieurs manches), alimenté par `RuleEngine.score_hand()`.
+- `MatchManager` (`scripts/match/match_manager.gd`, `RefCounted`, **non-autoload** — voir ADR-002) : cycle de vie complet d'une manche/partie (distribution, tour de jeu, résolution de pli, score, fin de manche, fin de partie au seuil de points). Pas de passe de cartes (3 cartes) à cette étape — voir ADR-018.
+- Stub IA minimal (`scripts/ai/ai_player.gd`, `AiPlayer`) : choix aléatoire seedable parmi les coups légaux, utilisé pour simuler une manche complète sans UI ; une vraie stratégie est prévue à l'étape 5.
+- Intégration avec `GameEvents` : `MatchManager` émet directement `match_started`, `card_played`, `trick_resolved`, `score_updated`, `match_ended` (même pattern que `game_session.gd`/`audio_service.gd`, voir docs/TECHNICAL_DESIGN.md).
+- Tests d'intégration (`tests/integration/test_match_manager.gd`), 11 cas, tous verts (68 au total avec les étapes 2/3, voir `docs/TEST_PLAN.md`) : déroulement complet d'une manche (13 plis, mains vides), cumul des scores sur plusieurs manches, rejet des coups illégaux et hors-tour, invariant de score (26 points ou 78 en cas de "shoot the moon").
 
-## Étape 5 — IA de base
+## Étape 5 — IA de base ✅ (en cours de validation)
 
-- Stratégie IA simple (choix de carte valide, priorité à défausser les points).
-- Intégration de l'IA dans le déroulement de la partie via `MatchManager`.
+- `AiStrategy` (`scripts/ai/ai_strategy.gd`) : interface polymorphe de choix de carte, deux stratégies concrètes : `RandomLegalStrategy` (baseline aléatoire, ex-comportement du stub étape 4) et `HeuristicStrategy` (stratégie par défaut : évite d'entamer avec une carte à points quand une alternative existe, "ducke" ou minimise la carte gagnante en réponse quand elle peut suivre la couleur, défausse en priorité la Dame de Pique/les Cœurs hauts quand elle ne peut pas suivre).
+- `AiPlayer` (`scripts/ai/ai_player.gd`) : porte la stratégie et un `RandomNumberGenerator` seedé (déterminisme garanti par seed), ne recalcule jamais la légalité (`choose_card()` ne peut retourner qu'une carte de `legal_plays`).
+- Intégration `MatchManager` : `set_ai_player`/`is_ai_controlled` (assignation par siège), `build_ai_context` (contexte transmis à l'IA), `play_ai_turn`/`advance_ai_turns` (jeu automatique des tours IA). Convention de sièges documentée en `docs/DECISIONS.md` (ADR-019) : siège 0 = joueur humain, sièges 1-3 = IA.
+- Tests unitaires (`tests/unit/test_ai_player.gd`, 17 cas) : aucun coup illégal (croisé avec `RuleEngine`/`MatchManager` sur des manches complètes), déterminisme par seed, comportements heuristiques ciblés (tête de pli, défausse, duck/gagne forcé).
+- Tests d'intégration (`tests/integration/test_match_ai_simulation.gd`, 5 cas) : manche complète à 4 IA sans erreur (plusieurs seeds), partie complète jusqu'à 100 points, déterminisme de bout en bout. `tests/integration/test_match_manager.gd` mis à jour pour utiliser la nouvelle API `AiPlayer`/`MatchManager.play_ai_turn()`.
+- Total : 86 tests, tous verts (70 unitaires + 16 d'intégration, voir `docs/TEST_PLAN.md`).
 
 ## Étape 6 — Interface de jeu (table)
 

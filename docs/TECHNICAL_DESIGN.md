@@ -148,6 +148,86 @@ Types purs (`RefCounted`, sans nœud Godot), testables sans instancier de scène
 
 Règles couvertes : 2 de Trèfle obligatoire au premier pli, suivi de couleur obligatoire, interdiction d'entamer un pli avec un Cœur avant qu'il soit défoncé (sauf main 100% Cœurs), interdiction de jouer une carte à points au premier pli (sauf main 100% cartes à points), détermination du vainqueur d'un pli, calcul du score de manche avec détection du « shoot the moon ». Pas de gestion de la passe de cartes (3 cartes) à cette étape — prévue avec l'orchestration de manche (étape 4).
 
+## Orchestration de partie — `MatchManager` (étape 4)
+
+Types purs (`RefCounted`, sans nœud Godot), testables sans instancier de scène (voir `tests/integration/test_match_manager.gd`). `MatchManager` compose `Deck`/`PlayerHand` (étape 2), `RuleEngine` (étape 3), `TrickManager` et `ScoreManager` (étape 4) pour dérouler une manche/partie complète. Pas de passe de cartes (3 cartes) à cette étape — voir docs/DECISIONS.md (ADR-018).
+
+### `TrickManager` — `scripts/match/trick_manager.gd`
+
+`class_name TrickManager extends RefCounted`. État du **pli en cours** uniquement (pas de l'historique de la manche, géré par `MatchManager`) :
+
+- `add_play(player_index, card)` : ajoute la carte posée ; la première carte du pli fixe `lead_suit` (`Suit.*`, `-1` si le pli est vide).
+- `is_complete() -> bool` (4 cartes posées), `played_count() -> int` (0 à 4, pratique pour savoir si le joueur courant entame le pli).
+- `get_winner() -> int` : délègue à `RuleEngine.get_trick_winner()` (à n'appeler qu'une fois `is_complete()` vrai).
+- `get_cards() -> Array[CardModel]` : cartes du pli en cours, dans l'ordre de jeu (pour le scoring).
+- `reset()` : vide le pli pour le suivant.
+
+### `ScoreManager` — `scripts/match/score_manager.gd`
+
+`class_name ScoreManager extends RefCounted`. Scores **cumulés** des 4 joueurs sur une partie (plusieurs manches) :
+
+- `add_hand_scores(hand_scores: Dictionary)` : ajoute les points d'une manche aux scores cumulés. Prend directement le dictionnaire `{player_index -> points}` retourné par `RuleEngine.score_hand()` (pas de conversion en `Array` côté `MatchManager`).
+- `get_scores() -> Array[int]` (copie, indexée par `player_index`), `get_score(player_index) -> int`, `reset()` (remise à zéro en début de partie).
+
+### `MatchManager` — `scripts/match/match_manager.gd`
+
+`class_name MatchManager extends RefCounted`. **Non-autoload** (voir ADR-002) : instancié par la scène de table quand elle existera (étape 6), ou directement dans les tests d'intégration en attendant.
+
+**État** : `hands: Array[PlayerHand]` (4), `deck: Deck`, `rule_engine: RuleEngine`, `trick_manager: TrickManager`, `score_manager: ScoreManager`, `phase` (enum `Phase` : `DEALING`, `PLAYING`, `HAND_END`, `MATCH_END`), `current_player`, `trick_leader`, `hand_number`.
+
+**Cycle de vie** :
+
+- `start_new_match(seed_value := -1)` : remet `ScoreManager` à zéro, émet `GameEvents.match_started`, distribue la première manche (`start_new_hand`).
+- `start_new_hand(seed_value := -1)` : mélange un `Deck` neuf, distribue 13 cartes par joueur, réinitialise `RuleEngine`/`TrickManager`, place en tête (`current_player`/`trick_leader`) le joueur détenant le 2 de Trèfle (obligatoire au premier pli). `seed_value` optionnel pour un mélange déterministe (tests/replays), transmis tel quel à `Deck.shuffle()`.
+- `get_legal_plays(player_index) -> Array[CardModel]` : délègue à `RuleEngine.get_legal_plays()`, `is_leading` déduit de `trick_manager.played_count() == 0`.
+- `play_card(player_index, card) -> PlayResult` : valide le tour (phase `PLAYING`, `player_index == current_player`) puis le coup (`RuleEngine.validate_play`). En cas de succès : retire la carte de la main, l'ajoute au pli, met à jour `hearts_broken`/`trick_number` (`RuleEngine.record_card_played`), émet `GameEvents.card_played`. Résout le pli si complet (`_resolve_trick`, voir ci-dessous) sinon passe la main au joueur suivant. Aucun effet de bord si le coup est refusé (immutabilité en cas d'échec).
+- `is_match_over() -> bool` / `get_match_winner() -> int` : partie terminée dès qu'un joueur atteint `MATCH_SCORE_THRESHOLD` (100 points, voir docs/GDD.md), vainqueur = score cumulé le plus bas.
+
+**`PlayResult`** (classe interne) : `success: bool`, `play_error` (enum `PlayError` : `NONE`, `WRONG_PHASE`, `NOT_YOUR_TURN`, `RULE_VIOLATION`), `rule_violation` (code `RuleEngine.ValidationResult`, valide seulement si `play_error == RULE_VIOLATION`), `trick_completed`, `trick_winner`, `hand_completed`, `match_completed`. Structure de retour explicite plutôt qu'une simple exception/bool, pour que l'appelant (IA, futur câblage UI) puisse réagir précisément à chaque cas sans avoir à ré-interroger l'état interne.
+
+**Résolution de pli** (`_resolve_trick`, privé) : détermine le vainqueur (`TrickManager.get_winner`), calcule les points du pli (`RuleEngine.score_trick`), les ajoute aux cartes capturées par le vainqueur pour la manche, émet `GameEvents.trick_resolved`, réinitialise `TrickManager`, place le vainqueur en tête du pli suivant. Si c'était le 13e pli (`rule_engine.trick_number >= HeartsRules.CARDS_PER_HAND`), termine la manche (`_end_hand`) ; sinon avance `RuleEngine` au pli suivant.
+
+**Fin de manche** (`_end_hand`, privé) : calcule le score de la manche (`RuleEngine.score_hand` sur les cartes capturées par chaque joueur), l'ajoute aux scores cumulés (`ScoreManager.add_hand_scores`), émet `GameEvents.score_updated` par joueur, passe en phase `HAND_END`. Si le seuil de partie est atteint, passe en `MATCH_END` et émet `GameEvents.match_ended` avec le vainqueur.
+
+### Intégration `GameEvents`
+
+`MatchManager` référence directement l'autoload `GameEvents` pour émettre ses signaux (même convention que `game_session.gd`/`audio_service.gd`, voir ADR-002/ADR-004) : pas de callback optionnel ni d'injection de dépendance supplémentaire, `GameEvents` étant déjà le point de découplage établi entre orchestration/UI/services. Conséquence pratique : `AudioService` (déjà branché sur `card_played`/`trick_resolved`, voir ADR-010) et `GameSession` (déjà branché sur `match_started`/`match_ended`) fonctionnent avec `MatchManager` sans modification.
+
+## IA — `scripts/ai/` (étape 5)
+
+Types purs (`RefCounted`, sans nœud Godot), testables sans instancier de scène (voir `tests/unit/test_ai_player.gd` et `tests/integration/test_match_ai_simulation.gd`). Voir docs/DECISIONS.md (ADR-019) pour la justification des choix de conception.
+
+### `AiStrategy` — `scripts/ai/ai_strategy.gd`
+
+`class_name AiStrategy extends RefCounted`. Interface minimale, à surcharger par chaque stratégie concrète : `choose_card(legal_plays: Array[CardModel], context: Dictionary, rng: RandomNumberGenerator) -> CardModel`. Reçoit toujours des coups déjà validés légaux (jamais recalculés ici) et doit toujours retourner une carte de `legal_plays`.
+
+### `RandomLegalStrategy` — `scripts/ai/random_legal_strategy.gd`
+
+`class_name RandomLegalStrategy extends AiStrategy`. Choix uniformément aléatoire parmi `legal_plays` (`rng.randi_range`). C'est le comportement du stub de l'étape 4 ; conservée comme stratégie de référence/baseline, utilisée par `tests/integration/test_match_manager.gd`.
+
+### `HeuristicStrategy` — `scripts/ai/heuristic_strategy.gd`
+
+`class_name HeuristicStrategy extends AiStrategy`. Stratégie IA par défaut (voir ADR-019 pour le détail du raisonnement) :
+
+- **Tête de pli** (`context.is_leading == true`) : joue la plus basse carte non "à points" (ni Cœur ni Dame de Pique) disponible, sinon retombe sur la main entière.
+- **Réponse, peut suivre la couleur demandée** : "ducke" (plus haute carte de la couleur qui ne remporte pas le pli) si possible ; sinon joue la plus basse carte gagnante (forcé de remporter le pli).
+- **Réponse, ne peut pas suivre la couleur demandée** : défausse (jamais gagnante, seule la couleur demandée peut remporter un pli) — priorité à la Dame de Pique, puis au Cœur le plus haut, puis à la carte la plus haute toutes couleurs confondues.
+- Les égalités de rang entre couleurs différentes sont départagées par le `RandomNumberGenerator` fourni (variété entre parties, déterminisme conservé pour une seed donnée).
+- Fonctions utilitaires privées statiques (`_reject`, `_select`, `_extreme_rank`, `_current_best_rank`, `_all_match_suit`) : pas d'état d'instance, entièrement testable par appel direct de `choose_card()` avec un contexte à la main.
+
+### `AiPlayer` — `scripts/ai/ai_player.gd`
+
+`class_name AiPlayer extends RefCounted`. Porte une `AiStrategy` (`HeuristicStrategy` par défaut) et un `RandomNumberGenerator` seedé (`seed_value >= 0` pour un comportement reproductible, sinon `randomize()`). `choose_card(legal_plays, context := {}) -> CardModel` court-circuite si `legal_plays` ne contient qu'une carte, sinon délègue à `strategy.choose_card()`. Ne connaît ni `MatchManager` ni `RuleEngine` : reçoit tout ce dont elle a besoin en paramètres, ce qui la rend testable avec de simples dictionnaires (voir `tests/unit/test_ai_player.gd`).
+
+### Intégration `MatchManager` ↔ IA
+
+`MatchManager` porte `ai_players: Array` (4 entrées, `null` = siège humain) et expose :
+
+- `set_ai_player(player_index, ai_player)` / `is_ai_controlled(player_index) -> bool` : assigne/interroge le pilotage IA d'un siège. Convention par défaut (non imposée en dur) : siège 0 = joueur humain, sièges 1-3 = IA (voir ADR-019).
+- `build_ai_context(player_index) -> Dictionary` : construit le contexte transmis à `AiPlayer.choose_card()` à partir de l'état courant (`trick_number`, `hearts_broken`, `is_leading`, `lead_suit`, `trick_cards` — via le nouveau `TrickManager.get_plays()` qui garde l'index du joueur contrairement à `get_cards()` —, `hand_size`).
+- `play_ai_turn() -> PlayResult` : joue le tour du joueur courant via son `AiPlayer` assigné (calcul des coups légaux, construction du contexte, choix, puis `play_card()`). Retourne `null` si la manche n'est pas en cours ou si le joueur courant n'est pas piloté par une IA (tour humain à attendre).
+- `advance_ai_turns() -> void` : enchaîne `play_ai_turn()` tant que le joueur courant est piloté par une IA, jusqu'à un tour humain ou la fin de manche/partie — pratique pour une future UI (avancer automatiquement les tours adverses) et pour les tests de simulation complète (`tests/integration/test_match_ai_simulation.gd`).
+
 ## Rendu et plateforme
 
 - Renderer : **GL Compatibility** (compatibilité large), driver Windows en D3D12.
