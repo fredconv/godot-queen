@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/table.gd" id="1_table"]
 [ext_resource type="PackedScene" path="res://scenes/components/top_menu_bar.tscn" id="2_topbar"]
 [ext_resource type="PackedScene" path="res://scenes/components/player_seat.tscn" id="3_seat"]
 [ext_resource type="Theme" path="res://resources/themes/pixel_theme.tres" id="4_pixel_theme"]
 [ext_resource type="PackedScene" path="res://scenes/components/confirm_dialog.tscn" id="5_confirm_dialog"]
+[ext_resource type="PackedScene" path="res://scenes/components/match_end_dialog.tscn" id="6_match_end_dialog"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
 bg_color = Color(1, 1, 1, 0.08)
@@ -146,6 +147,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
+; Couche dédiée aux cartes en cours d'animation (glissement main/siège -> pli,
+; ramassage du pli vers le siège du vainqueur) : dernier enfant du layer de
+; jeu (layer 0 implicite) pour se dessiner par-dessus sièges/pli/main pendant
+; le vol de la carte, tout en restant sous `UILayer` (layer 10).
+[node name="AnimationLayer" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
 ; CanvasLayer dédié au chrome UI (barre de menu + dialogue de confirmation) :
 ; garantit qu'il se dessine toujours au-dessus du reste de la table (fond,
 ; sièges, plis, main) quel que soit l'ordre des autres nœuds, y compris à
@@ -157,5 +167,9 @@ layer = 10
 anchor_right = 1.0
 
 [node name="ConfirmDialog" parent="UILayer" instance=ExtResource("5_confirm_dialog")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="MatchEndDialog" parent="UILayer" instance=ExtResource("6_match_end_dialog")]
 anchor_right = 1.0
 anchor_bottom = 1.0

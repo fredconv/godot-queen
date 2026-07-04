@@ -45,13 +45,16 @@ Suivi des étapes de développement. Chaque étape doit être validée avant de 
 - Tests d'intégration (`tests/integration/test_match_ai_simulation.gd`, 5 cas) : manche complète à 4 IA sans erreur (plusieurs seeds), partie complète jusqu'à 100 points, déterminisme de bout en bout. `tests/integration/test_match_manager.gd` mis à jour pour utiliser la nouvelle API `AiPlayer`/`MatchManager.play_ai_turn()`.
 - Total : 86 tests, tous verts (70 unitaires + 16 d'intégration, voir `docs/TEST_PLAN.md`).
 
-## Étape 6 — Interface de jeu (table)
+## Étape 6 — Interface de jeu (table) ✅ (en cours de validation)
 
-- Scène `table.tscn` : affichage des mains, du pli en cours, des scores.
-- Composants réutilisables (carte visuelle, jeton de score) dans `scenes/components/`.
-- Interactions joueur (sélection et validation d'une carte à jouer).
-
-> Note : un **scaffold visuel statique** de `table.tscn` (fond, barre de menu, sièges, zone de pli, main en éventail de démonstration) a été mis en place en avance de phase — voir `docs/TECHNICAL_DESIGN.md` (section « Architecture UI — table de jeu »). Il reste à y brancher les interactions et les données réelles via `GameEvents`/`MatchManager`.
+- `table.gd` instancie et pilote un `MatchManager` (siège 0 = joueur humain, sièges 1-3 = IA `HeuristicStrategy`, voir docs/DECISIONS.md ADR-019/ADR-020) : la table est désormais réellement jouable, plus un simple scaffold statique.
+- Main humaine affichée à partir de `MatchManager.hands[0]` (13 cartes, textures réelles) ; seules les cartes légales (`MatchManager.get_legal_plays()`) sont pleinement opaques et cliquables, les autres grisées et non interactives.
+- Sièges adverses : nombre de cartes restantes (`hand_card_count`) et surbrillance du tour actif synchronisés avec l'état de `MatchManager` ; mains adverses jamais révélées (dos de carte uniquement).
+- Tours IA enchaînés automatiquement (`table.gd::_run_ai_turns`) avec une pause courte entre chaque coup pour rester lisible, jusqu'au prochain tour humain ou la fin de manche/partie — sans modifier `MatchManager` (voir ADR-020 pour la justification de ne pas utiliser `MatchManager.advance_ai_turns()` ici).
+- Scores cumulés affichés sur les sièges et tour courant affiché dans la barre de menu (`ScoreLabel`/`TurnLabel`).
+- Fin de manche : nouvelle manche distribuée automatiquement. Fin de partie : popup dédié avec vainqueur/scores (voir étape 8, animations anticipées).
+- Composants réutilisés tels quels (`card_view`, `player_seat`, `top_menu_bar`), aucune modification de la maquette visuelle statique de `table.tscn` (ajout uniquement de `AnimationLayer` et `MatchEndDialog`, voir ADR-021).
+- Pas de nouveau test automatisé GdUnit4 pour cette étape (logique UI couplée à l'arbre de scène/minuteurs asynchrones, priorité plus basse — voir docs/TEST_PLAN.md) : validation par relecture du câblage et exécution headless (compilation des scripts). Les 86 tests GdUnit4 des étapes 2-5 restent inchangés et verts.
 
 ## Étape 7 — Menus & UX
 
@@ -66,6 +69,8 @@ Suivi des étapes de développement. Chaque étape doit être validée avant de 
 - Intégration des assets sonores via `AudioService`.
 - Animations de cartes, effets visuels (`assets/vfx/`).
 - Passage en revue de l'ergonomie et des retours visuels.
+
+> Note : les animations de pose de carte et de ramassage de pli ont été **anticipées depuis l'étape 6** (`scripts/ui/table_animations.gd`, voir docs/DECISIONS.md ADR-021) : glissement de la carte jouée vers le pli en ~0.3s, mise en évidence de la carte gagnante, pli visible au moins 2s puis glissement groupé des 4 cartes vers le siège du vainqueur. Le popup de fin de partie (`scenes/components/match_end_dialog.tscn`) a également été livré en avance (vainqueur, avatar, flèche de siège, scores, bouton "Rejouer" qui redémarre une partie sur la même table). Reste hors scope pour une itération future : animation visuelle de la distribution des cartes (seul le son est actuellement étalé dans le temps).
 
 ## Étape 9 — Tests end-to-end & stabilisation
 

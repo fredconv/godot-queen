@@ -312,7 +312,7 @@ func _refresh_hand_back() -> void:
 		# La position déplace l'origine (coin haut-gauche non transformé) du
 		# nœud ; le point qui reste fixe à l'écran lors de la mise à
 		# l'échelle/rotation est `position + pivot_offset` (voir
-		# `table.gd::_populate_demo_hand` pour le même principe). On veut que
+		# `table.gd::_rebuild_human_hand` pour le même principe). On veut que
 		# ce point (le centre géométrique de la carte) coïncide avec le
 		# centre calculé par `_hand_back_layout`.
 		card.position = (centers[i] as Vector2) - pivot

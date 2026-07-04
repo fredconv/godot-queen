@@ -226,7 +226,34 @@ Types purs (`RefCounted`, sans nœud Godot), testables sans instancier de scène
 - `set_ai_player(player_index, ai_player)` / `is_ai_controlled(player_index) -> bool` : assigne/interroge le pilotage IA d'un siège. Convention par défaut (non imposée en dur) : siège 0 = joueur humain, sièges 1-3 = IA (voir ADR-019).
 - `build_ai_context(player_index) -> Dictionary` : construit le contexte transmis à `AiPlayer.choose_card()` à partir de l'état courant (`trick_number`, `hearts_broken`, `is_leading`, `lead_suit`, `trick_cards` — via le nouveau `TrickManager.get_plays()` qui garde l'index du joueur contrairement à `get_cards()` —, `hand_size`).
 - `play_ai_turn() -> PlayResult` : joue le tour du joueur courant via son `AiPlayer` assigné (calcul des coups légaux, construction du contexte, choix, puis `play_card()`). Retourne `null` si la manche n'est pas en cours ou si le joueur courant n'est pas piloté par une IA (tour humain à attendre).
-- `advance_ai_turns() -> void` : enchaîne `play_ai_turn()` tant que le joueur courant est piloté par une IA, jusqu'à un tour humain ou la fin de manche/partie — pratique pour une future UI (avancer automatiquement les tours adverses) et pour les tests de simulation complète (`tests/integration/test_match_ai_simulation.gd`).
+- `advance_ai_turns() -> void` : enchaîne `play_ai_turn()` tant que le joueur courant est piloté par une IA, jusqu'à un tour humain ou la fin de manche/partie. Utilisée par les tests de simulation complète (`tests/integration/test_match_ai_simulation.gd`) ; **pas** utilisée par `table.gd`, qui réimplémente une boucle équivalente avec une pause visuelle entre chaque coup (voir section « Table de jeu — câblage `MatchManager` » et docs/DECISIONS.md ADR-020).
+
+## Table de jeu — câblage `MatchManager` (étape 6) et animations (étape 8 anticipée)
+
+`scripts/ui/table.gd` instancie et possède un `MatchManager` (créé dans `_start_new_match()`, jamais autoload — voir ADR-002) pour la durée d'une partie. Voir docs/DECISIONS.md (ADR-020 pour le câblage de base, ADR-021 pour les animations de pli et le popup de fin de partie) pour la justification détaillée des choix de conception ci-dessous.
+
+### Convention siège ↔ position à l'écran
+
+Le siège 0 (`SeatBottom`/`TrickCardBottom`) est toujours le joueur humain (voir ADR-019). Les sièges IA sont mappés dans l'ordre de jeu : joueur 1 → `SeatLeft`/`TrickCardLeft`, joueur 2 → `SeatTop`/`TrickCardTop`, joueur 3 → `SeatRight`/`TrickCardRight`. Ce mapping vit uniquement dans `table.gd` (tableaux `_seats`/`_trick_slots`, indexés par `player_index`) : les noms de nœuds de `table.tscn` ne sont pas renommés.
+
+### État du pli affiché côté UI (écart assumé par rapport à ADR-020)
+
+Contrairement au reste de l'affichage (qui lit toujours directement `MatchManager` sans dupliquer d'état), la zone de pli est une exception : `table.gd` maintient `_trick_card_views` (dictionnaire `player_index -> CardView`), rempli/vidé explicitement au fil de la séquence de jeu plutôt que reconstruit depuis `TrickManager.get_plays()`. Voir docs/DECISIONS.md ADR-021 pour la justification (la séquence pose → surbrillance → pause 2s → ramassage doit s'exécuter de façon strictement séquentielle, incompatible avec une reconstruction réactive sur chaque signal `GameEvents`).
+
+### Boucle de jeu
+
+- Clic sur une carte légale de la main humaine → `_on_human_card_selected()` → `MatchManager.play_card(0, card)` → animation de pose (`TableAnimations.play_card_to_trick`, ~0.3s) → `_handle_post_play()`.
+- `_run_ai_turns()` : boucle tant que le joueur courant est piloté par une IA (`MatchManager.is_ai_controlled()`), avec une pause (`AI_TURN_DELAY_SEC`, 0.8s) avant chaque coup pour rester lisible ; calcule elle-même les coups légaux/le contexte/le choix IA puis appelle `MatchManager.play_card()` (pas `advance_ai_turns()`, voir ADR-020).
+- `_handle_post_play()` : si le pli est complet, `_resolve_trick_sequence()` met en évidence la carte gagnante (`TableAnimations.highlight_winning_card`), laisse le pli visible au moins 2s (`TableAnimations.TRICK_VISIBLE_DURATION_SEC`), puis fait glisser les 4 cartes vers le siège du vainqueur et les fait disparaître d'un coup (`TableAnimations.collect_trick`). Le tour suivant (IA ou humain) ne démarre qu'une fois cette séquence terminée (`_turn_locked`).
+- Fin de manche (`PlayResult.hand_completed`, partie non terminée) : nouvelle manche distribuée immédiatement après le ramassage du dernier pli (`MatchManager.start_new_hand()` + `_rebuild_human_hand()`).
+- Fin de partie (`PlayResult.match_completed`) : popup dédié (`scenes/components/match_end_dialog.tscn`) affichant l'avatar et le nom du vainqueur, une flèche pointant vers son siège, les scores des 4 joueurs, et un bouton "Rejouer" qui appelle `_start_new_match()` (recrée `MatchManager`, réassigne les `AiPlayer`, sur la même scène de table).
+
+### Affichage
+
+- Main humaine : reconstruite en éventail à chaque changement (`_rebuild_human_hand`), texture recto résolue depuis `suit`/`rank` par `CardTexturePaths` (`scripts/core/card_texture_paths.gd`, motif de fichier `{couleur}_{rang}.png` du pack `kerenel_Cards_seperated`). Cartes illégales grisées (`ILLEGAL_CARD_ALPHA = 0.4`) et non interactives (`mouse_filter = IGNORE`) ; cartes légales pleinement opaques, survol/clic actifs.
+- Sièges adverses : `hand_card_count` (nombre de cartes restantes) et surbrillance de tour actif (`set_active_turn`) synchronisés à chaque coup ; mains adverses jamais révélées (composant `PlayerSeat` affiche uniquement des dos de carte).
+- Barre de menu : `TurnLabel` affiche le tour courant ; `ScoreLabel` affiche le score cumulé du joueur humain.
+- Animations (`scripts/ui/table_animations.gd`, `TableAnimations`, fonctions `Tween` statiques sans état) : les cartes animées (`table.gd::_spawn_traveling_card`) gardent une rotation nulle et un `pivot_offset` par défaut `(0, 0)`, pour que leur centre visuel (`global_position + size * scale / 2`) reste calculable sans ambiguïté quelle que soit l'échelle appliquée (voir ADR-021).
 
 ## Rendu et plateforme
 
@@ -260,8 +287,13 @@ Table (Control, full rect)
 │   └── SeatBottom (instance scenes/components/player_seat.tscn) — "Vous"
 ├── TrickArea (Control, centré, disposition en croix)
 │   ├── TrickCardTop / TrickCardBottom / TrickCardLeft / TrickCardRight (Panel, emplacement fantôme)
-└── HumanHandArea (Control, ancré en bas)
-    └── PlayerBottomHand (Control, cartes générées en éventail par table.gd)
+├── HumanHandArea (Control, ancré en bas)
+│   └── PlayerBottomHand (Control, cartes générées en éventail par table.gd)
+├── AnimationLayer (Control, full rect, dernier enfant du layer de jeu) : cartes en cours de glissement (pose/ramassage de pli, voir ADR-021)
+└── UILayer (CanvasLayer, layer=10)
+    ├── TopMenuBar (instance scenes/components/top_menu_bar.tscn)
+    ├── ConfirmDialog (instance scenes/components/confirm_dialog.tscn)
+    └── MatchEndDialog (instance scenes/components/match_end_dialog.tscn) : popup de fin de partie (voir ADR-021)
 ```
 
 ### Composants réutilisables — `scenes/components/`
@@ -271,18 +303,20 @@ Table (Control, full rect)
 | `card_view.tscn` | `card_view.gd` | Affiche une carte (dos `card_back_red` par défaut, ou texture recto via `front_texture` + `face_up`). Purement visuel. |
 | `player_seat.tscn` | `player_seat.gd` | Affiche un siège joueur : avatar (placeholder `ColorRect`), nom, score `(n)`, pénalité cœur, rangée de dos de carte représentant la main restante. |
 | `top_menu_bar.tscn` | `top_menu_bar.gd` | Barre de menu supérieure (style bois) : boutons d'action (signaux `hamburger_pressed`, `help_pressed`, `scores_pressed`, `new_game_pressed`, `menu_pressed`, `settings_pressed`) + zone d'info centrale (`TurnLabel`, `ScoreLabel`) pilotable via `set_turn_text()` / `set_score_text()`. |
+| `match_end_dialog.tscn` | `match_end_dialog.gd` | Popup de fin de partie (voir ADR-021) : avatar + nom du vainqueur, flèche pointant vers son siège, scores des 4 joueurs, bouton "Rejouer" (`replay_requested`). Affiché via `show_result()`. |
 
-`table.gd` reste **volontairement minimal** : il instancie la main du joueur en éventail (données de démonstration) et ne contient aucune règle de jeu. Le câblage réel (scores, tour courant, cartes jouées) se fera via les signaux `GameEvents` lorsque `MatchManager` existera (étape 4).
+`table.gd` ne contient aucune règle de jeu : depuis l'étape 6, il possède et pilote un `MatchManager` (distribution, tour de jeu, scores, cartes jouées) et réagit à ses signaux `GameEvents` pour tout l'affichage — voir section « Table de jeu — câblage `MatchManager` (étape 6) » plus bas pour le détail.
 
 ### Conventions de nommage des nœuds (stabilité pour les tests)
 
-Les noms de nœuds suivants sont **stables** et ne doivent pas être renommés sans mettre à jour les tests/outils qui s'y réfèrent (GdUnit4, éventuel Playwright sur export web) : `TurnLabel`, `ScoreLabel`, `PlayerBottomHand`, `TrickArea`, `BtnMenu`, `BtnNew`, `BtnHelp`, `BtnScores`, `BtnSettings`, `BtnHamburger`, `SeatTop`, `SeatLeft`, `SeatRight`, `SeatBottom`, `ConfirmDialog`, `BtnConfirmYes`, `BtnConfirmNo`, `MainMenu`, `BtnNewGame`.
+Les noms de nœuds suivants sont **stables** et ne doivent pas être renommés sans mettre à jour les tests/outils qui s'y réfèrent (GdUnit4, éventuel Playwright sur export web) : `TurnLabel`, `ScoreLabel`, `PlayerBottomHand`, `TrickArea`, `AnimationLayer`, `BtnMenu`, `BtnNew`, `BtnHelp`, `BtnScores`, `BtnSettings`, `BtnHamburger`, `SeatTop`, `SeatLeft`, `SeatRight`, `SeatBottom`, `ConfirmDialog`, `BtnConfirmYes`, `BtnConfirmNo`, `MatchEndDialog`, `MainMenu`, `BtnNewGame`.
 
-### Limites connues du scaffold actuel (polish futur)
+### Limites connues (polish futur)
 
 - Les rangées de dos de carte des sièges gauche/droite sont horizontales comme celle du haut (pas encore orientées verticalement) — polish visuel à faire à l'étape 8.
-- La disposition en éventail de la main du joueur est approximative (constantes ajustables en tête de `table.gd`) et n'anime rien pour l'instant.
-- Aucune interaction (clic sur carte, drag & drop) n'est câblée : c'est un rendu statique de démonstration.
+- La distribution des cartes n'a pas d'animation visuelle dédiée (apparition instantanée déjà en éventail, seul le son de distribution est étalé dans le temps, voir `_play_deal_sfx`) — la pose d'une carte dans le pli et le ramassage d'un pli, eux, sont bien animés (voir ADR-021).
+- Pas de drag & drop : jouer une carte se fait par simple clic (voir docs/DECISIONS.md ADR-020).
+- Le bouton "Rejouer" du popup de fin de partie redémarre une partie sur la même scène de table ; `BtnNew`/`new_game_pressed` de `TopMenuBar` (redémarrage en cours de partie) existe mais n'est pas connecté à cette étape.
 
 ## Direction artistique UI — pixel art
 

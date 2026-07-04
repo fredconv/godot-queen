@@ -60,6 +60,14 @@ Cible les interactions entre plusieurs modules, avec un `MatchManager` instanci�
 - Vérification que `SaveService` persiste et recharge correctement un état de partie/configuration.
 - Simulation complète pilotée par 4 IA (`tests/integration/test_match_ai_simulation.gd`) : manche complète sans erreur (plusieurs seeds), partie complète jusqu'au seuil de points, déterminisme de bout en bout (même seed → même score final, même vainqueur) — voir docs/DECISIONS.md ADR-019.
 
+## Validation manuelle de l'UI de table (étape 6)
+
+`scripts/ui/table.gd` (câblage `MatchManager` ↔ table, voir docs/DECISIONS.md ADR-020) n'a pas de test automatisé GdUnit4 dédié : sa logique est fortement couplée à l'arbre de scène Godot et à des minuteurs asynchrones (`await get_tree().create_timer(...)`), et les tests UI/e2e sont la priorité la plus basse (voir « Priorités » ci-dessous). Validation retenue pour cette étape :
+
+- **Exécution manuelle (F5)** : lancer le jeu, "NOUVELLE PARTIE" depuis le menu, vérifier qu'une manche se distribue, que seules les cartes légales de la main sont cliquables/opaques, qu'un clic joue la carte (glissement animé vers `TrickArea`), que les IA enchaînent leurs tours avec une pause visible, que la carte gagnante d'un pli complet est mise en évidence puis que le pli se ramasse vers le siège du vainqueur, que les scores se mettent à jour sur chaque siège, qu'une nouvelle manche démarre automatiquement, et que le popup `MatchEndDialog` (vainqueur, flèche de siège, scores, bouton "Rejouer") s'affiche au seuil de points.
+- **Exécution headless multi-manches** : `Godot_v4.7-stable_win64.exe --path . --headless --quit-after N res://scenes/table/table.tscn` (N élevé, ex. 900 frames ≈ 15s) pour dérouler plusieurs manches jouées automatiquement par les 3 IA jusqu'au premier tour humain, et vérifier l'absence de `SCRIPT ERROR`/erreur runtime dans la sortie.
+- Les 86 tests GdUnit4 (étapes 2-5, `scripts/rules/`, `scripts/match/`, `scripts/ai/`) restent la source de vérité pour la correction des règles/scores/IA : `table.gd` ne fait que les consommer, sans les dupliquer.
+
 ## Tests end-to-end (Playwright)
 
 À activer si un export **HTML5/Web** est produit (sinon cette section reste informative) :
