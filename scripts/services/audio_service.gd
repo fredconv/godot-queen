@@ -119,6 +119,11 @@ func play_next() -> void:
 func stop_music() -> void:
 	_music_player.stop()
 
+## Indique si la musique d'ambiance est activée (préférence persistée via
+## `ConfigService`). Point d'accès préféré pour l'UI (`table.gd`, barre de menu).
+func get_music_enabled() -> bool:
+	return ConfigService.get_music_enabled()
+
 ## Active/désactive la musique et persiste la préférence via `ConfigService`.
 ## Désactiver met en pause (reprise possible au même point) plutôt que
 ## d'arrêter, pour un comportement "mute" simple et prévisible.

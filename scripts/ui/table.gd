@@ -112,12 +112,12 @@ func _ready() -> void:
 ## dès le lancement du jeu, depuis `AudioService._ready()` : cette table n'a
 ## qu'à synchroniser l'affichage du bouton et relayer les actions.
 func _setup_music_controls() -> void:
-	_top_menu_bar.set_music_enabled_display(ConfigService.get_music_enabled())
+	_top_menu_bar.set_music_enabled_display(AudioService.get_music_enabled())
 	_top_menu_bar.music_toggle_pressed.connect(_on_music_toggle_pressed)
 	_top_menu_bar.music_next_pressed.connect(_on_music_next_pressed)
 
 func _on_music_toggle_pressed() -> void:
-	var enabled: bool = not ConfigService.get_music_enabled()
+	var enabled: bool = not AudioService.get_music_enabled()
 	AudioService.set_music_enabled(enabled)
 	_top_menu_bar.set_music_enabled_display(enabled)
 
