@@ -376,12 +376,32 @@ func _refresh_turn_ui() -> void:
 
 	if playing:
 		if _match_manager.current_player == HUMAN_INDEX:
-			_top_menu_bar.set_turn_text("À vous de jouer")
+			_top_menu_bar.set_turn_text(_human_turn_hint_text())
 		else:
 			_top_menu_bar.set_turn_text("%s joue..." % _seats[_match_manager.current_player].player_name)
 		_top_menu_bar.set_score_text("Score : %d" % _match_manager.get_display_scores()[HUMAN_INDEX])
 
 	_refresh_human_hand_legality()
+
+## Message de tour pour le joueur humain : rappelle les contraintes courantes
+## (2 de Trèfle au 1er pli, Cœurs non défoncés) afin d'éviter l'impression
+## d'un bug quand des cartes sont grisées à tort apparent.
+func _human_turn_hint_text() -> String:
+	var is_leading := _match_manager.trick_manager.played_count() == 0
+	var rule_engine: RuleEngine = _match_manager.rule_engine
+
+	if is_leading and rule_engine.is_first_trick:
+		var legal := _match_manager.get_legal_plays(HUMAN_INDEX)
+		if legal.size() == 1 and HeartsRules.is_two_of_clubs(legal[0]):
+			return "À vous — jouez le 2 de Trèfle"
+		return "À vous de jouer (1er pli : pas de points)"
+
+	if is_leading and not rule_engine.hearts_broken:
+		for card in _match_manager.get_legal_plays(HUMAN_INDEX):
+			if not card.is_heart():
+				return "À vous — les Cœurs ne sont pas encore défoncés"
+
+	return "À vous de jouer"
 
 ## Cartes légales pour le joueur humain dans le contexte courant (liste vide
 ## si ce n'est pas son tour ou si la manche n'est pas en cours).
