@@ -51,10 +51,6 @@ const DEAL_SFX_STAGGER_SEC: float = 0.09
 ## utilisée telle quelle par les tests d'intégration.
 const AI_TURN_DELAY_SEC: float = 0.8
 
-## Opacité appliquée aux cartes de la main humaine qui ne sont pas jouables
-## dans le contexte du pli en cours (voir `MatchManager.get_legal_plays()`).
-const ILLEGAL_CARD_ALPHA: float = 0.4
-
 ## Échelle appliquée à une carte une fois posée dans le pli (légèrement plus
 ## grande que dans la main, pour bien remplir l'emplacement de `TrickArea`,
 ## voir `table.tscn`).
@@ -88,7 +84,7 @@ const TRICK_CARD_SCALE: float = 1.5
 var _match_manager: MatchManager
 
 ## Vues des cartes de la main humaine, dans le même ordre que
-## `_hand_cards` (indices alignés), pour ajuster leur opacité/interactivité
+## `_hand_cards` (indices alignés), pour ajuster leur jouabilité/interactivité
 ## selon la légalité du coup (voir `_refresh_human_hand_legality()`).
 var _hand_card_views: Array = []
 var _hand_cards: Array = []
@@ -228,8 +224,8 @@ func _on_hand_card_gui_input(event: InputEvent, card_view: Control, card: CardMo
 
 ## Un clic sur une carte légale de la main humaine la joue immédiatement (pas
 ## d'étape de sélection/confirmation intermédiaire, voir docs/DECISIONS.md
-## ADR-020) : les cartes illégales sont grisées et ignorent les clics (voir
-## `_refresh_human_hand_legality()`), cette vérification reste une sécurité
+## ADR-020) : les cartes illégales affichent un voile gris (`CardView`) et
+## ignorent les clics (voir `_refresh_human_hand_legality()`), cette vérification reste une sécurité
 ## supplémentaire.
 func _on_human_card_selected(card_view: Control, card: CardModel) -> void:
 	if _turn_locked or _match_manager.current_player != HUMAN_INDEX:
@@ -392,16 +388,18 @@ func _current_human_legal_plays() -> Array[CardModel]:
 		return []
 	return _match_manager.get_legal_plays(HUMAN_INDEX)
 
-## Grise les cartes de la main humaine qui ne sont pas jouables et les rend
-## insensibles aux clics/survols (voir `ILLEGAL_CARD_ALPHA`), pour que seules
-## les cartes légales réagissent (voir docs/DECISIONS.md ADR-020).
+## Marque les cartes illégales de la main humaine (voile gris + position
+## basse via `CardView.set_playable(false)`) et les rend insensibles aux
+## clics/survols, pour que seules les cartes légales réagissent (voir
+## docs/DECISIONS.md ADR-020).
 func _refresh_human_hand_legality() -> void:
 	var legal: Array[CardModel] = _current_human_legal_plays()
 	for i in _hand_card_views.size():
 		var card_view: Control = _hand_card_views[i]
 		var card: CardModel = _hand_cards[i]
 		var is_legal: bool = _card_in_list(card, legal)
-		card_view.modulate.a = 1.0 if is_legal else ILLEGAL_CARD_ALPHA
+		card_view.modulate = Color.WHITE
+		card_view.set_playable(is_legal)
 		card_view.mouse_filter = Control.MOUSE_FILTER_STOP if is_legal else Control.MOUSE_FILTER_IGNORE
 
 func _card_in_list(card: CardModel, cards: Array[CardModel]) -> bool:

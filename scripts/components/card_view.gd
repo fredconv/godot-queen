@@ -11,6 +11,9 @@ const BACK_TEXTURE: Texture2D = preload("res://assets/cards/kerenel_Cards_sepera
 const HOVER_LIFT: float = -20.0
 ## Décalage vertical (px) appliqué à la carte lorsqu'elle est sélectionnée.
 const SELECTED_LIFT: float = -28.0
+## Décalage vertical (px) appliqué aux cartes non jouables : restent légèrement
+## plus basses dans l'éventail pour renforcer le contraste avec les cartes légales.
+const DISABLED_LIFT: float = 10.0
 const LIFT_DURATION: float = 0.12
 const HOVER_MODULATE: Color = Color(1.08, 1.08, 1.08, 1.0)
 const SELECTED_MODULATE: Color = Color(1.15, 1.15, 1.15, 1.0)
@@ -41,12 +44,25 @@ const DEFAULT_MODULATE: Color = Color(1.0, 1.0, 1.0, 1.0)
 		if hovered == value:
 			return
 		hovered = value
-		if hovered:
+		if hovered and playable:
 			AudioService.play_card_hover()
+		_update_visual_state()
+
+## Vrai si la carte peut être jouée dans le contexte courant (main humaine).
+## Les cartes non jouables conservent leur opacité pleine mais affichent un
+## voile gris semi-transparent et restent légèrement plus basses dans l'éventail.
+@export var playable: bool = true:
+	set(value):
+		if playable == value:
+			return
+		playable = value
+		if not playable:
+			hovered = false
 		_update_visual_state()
 
 @onready var _texture_rect: TextureRect = $Visual/Texture
 @onready var _visual: Control = $Visual
+@onready var _disabled_overlay: ColorRect = $Visual/DisabledOverlay
 @onready var _selection_highlight: Control = $Visual/SelectionHighlight
 
 var _lift_tween: Tween
@@ -63,6 +79,9 @@ func set_selected(value: bool) -> void:
 func set_hovered(value: bool) -> void:
 	hovered = value
 
+func set_playable(value: bool) -> void:
+	playable = value
+
 func _refresh_texture() -> void:
 	if not _texture_rect:
 		return
@@ -72,13 +91,16 @@ func _refresh_texture() -> void:
 ## l'état combiné sélection/survol (la sélection prime sur le simple survol).
 ## `instant` évite l'animation lors de l'initialisation (`_ready`).
 func _update_visual_state(instant: bool = false) -> void:
-	if not _visual or not _selection_highlight:
+	if not _visual or not _selection_highlight or not _disabled_overlay:
 		return
 	_selection_highlight.visible = selected
+	_disabled_overlay.visible = not playable
 
 	var target_y: float = 0.0
 	var target_modulate: Color = DEFAULT_MODULATE
-	if selected:
+	if not playable:
+		target_y = DISABLED_LIFT
+	elif selected:
 		target_y = SELECTED_LIFT
 		target_modulate = SELECTED_MODULATE
 	elif hovered:
