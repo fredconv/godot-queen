@@ -18,6 +18,9 @@ const CARD_PLAY_DURATION_SEC: float = 0.3
 ## Durée minimale d'affichage du pli complet avant ramassage (spec UX : "au
 ## moins 2 secondes").
 const TRICK_VISIBLE_DURATION_SEC: float = 2.0
+## Dernier pli d'une partie : laisser les cartes visibles plus longtemps avant
+## la popup de fin (spec UX : 4 à 5 secondes).
+const MATCH_END_TRICK_VISIBLE_DURATION_SEC: float = 4.5
 ## Durée du glissement des 4 cartes du pli vers le siège du vainqueur.
 const TRICK_COLLECT_DURATION_SEC: float = 0.35
 ## Facteur d'agrandissement appliqué à la carte gagnante lors de sa mise en

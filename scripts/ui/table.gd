@@ -104,6 +104,7 @@ func _ready() -> void:
 	_top_menu_bar.menu_pressed.connect(_on_top_menu_bar_menu_pressed)
 	_confirm_dialog.confirmed.connect(_on_leave_match_confirmed)
 	_match_end_dialog.replay_requested.connect(_on_match_end_replay_requested)
+	_match_end_dialog.quit_requested.connect(_on_match_end_quit_requested)
 	_setup_music_controls()
 	call_deferred("_start_new_match")
 
@@ -164,10 +165,21 @@ func _start_new_match(seed_value: int = -1) -> void:
 	_run_ai_turns()
 
 func _on_match_end_replay_requested() -> void:
+	_clear_trick_cards()
+	_match_end_dialog.close()
+	_start_new_match()
+
+
+func _on_match_end_quit_requested() -> void:
+	_clear_trick_cards()
+	_match_end_dialog.close()
+	_return_to_main_menu()
+
+
+func _clear_trick_cards() -> void:
 	for card_view in _trick_card_views.values():
 		(card_view as Control).queue_free()
 	_trick_card_views.clear()
-	_start_new_match()
 
 # --- Main du joueur humain ---------------------------------------------------
 
@@ -326,7 +338,7 @@ func _handle_post_play(result: MatchManager.PlayResult) -> void:
 		_refresh_turn_ui()
 		return
 
-	await _resolve_trick_sequence(result.trick_winner)
+	await _resolve_trick_sequence(result.trick_winner, result.match_completed)
 	_refresh_scores()
 
 	if result.hand_completed:
@@ -340,15 +352,23 @@ func _handle_post_play(result: MatchManager.PlayResult) -> void:
 
 	_refresh_turn_ui()
 
-## Met en évidence la carte gagnante, laisse le pli visible au moins
-## `TableAnimations.TRICK_VISIBLE_DURATION_SEC`, puis fait glisser les 4
-## cartes vers le siège du vainqueur et les fait disparaître à l'arrivée.
-func _resolve_trick_sequence(winner_index: int) -> void:
+## Met en évidence la carte gagnante, laisse le pli visible (2 s en cours de
+## partie, 4,5 s pour le dernier pli d'une partie), puis ramasse le pli sauf
+## en fin de partie où les cartes restent sur la table jusqu'à la popup.
+func _resolve_trick_sequence(winner_index: int, is_final_match_trick: bool = false) -> void:
 	var winner_card_view: Control = _trick_card_views.get(winner_index)
 	if winner_card_view:
 		await TableAnimations.highlight_winning_card(self, winner_card_view)
 
-	await get_tree().create_timer(TableAnimations.TRICK_VISIBLE_DURATION_SEC).timeout
+	var visible_duration: float = (
+		TableAnimations.MATCH_END_TRICK_VISIBLE_DURATION_SEC
+		if is_final_match_trick
+		else TableAnimations.TRICK_VISIBLE_DURATION_SEC
+	)
+	await get_tree().create_timer(visible_duration).timeout
+
+	if is_final_match_trick:
+		return
 
 	var winner_seat: Control = _seats[winner_index]
 	var target_center: Vector2 = winner_seat.get_global_transform_with_canvas() * (winner_seat.size / 2.0)

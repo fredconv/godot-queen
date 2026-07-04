@@ -127,9 +127,17 @@ text = "Joueur remporte la partie !"
 [node name="ScoresList" type="VBoxContainer" parent="Panel/Content"]
 theme_override_constants/separation = 4
 
-[node name="BtnReplay" type="Button" parent="Panel/Content"]
+[node name="ButtonsRow" type="HBoxContainer" parent="Panel/Content"]
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="BtnReplay" type="Button" parent="Panel/Content/ButtonsRow"]
 custom_minimum_size = Vector2(140, 40)
-size_flags_horizontal = 4
 text = "Rejouer"
 
-[connection signal="pressed" from="Panel/Content/BtnReplay" to="." method="_on_btn_replay_pressed"]
+[node name="BtnQuit" type="Button" parent="Panel/Content/ButtonsRow"]
+custom_minimum_size = Vector2(140, 40)
+text = "Quitter"
+
+[connection signal="pressed" from="Panel/Content/ButtonsRow/BtnReplay" to="." method="_on_btn_replay_pressed"]
+[connection signal="pressed" from="Panel/Content/ButtonsRow/BtnQuit" to="." method="_on_btn_quit_pressed"]

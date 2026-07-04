@@ -7,6 +7,7 @@ extends Control
 ## `show_result()`.
 
 signal replay_requested
+signal quit_requested
 
 ## Couleur de mise en valeur du score du vainqueur dans `ScoresList`.
 const WINNER_SCORE_COLOR: Color = Color(0.831, 0.686, 0.216, 1)
@@ -53,3 +54,8 @@ func close() -> void:
 func _on_btn_replay_pressed() -> void:
 	close()
 	replay_requested.emit()
+
+
+func _on_btn_quit_pressed() -> void:
+	close()
+	quit_requested.emit()
