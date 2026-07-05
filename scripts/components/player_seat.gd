@@ -324,6 +324,11 @@ func get_deal_start_offset() -> Vector2:
 		_:
 			return Vector2(0.0, 420.0)
 
+## Force la reconstruction de la pile de dos de carte (utile avant une
+## animation de distribution si `hand_card_count` n'a pas changé).
+func force_refresh_hand_back() -> void:
+	_refresh_hand_back()
+
 func _refresh_hand_back() -> void:
 	if not _hand_back_row or not _hand_back_column:
 		return

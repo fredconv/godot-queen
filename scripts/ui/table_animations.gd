@@ -40,8 +40,9 @@ static func deal_card_to_local_position(
 	duration_sec: float = DEAL_CARD_DURATION_SEC
 ) -> void:
 	var tween: Tween = host.create_tween()
-	tween.tween_property(card_view, "position", target_position, duration_sec) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(card_view, "position", target_position, duration_sec)
 	await tween.finished
 
 ## Fait glisser `card_view` (déjà positionnée à son point de départ) jusqu'à
@@ -50,8 +51,9 @@ static func deal_card_to_local_position(
 static func play_card_to_trick(host: Node, card_view: Control, target_global_center: Vector2) -> void:
 	var visual_half_size: Vector2 = card_view.size * card_view.scale / 2.0
 	var tween: Tween = host.create_tween()
-	tween.tween_property(card_view, "global_position", target_global_center - visual_half_size, CARD_PLAY_DURATION_SEC) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(card_view, "global_position", target_global_center - visual_half_size, CARD_PLAY_DURATION_SEC)
 	await tween.finished
 
 ## Met en évidence la carte gagnante d'un pli : réutilise la surbrillance à
@@ -60,8 +62,9 @@ static func play_card_to_trick(host: Node, card_view: Control, target_global_cen
 static func highlight_winning_card(host: Node, card_view: Control) -> void:
 	card_view.set_selected(true)
 	var tween: Tween = host.create_tween()
-	tween.tween_property(card_view, "scale", card_view.scale * WINNER_HIGHLIGHT_SCALE_FACTOR, WINNER_HIGHLIGHT_DURATION_SEC) \
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(card_view, "scale", card_view.scale * WINNER_HIGHLIGHT_SCALE_FACTOR, WINNER_HIGHLIGHT_DURATION_SEC)
 	await tween.finished
 
 ## Ramasse les cartes du pli (`card_views`) en les faisant glisser ensemble
@@ -70,11 +73,12 @@ static func highlight_winning_card(host: Node, card_view: Control) -> void:
 static func collect_trick(host: Node, card_views: Array, target_global_center: Vector2) -> void:
 	var tween: Tween = host.create_tween()
 	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_ease(Tween.EASE_IN)
 	for card_view in card_views:
 		var control: Control = card_view as Control
 		var visual_half_size: Vector2 = control.size * control.scale / 2.0
-		tween.tween_property(control, "global_position", target_global_center - visual_half_size, TRICK_COLLECT_DURATION_SEC) \
-			.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		tween.tween_property(control, "global_position", target_global_center - visual_half_size, TRICK_COLLECT_DURATION_SEC)
 	await tween.finished
 	for card_view in card_views:
 		(card_view as Control).queue_free()

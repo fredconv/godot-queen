@@ -225,8 +225,12 @@ func _rebuild_human_hand() -> void:
 ## ses cartes depuis le bord d'écran le plus proche (gauche/haut/droite/bas).
 func _deal_visual_sequence() -> void:
 	_turn_locked = true
+	await get_tree().process_frame
+
 	_rebuild_human_hand()
 	_refresh_opponent_hand_counts()
+	for player_index in range(1, HeartsRules.PLAYER_COUNT):
+		_seats[player_index].force_refresh_hand_back()
 
 	var human_final_positions: Array[Vector2] = []
 	for card_view in _hand_card_views:
@@ -249,23 +253,38 @@ func _deal_visual_sequence() -> void:
 	for round_index in card_count:
 		var tween: Tween = create_tween()
 		tween.set_parallel(true)
+		tween.set_trans(Tween.TRANS_CUBIC)
+		tween.set_ease(Tween.EASE_OUT)
+		var tween_count := 0
+
 		if round_index < _hand_card_views.size():
-			tween.tween_property(
-				_hand_card_views[round_index],
-				"position",
-				human_final_positions[round_index],
-				TableAnimations.DEAL_CARD_DURATION_SEC
-			).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+			var human_card: Control = _hand_card_views[round_index]
+			if is_instance_valid(human_card):
+				tween.tween_property(
+					human_card,
+					"position",
+					human_final_positions[round_index],
+					TableAnimations.DEAL_CARD_DURATION_SEC
+				)
+				tween_count += 1
+
 		for deal_entry in opponent_deals:
 			var cards: Array = deal_entry["cards"]
 			var finals: Array = deal_entry["final_positions"]
 			if round_index < cards.size():
-				tween.tween_property(
-					cards[round_index],
-					"position",
-					finals[round_index],
-					TableAnimations.DEAL_CARD_DURATION_SEC
-				).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+				var opponent_card: Control = cards[round_index]
+				if is_instance_valid(opponent_card):
+					tween.tween_property(
+						opponent_card,
+						"position",
+						finals[round_index],
+						TableAnimations.DEAL_CARD_DURATION_SEC
+					)
+					tween_count += 1
+
+		if tween_count == 0:
+			continue
+
 		AudioService.play_deal_card()
 		await tween.finished
 		if round_index < card_count - 1:
