@@ -199,7 +199,7 @@ func _clear_trick_cards() -> void:
 func _rebuild_human_hand() -> void:
 	for child in _player_bottom_hand.get_children():
 		_player_bottom_hand.remove_child(child)
-		child.free()
+		child.queue_free()
 	_hand_card_views.clear()
 	_hand_cards = _match_manager.hands[HUMAN_INDEX].cards()
 
@@ -332,7 +332,9 @@ func _on_hand_card_mouse_exited(card_view: Control) -> void:
 
 func _on_hand_card_gui_input(event: InputEvent, card_view: Control, card: CardModel) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_human_card_selected(card_view, card)
+		# Différé : évite de libérer la carte pendant l'émission de gui_input
+		# (« Attempted to free a locked object » si _rebuild_human_hand() est appelé ici).
+		call_deferred("_on_human_card_selected", card_view, card)
 
 ## Un clic sur une carte légale de la main humaine la joue immédiatement (pas
 ## d'étape de sélection/confirmation intermédiaire, voir docs/DECISIONS.md
@@ -340,6 +342,8 @@ func _on_hand_card_gui_input(event: InputEvent, card_view: Control, card: CardMo
 ## ignorent les clics (voir `_refresh_human_hand_legality()`), cette vérification reste une sécurité
 ## supplémentaire.
 func _on_human_card_selected(card_view: Control, card: CardModel) -> void:
+	if not is_instance_valid(card_view):
+		return
 	if _turn_locked or _match_manager.current_player != HUMAN_INDEX:
 		return
 	if _match_manager.is_match_over():
