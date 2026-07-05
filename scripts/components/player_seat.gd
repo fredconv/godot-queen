@@ -308,8 +308,16 @@ func get_hand_back_card_views() -> Array:
 	var container: Control = _hand_back_row if _is_horizontal_stack() else _hand_back_column
 	var cards: Array = []
 	for child in container.get_children():
-		cards.append(child)
+		if is_instance_valid(child):
+			cards.append(child)
 	return cards
+
+## Supprime immédiatement les dos de carte d'un conteneur (évite les références
+## invalides si `queue_free()` différé pendant une animation de distribution).
+func _clear_hand_back_container(container: Control) -> void:
+	for child in container.get_children():
+		container.remove_child(child)
+		child.free()
 
 ## Décalage local (dans le conteneur de dos de carte) depuis lequel chaque
 ## carte glisse jusqu'à sa position finale lors de la distribution.
@@ -332,10 +340,8 @@ func force_refresh_hand_back() -> void:
 func _refresh_hand_back() -> void:
 	if not _hand_back_row or not _hand_back_column:
 		return
-	for child in _hand_back_row.get_children():
-		child.queue_free()
-	for child in _hand_back_column.get_children():
-		child.queue_free()
+	_clear_hand_back_container(_hand_back_row)
+	_clear_hand_back_container(_hand_back_column)
 	if not show_hand_back:
 		return
 	var target_container: Control = _hand_back_row if _is_horizontal_stack() else _hand_back_column

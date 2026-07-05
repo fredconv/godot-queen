@@ -189,7 +189,8 @@ func _clear_trick_cards() -> void:
 
 func _rebuild_human_hand() -> void:
 	for child in _player_bottom_hand.get_children():
-		child.queue_free()
+		_player_bottom_hand.remove_child(child)
+		child.free()
 	_hand_card_views.clear()
 	_hand_cards = _match_manager.hands[HUMAN_INDEX].cards()
 
@@ -229,8 +230,7 @@ func _deal_visual_sequence() -> void:
 
 	_rebuild_human_hand()
 	_refresh_opponent_hand_counts()
-	for player_index in range(1, HeartsRules.PLAYER_COUNT):
-		_seats[player_index].force_refresh_hand_back()
+	await get_tree().process_frame
 
 	var human_final_positions: Array[Vector2] = []
 	for card_view in _hand_card_views:
@@ -241,6 +241,8 @@ func _deal_visual_sequence() -> void:
 	var opponent_deals: Array = []
 	for player_index in range(1, HeartsRules.PLAYER_COUNT):
 		var seat: Control = _seats[player_index]
+		if seat.get_hand_back_card_views().is_empty():
+			seat.force_refresh_hand_back()
 		var cards: Array = seat.get_hand_back_card_views()
 		var offset: Vector2 = seat.get_deal_start_offset()
 		var final_positions: Array[Vector2] = []
@@ -271,16 +273,18 @@ func _deal_visual_sequence() -> void:
 		for deal_entry in opponent_deals:
 			var cards: Array = deal_entry["cards"]
 			var finals: Array = deal_entry["final_positions"]
-			if round_index < cards.size():
-				var opponent_card: Control = cards[round_index]
-				if is_instance_valid(opponent_card):
-					tween.tween_property(
-						opponent_card,
-						"position",
-						finals[round_index],
-						TableAnimations.DEAL_CARD_DURATION_SEC
-					)
-					tween_count += 1
+			if round_index >= cards.size():
+				continue
+			var opponent_card: Variant = cards[round_index]
+			if opponent_card == null or not is_instance_valid(opponent_card):
+				continue
+			tween.tween_property(
+				opponent_card,
+				"position",
+				finals[round_index],
+				TableAnimations.DEAL_CARD_DURATION_SEC
+			)
+			tween_count += 1
 
 		if tween_count == 0:
 			continue
