@@ -302,6 +302,28 @@ func _hand_back_layout(container_size: Vector2, back_scale: float, back_rotation
 		centers.append(center)
 	return {"centers": centers, "visual_size": visual_size}
 
+func get_hand_back_card_views() -> Array:
+	if not show_hand_back:
+		return []
+	var container: Control = _hand_back_row if _is_horizontal_stack() else _hand_back_column
+	var cards: Array = []
+	for child in container.get_children():
+		cards.append(child)
+	return cards
+
+## Décalage local (dans le conteneur de dos de carte) depuis lequel chaque
+## carte glisse jusqu'à sa position finale lors de la distribution.
+func get_deal_start_offset() -> Vector2:
+	match orientation:
+		SeatOrientation.LEFT:
+			return Vector2(-420.0, 0.0)
+		SeatOrientation.RIGHT:
+			return Vector2(420.0, 0.0)
+		SeatOrientation.TOP:
+			return Vector2(0.0, -320.0)
+		_:
+			return Vector2(0.0, 420.0)
+
 func _refresh_hand_back() -> void:
 	if not _hand_back_row or not _hand_back_column:
 		return

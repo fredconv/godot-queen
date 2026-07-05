@@ -45,6 +45,9 @@ const HAND_FAN_BOTTOM_MARGIN: float = -30.0
 ## visuelle, hors scope) ; seul le son est étalé dans le temps.
 const DEAL_SFX_STAGGER_SEC: float = 0.09
 
+## Décalage initial des cartes de la main humaine (distribution depuis le bas).
+const HUMAN_HAND_DEAL_OFFSET: Vector2 = Vector2(0.0, 480.0)
+
 ## Pause avant chaque coup joué par une IA (voir docs/DECISIONS.md ADR-020) :
 ## rend l'enchaînement des tours adverses suivable à l'œil plutôt
 ## qu'instantané. `MatchManager.advance_ai_turns()` (sans pause) reste
@@ -160,12 +163,9 @@ func _start_new_match(seed_value: int = -1) -> void:
 		_match_manager.set_ai_player(player_index, AiPlayer.new())
 	_match_manager.start_new_match(seed_value)
 
-	_rebuild_human_hand()
-	_refresh_opponent_hand_counts()
+	await _deal_visual_sequence()
 	_refresh_scores()
 	_refresh_turn_ui()
-	_play_deal_sfx(_match_manager.hands[HUMAN_INDEX].count())
-
 	_run_ai_turns()
 
 func _on_match_end_replay_requested() -> void:
@@ -221,9 +221,65 @@ func _rebuild_human_hand() -> void:
 
 	_refresh_human_hand_legality()
 
+## Anime la distribution : une carte par joueur à la fois, chaque siège reçoit
+## ses cartes depuis le bord d'écran le plus proche (gauche/haut/droite/bas).
+func _deal_visual_sequence() -> void:
+	_turn_locked = true
+	_rebuild_human_hand()
+	_refresh_opponent_hand_counts()
+
+	var human_final_positions: Array[Vector2] = []
+	for card_view in _hand_card_views:
+		human_final_positions.append(card_view.position)
+		card_view.position = human_final_positions[-1] + HUMAN_HAND_DEAL_OFFSET
+		card_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var opponent_deals: Array = []
+	for player_index in range(1, HeartsRules.PLAYER_COUNT):
+		var seat: Control = _seats[player_index]
+		var cards: Array = seat.get_hand_back_card_views()
+		var offset: Vector2 = seat.get_deal_start_offset()
+		var final_positions: Array[Vector2] = []
+		for card_view in cards:
+			final_positions.append(card_view.position)
+			card_view.position = final_positions[-1] + offset
+		opponent_deals.append({"cards": cards, "final_positions": final_positions})
+
+	var card_count: int = human_final_positions.size()
+	for round_index in card_count:
+		var tween: Tween = create_tween()
+		tween.set_parallel(true)
+		if round_index < _hand_card_views.size():
+			tween.tween_property(
+				_hand_card_views[round_index],
+				"position",
+				human_final_positions[round_index],
+				TableAnimations.DEAL_CARD_DURATION_SEC
+			).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		for deal_entry in opponent_deals:
+			var cards: Array = deal_entry["cards"]
+			var finals: Array = deal_entry["final_positions"]
+			if round_index < cards.size():
+				tween.tween_property(
+					cards[round_index],
+					"position",
+					finals[round_index],
+					TableAnimations.DEAL_CARD_DURATION_SEC
+				).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		AudioService.play_deal_card()
+		await tween.finished
+		if round_index < card_count - 1:
+			await get_tree().create_timer(TableAnimations.DEAL_CARD_STAGGER_SEC).timeout
+
+	for card_view in _hand_card_views:
+		card_view.mouse_filter = Control.MOUSE_FILTER_STOP
+	_refresh_human_hand_legality()
+	_turn_locked = false
+
 ## Joue un son de distribution par carte, étalé dans le temps (voir
-## `DEAL_SFX_STAGGER_SEC`), pour donner un aperçu audio de la distribution en
-## attendant une éventuelle animation visuelle dédiée (hors scope actuel).
+## `DEAL_SFX_STAGGER_SEC`). Conservé pour compatibilité ; la distribution
+## animée déclenche désormais le son carte par carte dans
+## `_deal_visual_sequence()`.
 func _play_deal_sfx(count: int) -> void:
 	for i in count:
 		get_tree().create_timer(i * DEAL_SFX_STAGGER_SEC).timeout.connect(AudioService.play_deal_card)
@@ -356,10 +412,8 @@ func _handle_post_play(result: MatchManager.PlayResult) -> void:
 			return
 		await _show_hand_end_popup()
 		_match_manager.start_new_hand()
-		_rebuild_human_hand()
-		_refresh_opponent_hand_counts()
+		await _deal_visual_sequence()
 		_refresh_scores()
-		_play_deal_sfx(_match_manager.hands[HUMAN_INDEX].count())
 
 	_refresh_turn_ui()
 

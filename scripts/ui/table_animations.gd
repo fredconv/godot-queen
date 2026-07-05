@@ -27,6 +27,22 @@ const TRICK_COLLECT_DURATION_SEC: float = 0.35
 ## surbrillance (en plus des crochets de coin déjà gérés par `CardView`).
 const WINNER_HIGHLIGHT_SCALE_FACTOR: float = 1.18
 const WINNER_HIGHLIGHT_DURATION_SEC: float = 0.2
+## Distribution visuelle : glissement rapide depuis le bord de l'écran.
+const DEAL_CARD_DURATION_SEC: float = 0.2
+## Pause entre l'arrivée de deux cartes consécutives (même siège).
+const DEAL_CARD_STAGGER_SEC: float = 0.045
+
+## Fait glisser `card_view` vers `target_position` (espace local du parent).
+static func deal_card_to_local_position(
+	host: Node,
+	card_view: Control,
+	target_position: Vector2,
+	duration_sec: float = DEAL_CARD_DURATION_SEC
+) -> void:
+	var tween: Tween = host.create_tween()
+	tween.tween_property(card_view, "position", target_position, duration_sec) \
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	await tween.finished
 
 ## Fait glisser `card_view` (déjà positionnée à son point de départ) jusqu'à
 ## `target_global_center` en `CARD_PLAY_DURATION_SEC`. `host` doit être un
