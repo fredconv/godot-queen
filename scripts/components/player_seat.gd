@@ -113,8 +113,16 @@ enum SeatOrientation { TOP, BOTTOM, LEFT, RIGHT }
 @onready var _name_label: Label = $InfoBox/NameLabel
 @onready var _score_label: Label = $InfoBox/ScoreRow/ScoreLabel
 @onready var _heart_label: Label = $InfoBox/ScoreRow/HeartPenaltyLabel
+@onready var _avatar_placeholder: Control = $InfoBox/AvatarPlaceholder
 @onready var _turn_highlight: Control = $InfoBox/AvatarPlaceholder/TurnHighlight
 @onready var _avatar: Control = $InfoBox/AvatarPlaceholder/Avatar
+
+const SCORE_TOOLTIP: String = (
+	"(N) : points de pénalité de la manche en cours\n"
+	+ "(Cœur = 1 pt, Dame de Pique = 13 pts).\n"
+	+ "♥ N : nombre de cartes Cœur capturées.\n"
+	+ "Le total de la partie est en haut à droite."
+)
 
 func _ready() -> void:
 	_layout_seat()
@@ -122,6 +130,12 @@ func _ready() -> void:
 	_refresh_hand_back()
 	_refresh_turn_highlight()
 	_refresh_avatar()
+	_setup_score_tooltip()
+
+func _setup_score_tooltip() -> void:
+	if _avatar_placeholder:
+		_avatar_placeholder.mouse_filter = Control.MOUSE_FILTER_STOP
+		_avatar_placeholder.tooltip_text = SCORE_TOOLTIP
 
 func set_active_turn(value: bool) -> void:
 	is_active_turn = value

@@ -194,3 +194,4 @@ func test_display_scores_equal_cumulative_after_hand_end() -> void:
 
 	assert_int(match_manager.phase).is_equal(MatchManager.Phase.HAND_END)
 	assert_int(match_manager.last_hand_scores.size()).is_equal(HeartsRules.PLAYER_COUNT)
+	assert_bool(match_manager.get_last_hand_winner() >= 0).is_true()

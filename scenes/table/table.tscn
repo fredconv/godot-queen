@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/table.gd" id="1_table"]
 [ext_resource type="PackedScene" path="res://scenes/components/top_menu_bar.tscn" id="2_topbar"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/components/confirm_dialog.tscn" id="5_confirm_dialog"]
 [ext_resource type="PackedScene" path="res://scenes/components/match_end_dialog.tscn" id="6_match_end_dialog"]
 [ext_resource type="PackedScene" path="res://scenes/components/match_scoreboard.tscn" id="7_scoreboard"]
+[ext_resource type="PackedScene" path="res://scenes/components/hand_end_dialog.tscn" id="8_hand_end"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
 bg_color = Color(1, 1, 1, 0.08)
@@ -172,6 +173,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="MatchEndDialog" parent="UILayer" instance=ExtResource("6_match_end_dialog")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="HandEndDialog" parent="UILayer" instance=ExtResource("8_hand_end")]
 anchor_right = 1.0
 anchor_bottom = 1.0
 

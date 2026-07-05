@@ -61,6 +61,7 @@ const TRICK_CARD_SCALE: float = 1.5
 @onready var _top_menu_bar: Control = $UILayer/TopMenuBar
 @onready var _confirm_dialog: Control = $UILayer/ConfirmDialog
 @onready var _match_end_dialog: Control = $UILayer/MatchEndDialog
+@onready var _hand_end_dialog: Control = $UILayer/HandEndDialog
 @onready var _match_scoreboard: Control = $UILayer/MatchScoreboard
 
 ## Sièges et emplacements de pli indexés par `player_index` (0-3), convention
@@ -151,6 +152,7 @@ func _return_to_main_menu() -> void:
 func _start_new_match(seed_value: int = -1) -> void:
 	_turn_locked = false
 	_match_end_dialog.close()
+	_hand_end_dialog.close()
 	_clear_trick_cards()
 
 	_match_manager = MatchManager.new()
@@ -352,6 +354,7 @@ func _handle_post_play(result: MatchManager.PlayResult) -> void:
 		if result.match_completed or _match_manager.is_match_over():
 			_show_match_end_popup()
 			return
+		await _show_hand_end_popup()
 		_match_manager.start_new_hand()
 		_rebuild_human_hand()
 		_refresh_opponent_hand_counts()
@@ -472,7 +475,24 @@ func _card_in_list(card: CardModel, cards: Array[CardModel]) -> bool:
 			return true
 	return false
 
-# --- Fin de partie ------------------------------------------------------------
+# --- Fin de manche / fin de partie --------------------------------------------
+
+func _show_hand_end_popup() -> void:
+	var winner_index: int = _match_manager.get_last_hand_winner()
+	var names: Array = []
+	var character_ids: Array = []
+	for player_index in range(HeartsRules.PLAYER_COUNT):
+		names.append(_seats[player_index].player_name)
+		character_ids.append(_seats[player_index].character_id)
+	_hand_end_dialog.show_result(
+		winner_index,
+		names,
+		_match_manager.last_hand_scores,
+		_match_manager.score_manager.get_scores(),
+		character_ids
+	)
+	await _hand_end_dialog.continue_requested
+
 
 func _show_match_end_popup() -> void:
 	if _match_end_dialog.visible:

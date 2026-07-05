@@ -249,7 +249,13 @@ func get_display_scores() -> Array[int]:
 ## Index du joueur ayant le score cumulé le plus bas. Pertinent seulement une
 ## fois `is_match_over()` vrai.
 func get_match_winner() -> int:
-	var scores := score_manager.get_scores()
+	return _get_lowest_score_player_index(score_manager.get_scores())
+
+## Index du joueur ayant marqué le moins de points lors de la dernière manche.
+func get_last_hand_winner() -> int:
+	return _get_lowest_score_player_index(last_hand_scores)
+
+func _get_lowest_score_player_index(scores: Array) -> int:
 	var winner := 0
 	for player_index in range(1, scores.size()):
 		if scores[player_index] < scores[winner]:

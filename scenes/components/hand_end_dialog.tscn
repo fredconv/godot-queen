@@ -1,0 +1,80 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/components/hand_end_dialog.gd" id="1_hand_end"]
+[ext_resource type="PackedScene" path="res://scenes/components/player_avatar.tscn" id="2_avatar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backdrop"]
+bg_color = Color(0, 0, 0, 0.55)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.129, 0.129, 0.157, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.831, 0.686, 0.216, 1)
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+
+[node name="HandEndDialog" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+visible = false
+script = ExtResource("1_hand_end")
+
+[node name="Backdrop" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_backdrop")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -160.0
+offset_right = 230.0
+offset_bottom = 160.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Content" type="VBoxContainer" parent="Panel"]
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="Panel/Content"]
+theme_override_colors/font_color = Color(0.961, 0.941, 0.902, 1)
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+text = "Manche terminée"
+
+[node name="WinnerRow" type="HBoxContainer" parent="Panel/Content"]
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="WinnerAvatar" parent="Panel/Content/WinnerRow" instance=ExtResource("2_avatar")]
+custom_minimum_size = Vector2(56, 56)
+
+[node name="WinnerNameLabel" type="Label" parent="Panel/Content/WinnerRow"]
+theme_override_colors/font_color = Color(0.831, 0.686, 0.216, 1)
+autowrap_mode = 2
+vertical_alignment = 1
+text = "Joueur remporte la manche !"
+
+[node name="WinnerDetailLabel" type="Label" parent="Panel/Content"]
+theme_override_colors/font_color = Color(0.961, 0.941, 0.902, 1)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+text = "Manche : 0 pts  |  Total partie : 0 pts"
+
+[node name="ScoresList" type="VBoxContainer" parent="Panel/Content"]
+theme_override_constants/separation = 4
+
+[node name="BtnContinue" type="Button" parent="Panel/Content"]
+custom_minimum_size = Vector2(160, 40)
+size_flags_horizontal = 4
+text = "Manche suivante"
+
+[connection signal="pressed" from="Panel/Content/BtnContinue" to="." method="_on_btn_continue_pressed"]
