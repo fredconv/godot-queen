@@ -46,7 +46,7 @@ const HUMAN_HAND_DEAL_OFFSET: Vector2 = Vector2(0.0, 480.0)
 ## rend l'enchaînement des tours adverses suivable à l'œil plutôt
 ## qu'instantané. `MatchManager.advance_ai_turns()` (sans pause) reste
 ## utilisée telle quelle par les tests d'intégration.
-const AI_TURN_DELAY_SEC: float = 0.8
+const AI_TURN_DELAY_SEC: float = 0.4
 
 ## Échelle appliquée à une carte une fois posée dans le pli (légèrement plus
 ## grande que dans la main, pour bien remplir l'emplacement de `TrickArea`,
@@ -325,6 +325,10 @@ func _deal_visual_sequence() -> void:
 	_turn_locked = false
 
 func _on_hand_card_mouse_entered(card_view: Control) -> void:
+	if not is_inside_tree():
+		return
+	if card_view.playable:
+		AudioService.play_card_hover()
 	card_view.set_hovered(true)
 
 func _on_hand_card_mouse_exited(card_view: Control) -> void:
@@ -425,7 +429,7 @@ func _run_ai_turns() -> void:
 
 ## Fait glisser une carte (nouvellement créée, voir `_spawn_traveling_card`)
 ## depuis `start_center` (position globale, main ou siège d'origine) jusqu'à
-## l'emplacement de pli de `player_index`, en ~0.3s (voir `TableAnimations`).
+## l'emplacement de pli de `player_index` (voir `TableAnimations`).
 ## Le son de pose de carte est déclenché par `MatchManager.play_card()`
 ## (`GameEvents.card_played` -> `AudioService`) avant même l'appel à cette
 ## fonction : il démarre donc bien en même temps que le glissement visuel.

@@ -13,24 +13,22 @@ extends RefCounted
 ## du calcul de la position cible.
 
 ## Durée du glissement d'une carte jouée depuis la main/le siège d'origine
-## jusqu'à son emplacement dans le pli (spec UX : "environ 0.3 seconde").
-const CARD_PLAY_DURATION_SEC: float = 0.3
-## Durée minimale d'affichage du pli complet avant ramassage (spec UX : "au
-## moins 2 secondes").
-const TRICK_VISIBLE_DURATION_SEC: float = 2.0
-## Dernier pli d'une partie : laisser les cartes visibles plus longtemps avant
-## la popup de fin (spec UX : 4 à 5 secondes).
-const MATCH_END_TRICK_VISIBLE_DURATION_SEC: float = 4.5
+## jusqu'à son emplacement dans le pli.
+const CARD_PLAY_DURATION_SEC: float = 0.15
+## Durée minimale d'affichage du pli complet avant ramassage.
+const TRICK_VISIBLE_DURATION_SEC: float = 1.0
+## Dernier pli d'une partie : laisser les cartes visibles avant la popup de fin.
+const MATCH_END_TRICK_VISIBLE_DURATION_SEC: float = 3.5
 ## Durée du glissement des 4 cartes du pli vers le siège du vainqueur.
-const TRICK_COLLECT_DURATION_SEC: float = 0.35
+const TRICK_COLLECT_DURATION_SEC: float = 0.18
 ## Facteur d'agrandissement appliqué à la carte gagnante lors de sa mise en
 ## surbrillance (en plus des crochets de coin déjà gérés par `CardView`).
 const WINNER_HIGHLIGHT_SCALE_FACTOR: float = 1.18
-const WINNER_HIGHLIGHT_DURATION_SEC: float = 0.2
+const WINNER_HIGHLIGHT_DURATION_SEC: float = 0.1
 ## Distribution visuelle : glissement rapide depuis le bord de l'écran.
-const DEAL_CARD_DURATION_SEC: float = 0.2
+const DEAL_CARD_DURATION_SEC: float = 0.1
 ## Pause entre l'arrivée de deux cartes consécutives (même siège).
-const DEAL_CARD_STAGGER_SEC: float = 0.045
+const DEAL_CARD_STAGGER_SEC: float = 0.023
 
 ## Fait glisser `card_view` vers `target_position` (espace local du parent).
 static func deal_card_to_local_position(

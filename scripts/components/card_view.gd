@@ -44,8 +44,6 @@ const DEFAULT_MODULATE: Color = Color(1.0, 1.0, 1.0, 1.0)
 		if hovered == value:
 			return
 		hovered = value
-		if hovered and playable:
-			AudioService.play_card_hover()
 		_update_visual_state()
 
 ## Vrai si la carte peut être jouée dans le contexte courant (main humaine).
