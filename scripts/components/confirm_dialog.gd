@@ -9,20 +9,34 @@ signal confirmed
 signal cancelled
 
 @onready var _message_label: Label = $Panel/Content/MessageLabel
+@onready var _btn_yes: Button = $Panel/Content/Buttons/BtnConfirmYes
+@onready var _btn_no: Button = $Panel/Content/Buttons/BtnConfirmNo
 
-## Affiche la boîte de dialogue. `message` permet de personnaliser le texte ;
-## laissé vide, le texte déjà défini dans la scène est conservé.
+
+func _ready() -> void:
+	LocaleAware.bind(self, refresh_locale)
+	refresh_locale()
+
+
 func open(message: String = "") -> void:
 	if message != "":
 		_message_label.text = message
 	visible = true
 
+
 func close() -> void:
 	visible = false
+
+
+func refresh_locale() -> void:
+	_btn_yes.text = tr(CommonKeys.YES)
+	_btn_no.text = tr(CommonKeys.NO)
+
 
 func _on_btn_confirm_yes_pressed() -> void:
 	close()
 	confirmed.emit()
+
 
 func _on_btn_confirm_no_pressed() -> void:
 	close()

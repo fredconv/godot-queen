@@ -17,6 +17,7 @@ static func start_new_match(ctx: TableContext, seed_value: int = -1) -> void:
 	await TableDealing.play_sequence(ctx)
 	if not ctx.is_active():
 		return
+	TableLocale.apply(ctx)
 	TableDisplay.refresh_scores(ctx)
 	TableDisplay.refresh_turn_ui(ctx)
 	await TablePlayFlow.run_ai_turns(ctx)
@@ -49,7 +50,7 @@ static func return_to_main_menu(ctx: TableContext) -> void:
 
 static func on_menu_pressed(ctx: TableContext) -> void:
 	if TableServiceAccess.session(ctx.host).match_in_progress:
-		ctx.confirm_dialog.open("Voulez-vous quitter la partie en cours ?")
+		ctx.confirm_dialog.open(DialogCopy.leave_match_confirm())
 	else:
 		return_to_main_menu(ctx)
 

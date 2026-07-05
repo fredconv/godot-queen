@@ -1,0 +1,23 @@
+keys,fr,en
+TB_PLAYER_YOU,Vous,You
+TB_PLAYER_OPPONENT,Adversaire %d,Opponent %d
+TB_SCORE_HAND_MATCH,Manche : %d pts  |  Partie : %d pts,Hand: %d pts  |  Match: %d pts
+TB_TURN_YOUR_PLAY,À vous de jouer,Your turn
+TB_TURN_TWO_CLUBS,À vous — jouez le 2 de Trèfle,Your turn — play the 2 of Clubs
+TB_TURN_FIRST_TRICK,À vous de jouer (1er pli : pas de points),Your turn (first trick: no penalty cards)
+TB_TURN_HEARTS_NOT_BROKEN,À vous — les Cœurs ne sont pas encore défoncés,Your turn — Hearts are not broken yet
+TB_TURN_OPPONENT,%s joue...,%s is playing...
+TB_SCOREBOARD_TITLE,Partie — manche %d / %d pts,Match — hand %d / %d pts
+TB_THEME_CLASSIC,Feutre vert,Green felt
+TB_THEME_TAPIS,Tapis,Tablecloth
+TB_TOP_HELP,AIDE,HELP
+TB_TOP_SCORES,SCORES,SCORES
+TB_TOP_NEW,NOUVEAU,NEW
+TB_TOP_MENU,MENU,MENU
+TB_TOP_MUSIC_ON,MUSIQUE : ON,MUSIC: ON
+TB_TOP_MUSIC_OFF,MUSIQUE : OFF,MUSIC: OFF
+TB_TOP_MUSIC_NEXT,SUIVANT,NEXT
+TB_TOP_TOOLTIP_MENU,Menu,Menu
+TB_TOP_TOOLTIP_MUSIC,Activer/couper la musique,Toggle music
+TB_TOP_TOOLTIP_MUSIC_NEXT,Piste suivante,Next track
+TB_TOP_TOOLTIP_SETTINGS,Réglages,Settings

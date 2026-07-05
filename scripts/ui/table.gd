@@ -43,6 +43,8 @@ func _ready() -> void:
 	_match_end_dialog.replay_requested.connect(_on_match_end_replay_requested)
 	_match_end_dialog.quit_requested.connect(_on_match_end_quit_requested)
 	TableChrome.setup_music_controls(_ctx)
+	LocaleAware.bind(self, _on_locale_changed)
+	TableLocale.refresh_seat_names(_ctx)
 	call_deferred("_start_new_match")
 
 
@@ -85,6 +87,11 @@ func _on_top_menu_bar_menu_pressed() -> void:
 
 func _on_top_menu_bar_scores_pressed() -> void:
 	_scores_screen.open()
+
+
+func _on_locale_changed(_locale: String = "") -> void:
+	if _ctx != null:
+		TableLocale.apply(_ctx)
 
 
 func _on_leave_match_confirmed() -> void:

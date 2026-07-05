@@ -9,17 +9,17 @@ extends Control
 signal replay_requested
 signal quit_requested
 
-## Couleur de mise en valeur du score du vainqueur dans `ScoresList`.
 const WINNER_SCORE_COLOR: Color = Color(0.831, 0.686, 0.216, 1)
 const DEFAULT_SCORE_COLOR: Color = Color(0.961, 0.941, 0.902, 1)
 
+@onready var _title_label: Label = $Panel/Content/TitleLabel
 @onready var _winner_avatar: Control = $Panel/Content/WinnerRow/WinnerAvatar
 @onready var _winner_name_label: Label = $Panel/Content/WinnerRow/WinnerNameLabel
 @onready var _winner_detail_label: Label = $Panel/Content/WinnerDetailLabel
 @onready var _scores_list: VBoxContainer = $Panel/Content/ScoresList
+@onready var _btn_replay: Button = $Panel/Content/ButtonsRow/BtnReplay
+@onready var _btn_quit: Button = $Panel/Content/ButtonsRow/BtnQuit
 
-## Flèches indexées par index de joueur (0=bas, 1=gauche, 2=haut, 3=droite),
-## même convention de siège que `table.gd::SEAT_FOR_PLAYER`.
 @onready var _arrows_by_player: Array = [
 	$ArrowBottom,
 	$ArrowLeft,
@@ -27,8 +27,13 @@ const DEFAULT_SCORE_COLOR: Color = Color(0.961, 0.941, 0.902, 1)
 	$ArrowRight,
 ]
 
-## Affiche le résultat de la partie. `player_names`, `cumulative_scores`,
-## `hand_scores` et `character_ids` sont indexés par `player_index` (0-3).
+var _last_result: Dictionary = {}
+
+
+func _ready() -> void:
+	LocaleAware.bind(self, _refresh_locale)
+
+
 func show_result(
 	winner_index: int,
 	player_names: Array,
@@ -36,17 +41,49 @@ func show_result(
 	hand_scores: Array,
 	character_ids: Array
 ) -> void:
+	_last_result = {
+		"winner_index": winner_index,
+		"player_names": player_names.duplicate(),
+		"cumulative_scores": cumulative_scores.duplicate(),
+		"hand_scores": hand_scores.duplicate(),
+		"character_ids": character_ids.duplicate(),
+	}
+	_render_result()
+	visible = true
+
+
+func close() -> void:
+	visible = false
+
+
+func _refresh_locale() -> void:
+	_title_label.text = tr(DialogKeys.MATCH_END_TITLE)
+	_btn_replay.text = tr(DialogKeys.MATCH_REPLAY)
+	_btn_quit.text = tr(DialogKeys.MATCH_QUIT)
+	if not _last_result.is_empty():
+		_render_result()
+
+
+func _render_result() -> void:
+	if _last_result.is_empty():
+		return
+	var winner_index: int = _last_result["winner_index"]
+	var player_names: Array = _last_result["player_names"]
+	var cumulative_scores: Array = _last_result["cumulative_scores"]
+	var hand_scores: Array = _last_result["hand_scores"]
+	var character_ids: Array = _last_result["character_ids"]
+
 	for arrow in _arrows_by_player:
 		(arrow as Control).visible = false
 	(_arrows_by_player[winner_index] as Control).visible = true
 
 	_winner_avatar.set("character_index", character_ids[winner_index])
-	_winner_name_label.text = "%s remporte la partie !" % player_names[winner_index]
+	_winner_name_label.text = DialogCopy.match_winner_line(player_names[winner_index])
 	if _winner_detail_label:
-		_winner_detail_label.text = "Dernière manche : %d pts  |  Total partie : %d pts" % [
+		_winner_detail_label.text = DialogCopy.match_winner_detail(
 			hand_scores[winner_index],
-			cumulative_scores[winner_index],
-		]
+			cumulative_scores[winner_index]
+		)
 
 	for child in _scores_list.get_children():
 		child.queue_free()
@@ -66,20 +103,15 @@ func show_result(
 		var player_index: int = entry["index"]
 		var is_winner: bool = player_index == winner_index
 		var label := Label.new()
-		var prefix: String = "★ " if is_winner else "   "
-		label.text = "%s%s — manche : %d | total : %d" % [
-			prefix,
+		label.text = DialogCopy.match_score_row(
+			DialogCopy.winner_prefix(is_winner),
 			player_names[player_index],
 			entry["hand"],
-			entry["cumulative"],
-		]
+			entry["cumulative"]
+		)
 		label.add_theme_color_override("font_color", WINNER_SCORE_COLOR if is_winner else DEFAULT_SCORE_COLOR)
 		_scores_list.add_child(label)
 
-	visible = true
-
-func close() -> void:
-	visible = false
 
 func _on_btn_replay_pressed() -> void:
 	close()

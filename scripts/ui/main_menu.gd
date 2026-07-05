@@ -3,7 +3,6 @@ extends Control
 ## Écran de menu principal (étape 7 de docs/ROADMAP.md). Contrôleur minimal :
 ## lance une partie de démonstration sur `table.tscn`, quitte le jeu, ou
 ## affiche les écrans Scores / Configuration.
-## Aucune règle de jeu ici, uniquement de la navigation entre scènes.
 
 @onready var _title_label: Label = $CenterContainer/Menu/TitleLabel
 @onready var _btn_new_game: Button = $CenterContainer/Menu/BtnNewGame
@@ -28,11 +27,11 @@ func _ready() -> void:
 
 
 func _refresh_locale() -> void:
-	_title_label.text = tr(UiKeys.MENU_TITLE)
-	_btn_new_game.text = tr(UiKeys.MENU_NEW_GAME)
-	_btn_scores.text = tr(UiKeys.MENU_SCORES)
-	_btn_settings.text = tr(UiKeys.MENU_SETTINGS)
-	_btn_quit.text = tr(UiKeys.MENU_QUIT)
+	_title_label.text = tr(MenuKeys.TITLE)
+	_btn_new_game.text = tr(MenuKeys.NEW_GAME)
+	_btn_scores.text = tr(MenuKeys.SCORES)
+	_btn_settings.text = tr(MenuKeys.SETTINGS)
+	_btn_quit.text = tr(MenuKeys.QUIT)
 
 
 func _focus_default_button() -> void:

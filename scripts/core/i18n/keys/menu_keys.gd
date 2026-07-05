@@ -1,0 +1,25 @@
+class_name MenuKeys
+extends RefCounted
+## Clés du menu principal (`translations/menu.csv`).
+
+const TITLE: String = "MN_TITLE"
+const NEW_GAME: String = "MN_NEW_GAME"
+const SCORES: String = "MN_SCORES"
+const SETTINGS: String = "MN_SETTINGS"
+const QUIT: String = "MN_QUIT"
+
+const SETTINGS_TITLE: String = "MN_SETTINGS_TITLE"
+const SETTINGS_SFX_VOLUME: String = "MN_SETTINGS_SFX_VOLUME"
+const SETTINGS_MUSIC_VOLUME: String = "MN_SETTINGS_MUSIC_VOLUME"
+const SETTINGS_MUSIC_ENABLED: String = "MN_SETTINGS_MUSIC_ENABLED"
+const SETTINGS_TABLE_THEME: String = "MN_SETTINGS_TABLE_THEME"
+const SETTINGS_LANGUAGE: String = "MN_SETTINGS_LANGUAGE"
+const SETTINGS_LANG_FR: String = "MN_SETTINGS_LANG_FR"
+const SETTINGS_LANG_EN: String = "MN_SETTINGS_LANG_EN"
+
+const SCORES_TITLE: String = "MN_SCORES_TITLE"
+const SCORES_EMPTY: String = "MN_SCORES_EMPTY"
+const SCORES_MATCHES: String = "MN_SCORES_MATCHES"
+const SCORES_WINS: String = "MN_SCORES_WINS"
+const SCORES_LOSSES: String = "MN_SCORES_LOSSES"
+const SCORES_WIN_RATE: String = "MN_SCORES_WIN_RATE"

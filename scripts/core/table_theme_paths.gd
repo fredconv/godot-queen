@@ -11,11 +11,6 @@ const TAPIS_TEXTURE_PATH: String = "res://assets/sprites/texture_tapis.jpg"
 
 const THEME_IDS: Array[StringName] = [THEME_CLASSIC, THEME_TAPIS]
 
-const THEME_LABELS: Dictionary = {
-	THEME_CLASSIC: "Feutre vert",
-	THEME_TAPIS: "Tapis",
-}
-
 
 static func normalize_theme_id(theme_id: Variant) -> StringName:
 	if str(theme_id) == str(THEME_TAPIS):
@@ -24,8 +19,7 @@ static func normalize_theme_id(theme_id: Variant) -> StringName:
 
 
 static func get_label(theme_id: StringName) -> String:
-	var normalized: StringName = normalize_theme_id(theme_id)
-	return THEME_LABELS.get(normalized, "Feutre vert")
+	return TableCopy.theme_label(theme_id)
 
 
 static func apply_to_nodes(color_rect: ColorRect, texture_rect: TextureRect, theme_id: StringName) -> void:

@@ -1,6 +1,8 @@
 class_name LocaleAware
 extends RefCounted
 ## Utilitaires pour les écrans réactifs au changement de langue.
+## Brancher via `LocaleAware.bind(node, refresh_callable)` ; les clés vivent
+## dans `scripts/core/i18n/keys/*` et les CSV de `translations/`.
 
 
 static func bind(node: Node, refresh_callable: Callable) -> void:

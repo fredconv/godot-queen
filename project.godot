@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://translations/ui.fr.translation", "res://translations/ui.en.translation")
+locale/translations=PackedStringArray("res://translations/common.fr.translation", "res://translations/common.en.translation", "res://translations/menu.fr.translation", "res://translations/menu.en.translation", "res://translations/table.fr.translation", "res://translations/table.en.translation", "res://translations/dialogs.fr.translation", "res://translations/dialogs.en.translation")
 locale/fallback="fr"
 
 [autoload]

@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://cw13qkh1e7861"
+
+[deps]
+
+files=["res://translations/dialogs.fr.translation", "res://translations/dialogs.en.translation"]
+
+source_file="res://translations/dialogs.csv"
+dest_files=["res://translations/dialogs.fr.translation", "res://translations/dialogs.en.translation"]
+
+[params]
+
+compress=true
+delimiter=0
+unescape_keys=false
+unescape_translations=true

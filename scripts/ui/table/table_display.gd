@@ -38,11 +38,11 @@ static func refresh_turn_ui(ctx: TableContext) -> void:
 			ctx.top_menu_bar.set_turn_text(_human_turn_hint_text(ctx))
 		else:
 			ctx.top_menu_bar.set_turn_text(
-				"%s joue..." % ctx.seats[ctx.match_manager.current_player].player_name
+				TableCopy.opponent_turn_line(ctx.seats[ctx.match_manager.current_player].player_name)
 			)
 		var hand_score: int = ctx.match_manager.get_current_hand_raw_scores()[TableConstants.HUMAN_INDEX]
 		var match_score: int = ctx.match_manager.score_manager.get_score(TableConstants.HUMAN_INDEX)
-		ctx.top_menu_bar.set_score_text("Manche : %d pts  |  Partie : %d pts" % [hand_score, match_score])
+		ctx.top_menu_bar.set_score_text(TableCopy.hand_match_score_line(hand_score, match_score))
 
 	refresh_human_hand_legality(ctx)
 	TableFx.refresh_lead_suit_indicator(ctx)
@@ -63,19 +63,22 @@ static func refresh_human_hand_legality(ctx: TableContext) -> void:
 static func _human_turn_hint_text(ctx: TableContext) -> String:
 	var is_leading := ctx.match_manager.trick_manager.played_count() == 0
 	var rule_engine: RuleEngine = ctx.match_manager.rule_engine
+	var must_play_two_of_clubs := false
+	var hearts_not_broken_lead := false
 
 	if is_leading and rule_engine.is_first_trick:
 		var legal := ctx.match_manager.get_legal_plays(TableConstants.HUMAN_INDEX)
-		if legal.size() == 1 and HeartsRules.is_two_of_clubs(legal[0]):
-			return "À vous — jouez le 2 de Trèfle"
-		return "À vous de jouer (1er pli : pas de points)"
+		must_play_two_of_clubs = legal.size() == 1 and HeartsRules.is_two_of_clubs(legal[0])
+		return TableCopy.human_turn_hint(true, must_play_two_of_clubs, false)
 
 	if is_leading and not rule_engine.hearts_broken:
 		for card in ctx.match_manager.get_legal_plays(TableConstants.HUMAN_INDEX):
 			if not card.is_heart():
-				return "À vous — les Cœurs ne sont pas encore défoncés"
+				hearts_not_broken_lead = true
+				break
+		return TableCopy.human_turn_hint(false, false, hearts_not_broken_lead)
 
-	return "À vous de jouer"
+	return TableCopy.human_turn_hint(false, false, false)
 
 
 static func current_human_legal_plays(ctx: TableContext) -> Array[CardModel]:

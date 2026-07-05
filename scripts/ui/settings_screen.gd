@@ -21,8 +21,6 @@ signal closed
 
 func _ready() -> void:
 	visible = false
-	_build_theme_options()
-	_build_language_options()
 	_sfx_slider.value_changed.connect(_on_sfx_slider_changed)
 	_music_slider.value_changed.connect(_on_music_slider_changed)
 	_music_toggle.toggled.connect(_on_music_toggle_changed)
@@ -44,13 +42,14 @@ func close() -> void:
 
 
 func _refresh_locale() -> void:
-	_title_label.text = tr(UiKeys.SETTINGS_TITLE)
-	_sfx_label.text = tr(UiKeys.SETTINGS_SFX_VOLUME)
-	_music_label.text = tr(UiKeys.SETTINGS_MUSIC_VOLUME)
-	_music_toggle.text = tr(UiKeys.SETTINGS_MUSIC_ENABLED)
-	_theme_label.text = tr(UiKeys.SETTINGS_TABLE_THEME)
-	_language_label.text = tr(UiKeys.SETTINGS_LANGUAGE)
-	_btn_back.text = tr(UiKeys.COMMON_BACK)
+	_title_label.text = tr(MenuKeys.SETTINGS_TITLE)
+	_sfx_label.text = tr(MenuKeys.SETTINGS_SFX_VOLUME)
+	_music_label.text = tr(MenuKeys.SETTINGS_MUSIC_VOLUME)
+	_music_toggle.text = tr(MenuKeys.SETTINGS_MUSIC_ENABLED)
+	_theme_label.text = tr(MenuKeys.SETTINGS_TABLE_THEME)
+	_language_label.text = tr(MenuKeys.SETTINGS_LANGUAGE)
+	_btn_back.text = tr(CommonKeys.BACK)
+	_build_theme_options()
 	_build_language_options()
 	_select_language_option(ConfigService.get_language())
 	_set_slider_label(_sfx_value_label, _sfx_slider.value)
@@ -58,17 +57,22 @@ func _refresh_locale() -> void:
 
 
 func _build_theme_options() -> void:
+	var selected_index: int = _theme_option.selected
 	_theme_option.clear()
 	for theme_id in TableThemePaths.THEME_IDS:
 		_theme_option.add_item(TableThemePaths.get_label(theme_id), _theme_option.item_count)
+	if selected_index >= 0 and selected_index < _theme_option.item_count:
+		_theme_option.select(selected_index)
+	else:
+		_select_theme_option(ConfigService.get_table_theme())
 
 
 func _build_language_options() -> void:
 	var selected_language: String = ConfigService.get_language()
 	_language_option.clear()
-	_language_option.add_item(tr(UiKeys.SETTINGS_LANG_FR), 0)
+	_language_option.add_item(tr(MenuKeys.SETTINGS_LANG_FR), 0)
 	_language_option.set_item_metadata(0, "fr")
-	_language_option.add_item(tr(UiKeys.SETTINGS_LANG_EN), 1)
+	_language_option.add_item(tr(MenuKeys.SETTINGS_LANG_EN), 1)
 	_language_option.set_item_metadata(1, "en")
 	_select_language_option(selected_language)
 

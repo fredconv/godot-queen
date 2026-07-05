@@ -1,0 +1,13 @@
+keys,fr,en
+DL_CONFIRM_LEAVE_MATCH,Voulez-vous quitter la partie en cours ?,Do you want to leave the current game?
+DL_HAND_END_TITLE,Manche terminée,Hand complete
+DL_HAND_WINNER,%s remporte la manche !,%s wins the hand!
+DL_HAND_WINNER_DETAIL,Manche : %d pts  |  Total partie : %d pts,Hand: %d pts  |  Match total: %d pts
+DL_HAND_SCORE_ROW,%s%s — manche : %d | total : %d,%s%s — hand: %d | total: %d
+DL_HAND_CONTINUE,Manche suivante,Next hand
+DL_MATCH_END_TITLE,Partie terminée !,Match over!
+DL_MATCH_WINNER,%s remporte la partie !,%s wins the match!
+DL_MATCH_WINNER_DETAIL,Dernière manche : %d pts  |  Total partie : %d pts,Last hand: %d pts  |  Match total: %d pts
+DL_MATCH_SCORE_ROW,%s%s — manche : %d | total : %d,%s%s — hand: %d | total: %d
+DL_MATCH_REPLAY,Nouvelle partie,New game
+DL_MATCH_QUIT,Quitter la partie,Leave match

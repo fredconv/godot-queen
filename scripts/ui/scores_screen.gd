@@ -29,9 +29,9 @@ func close() -> void:
 
 
 func _refresh_locale() -> void:
-	_title_label.text = tr(UiKeys.SCORES_TITLE)
-	_btn_back.text = tr(UiKeys.COMMON_BACK)
-	_empty_label.text = tr(UiKeys.SCORES_EMPTY)
+	_title_label.text = tr(MenuKeys.SCORES_TITLE)
+	_btn_back.text = tr(CommonKeys.BACK)
+	_empty_label.text = tr(MenuKeys.SCORES_EMPTY)
 	_refresh_display()
 
 
@@ -48,13 +48,13 @@ func _refresh_display() -> void:
 		return
 
 	_summary_label.text = (
-		tr(UiKeys.SCORES_MATCHES) % played
+		tr(MenuKeys.SCORES_MATCHES) % played
 		+ "\n"
-		+ tr(UiKeys.SCORES_WINS) % won
+		+ tr(MenuKeys.SCORES_WINS) % won
 		+ "\n"
-		+ tr(UiKeys.SCORES_LOSSES) % lost
+		+ tr(MenuKeys.SCORES_LOSSES) % lost
 		+ "\n"
-		+ tr(UiKeys.SCORES_WIN_RATE) % win_rate
+		+ tr(MenuKeys.SCORES_WIN_RATE) % win_rate
 	)
 
 

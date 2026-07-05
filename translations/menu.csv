@@ -1,0 +1,20 @@
+keys,fr,en
+MN_TITLE,Dame de pique,Hearts
+MN_NEW_GAME,NOUVELLE PARTIE,NEW GAME
+MN_SCORES,SCORES,SCORES
+MN_SETTINGS,CONFIGURATION,SETTINGS
+MN_QUIT,QUITTER,QUIT
+MN_SETTINGS_TITLE,Configuration,Settings
+MN_SETTINGS_SFX_VOLUME,Volume SFX,SFX volume
+MN_SETTINGS_MUSIC_VOLUME,Volume musique,Music volume
+MN_SETTINGS_MUSIC_ENABLED,Musique activée,Music enabled
+MN_SETTINGS_TABLE_THEME,Thème table,Table theme
+MN_SETTINGS_LANGUAGE,Langue,Language
+MN_SETTINGS_LANG_FR,Français,French
+MN_SETTINGS_LANG_EN,English,English
+MN_SCORES_TITLE,Statistiques,Statistics
+MN_SCORES_EMPTY,"Aucune partie terminée pour l'instant.\nLancez une nouvelle partie pour commencer votre historique.","No completed games yet.\nStart a new game to build your history."
+MN_SCORES_MATCHES,Parties terminées : %d,Games completed: %d
+MN_SCORES_WINS,Victoires : %d,Wins: %d
+MN_SCORES_LOSSES,Défaites : %d,Losses: %d
+MN_SCORES_WIN_RATE,Taux de victoire : %d %%,Win rate: %d %%
