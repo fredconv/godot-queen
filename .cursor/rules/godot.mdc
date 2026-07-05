@@ -90,11 +90,18 @@ Ne pas ajouter de nouvel autoload sans justification : un autoload doit être un
 - Tests d'intégration (`tests/integration/`) sur l'orchestration de manche/partie complète
 - Détail de la stratégie : `docs/TEST_PLAN.md`
 
-## MCP Godot (Coding-Solo)
+## MCP
+
+### Godot (Coding-Solo)
 
 - Lancer/arrêter le projet via MCP ; ne pas dupliquer la logique éditeur en CLI sans raison
 - Préférer créer/modifier scènes et scripts via les outils MCP quand disponibles
 - `GODOT_PATH` doit pointer vers l'exécutable Godot 4.7 (voir `.cursor/mcp.json`)
+
+### Context7 (documentation)
+
+- Serveur MCP **Context7** pour la doc à jour Godot 4.7 et GDScript (`/websites/godotengine_en_4_7`)
+- Voir `.cursor/rules/context7.mdc` — consulter Context7 avant de deviner une API moteur ou une syntaxe GDScript
 
 ## À ne pas faire
 
