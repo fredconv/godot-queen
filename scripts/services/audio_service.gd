@@ -189,7 +189,7 @@ func _volume_scale_to_db(volume_scale: float) -> float:
 		return -80.0
 	return linear_to_db(linear)
 
-func _on_card_played(_player_id: int, _card: Variant) -> void:
+func _on_card_played(_player_id: int, _card: CardModel) -> void:
 	play_card_played()
 
 func _on_trick_resolved(_winner_id: int, _points: int) -> void:

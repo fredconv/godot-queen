@@ -21,7 +21,6 @@ func _ready() -> void:
 	AudioService.ensure_music_playing()
 
 func _on_btn_new_game_pressed() -> void:
-	GameSession.start_match()
 	get_tree().change_scene_to_file("res://scenes/table/table.tscn")
 
 func _on_btn_scores_pressed() -> void:

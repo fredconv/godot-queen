@@ -1,3 +1,4 @@
+class_name PlayerSeat
 extends Control
 ## PlayerSeat
 ## Composant d'affichage d'un siège joueur : avatar (placeholder), nom,
@@ -131,6 +132,17 @@ func _ready() -> void:
 	_refresh_turn_highlight()
 	_refresh_avatar()
 	_setup_score_tooltip()
+	_hand_back_row.resized.connect(_on_hand_back_container_resized)
+	_hand_back_column.resized.connect(_on_hand_back_container_resized)
+
+
+func _on_hand_back_container_resized() -> void:
+	if hand_card_count <= 0 or not show_hand_back:
+		return
+	var container: Control = _hand_back_row if _is_horizontal_stack() else _hand_back_column
+	if container.size.x <= 0.0 or container.size.y <= 0.0:
+		return
+	_refresh_hand_back()
 
 func _setup_score_tooltip() -> void:
 	if _avatar_placeholder:
@@ -302,14 +314,14 @@ func _hand_back_layout(container_size: Vector2, back_scale: float, back_rotation
 		centers.append(center)
 	return {"centers": centers, "visual_size": visual_size}
 
-func get_hand_back_card_views() -> Array:
+func get_hand_back_card_views() -> Array[Control]:
 	if not show_hand_back:
 		return []
 	var container: Control = _hand_back_row if _is_horizontal_stack() else _hand_back_column
-	var cards: Array = []
+	var cards: Array[Control] = []
 	for child in container.get_children():
 		if is_instance_valid(child):
-			cards.append(child)
+			cards.append(child as Control)
 	return cards
 
 ## Supprime immédiatement les dos de carte d'un conteneur (évite les références

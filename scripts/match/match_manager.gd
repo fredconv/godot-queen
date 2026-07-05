@@ -59,7 +59,7 @@ var score_manager: ScoreManager
 ## `AiPlayer` voulus siège par siège.
 var ai_players: Array = [null, null, null, null]
 
-var phase: int = Phase.DEALING
+var phase: Phase = Phase.DEALING
 var current_player: int = -1
 var trick_leader: int = -1
 var hand_number: int = 0
@@ -144,20 +144,26 @@ func build_ai_context(player_index: int) -> Dictionary:
 	}
 
 ## Joue le tour du joueur courant via l'`AiPlayer` qui lui est assigné.
-## Ne fait rien et retourne `null` si la manche n'est pas en cours
+## Retourne un `PlayResult` en échec si la manche n'est pas en cours
 ## (`Phase.PLAYING`) ou si le joueur courant n'est pas piloté par une IA
 ## (tour humain à attendre).
 func play_ai_turn() -> PlayResult:
 	if phase != Phase.PLAYING:
-		return null
+		return _failed_play_result(PlayError.WRONG_PHASE)
 	var player_index := current_player
 	if not is_ai_controlled(player_index):
-		return null
+		return _failed_play_result(PlayError.NONE)
 
 	var legal := get_legal_plays(player_index)
 	var context := build_ai_context(player_index)
 	var card: CardModel = ai_players[player_index].choose_card(legal, context)
 	return play_card(player_index, card)
+
+
+func _failed_play_result(error: PlayError) -> PlayResult:
+	var result := PlayResult.new()
+	result.play_error = error
+	return result
 
 ## Enchaîne `play_ai_turn()` tant que le joueur courant est piloté par une IA
 ## et que la manche est en cours : s'arrête dès qu'un tour humain doit être

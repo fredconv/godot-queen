@@ -5,6 +5,6 @@ extends Node
 
 signal match_started
 signal match_ended(winner_id: int)
-signal card_played(player_id: int, card: Variant)
+signal card_played(player_id: int, card: CardModel)
 signal trick_resolved(winner_id: int, points: int)
 signal score_updated(player_id: int, score: int)

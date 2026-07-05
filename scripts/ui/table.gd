@@ -39,12 +39,6 @@ const CARD_BASE_SIZE: Vector2 = Vector2(56.0, 80.0)
 ## des cartes), afin qu'elle ne chevauche plus `TrickCardBottom`.
 const HAND_FAN_BOTTOM_MARGIN: float = -30.0
 
-## Délai (secondes) entre deux sons de distribution lors de la séquence audio
-## jouée au début de chaque manche (voir `_play_deal_sfx`). Les cartes de la
-## main apparaissent instantanément (pas d'animation de distribution
-## visuelle, hors scope) ; seul le son est étalé dans le temps.
-const DEAL_SFX_STAGGER_SEC: float = 0.09
-
 ## Décalage initial des cartes de la main humaine (distribution depuis le bas).
 const HUMAN_HAND_DEAL_OFFSET: Vector2 = Vector2(0.0, 480.0)
 
@@ -70,13 +64,13 @@ const TRICK_CARD_SCALE: float = 1.5
 ## Sièges et emplacements de pli indexés par `player_index` (0-3), convention
 ## fixée en docs/DECISIONS.md ADR-020 : 0 = bas (humain), 1 = gauche, 2 = haut,
 ## 3 = droite (ordre de jeu humain → gauche → haut → droite).
-@onready var _seats: Array = [
+@onready var _seats: Array[PlayerSeat] = [
 	$PlayerSeats/SeatBottom,
 	$PlayerSeats/SeatLeft,
 	$PlayerSeats/SeatTop,
 	$PlayerSeats/SeatRight,
 ]
-@onready var _trick_slots: Array = [
+@onready var _trick_slots: Array[Control] = [
 	$TrickArea/TrickCardBottom,
 	$TrickArea/TrickCardLeft,
 	$TrickArea/TrickCardTop,
@@ -91,8 +85,8 @@ var _match_manager: MatchManager
 ## Vues des cartes de la main humaine, dans le même ordre que
 ## `_hand_cards` (indices alignés), pour ajuster leur jouabilité/interactivité
 ## selon la légalité du coup (voir `_refresh_human_hand_legality()`).
-var _hand_card_views: Array = []
-var _hand_cards: Array = []
+var _hand_card_views: Array[Control] = []
+var _hand_cards: Array[CardModel] = []
 
 ## Cartes actuellement posées dans le pli en cours, indexées par
 ## `player_index` : seule source de vérité côté UI pour l'affichage du pli
@@ -105,6 +99,10 @@ var _trick_card_views: Dictionary = {}
 ## double-clic humain ou un chevauchement entre deux boucles de tours IA.
 var _turn_locked: bool = false
 
+## Vrai pendant la destruction de la scène : annule les coroutines `await`
+## encore en cours pour éviter d'accéder à des nœuds libérés.
+var _scene_exiting: bool = false
+
 func _ready() -> void:
 	_top_menu_bar.menu_pressed.connect(_on_top_menu_bar_menu_pressed)
 	_confirm_dialog.confirmed.connect(_on_leave_match_confirmed)
@@ -112,6 +110,14 @@ func _ready() -> void:
 	_match_end_dialog.quit_requested.connect(_on_match_end_quit_requested)
 	_setup_music_controls()
 	call_deferred("_start_new_match")
+
+
+func _exit_tree() -> void:
+	_scene_exiting = true
+
+
+func _is_active() -> bool:
+	return is_inside_tree() and not _scene_exiting
 
 ## Câble les boutons musique de `TopMenuBar` sur `AudioService` (voir
 ## docs/DECISIONS.md ADR-013). La musique elle-même démarre indépendamment,
@@ -145,7 +151,8 @@ func _on_leave_match_confirmed() -> void:
 	_return_to_main_menu()
 
 func _return_to_main_menu() -> void:
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)
+	_scene_exiting = true
+	get_tree().call_deferred("change_scene_to_file", MAIN_MENU_SCENE_PATH)
 
 # --- Cycle de vie d'une partie -----------------------------------------------
 
@@ -164,6 +171,8 @@ func _start_new_match(seed_value: int = -1) -> void:
 	_match_manager.start_new_match(seed_value)
 
 	await _deal_visual_sequence()
+	if not _is_active():
+		return
 	_refresh_scores()
 	_refresh_turn_ui()
 	_run_ai_turns()
@@ -227,10 +236,16 @@ func _rebuild_human_hand() -> void:
 func _deal_visual_sequence() -> void:
 	_turn_locked = true
 	await get_tree().process_frame
+	if not _is_active():
+		_turn_locked = false
+		return
 
 	_rebuild_human_hand()
 	_refresh_opponent_hand_counts()
 	await get_tree().process_frame
+	if not _is_active():
+		_turn_locked = false
+		return
 
 	var human_final_positions: Array[Vector2] = []
 	for card_view in _hand_card_views:
@@ -238,12 +253,12 @@ func _deal_visual_sequence() -> void:
 		card_view.position = human_final_positions[-1] + HUMAN_HAND_DEAL_OFFSET
 		card_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var opponent_deals: Array = []
+	var opponent_deals: Array[Dictionary] = []
 	for player_index in range(1, HeartsRules.PLAYER_COUNT):
-		var seat: Control = _seats[player_index]
+		var seat: PlayerSeat = _seats[player_index]
 		if seat.get_hand_back_card_views().is_empty():
 			seat.force_refresh_hand_back()
-		var cards: Array = seat.get_hand_back_card_views()
+		var cards: Array[Control] = seat.get_hand_back_card_views()
 		var offset: Vector2 = seat.get_deal_start_offset()
 		var final_positions: Array[Vector2] = []
 		for card_view in cards:
@@ -253,6 +268,10 @@ func _deal_visual_sequence() -> void:
 
 	var card_count: int = human_final_positions.size()
 	for round_index in card_count:
+		if not _is_active():
+			_turn_locked = false
+			return
+
 		var tween: Tween = create_tween()
 		tween.set_parallel(true)
 		tween.set_trans(Tween.TRANS_CUBIC)
@@ -271,12 +290,12 @@ func _deal_visual_sequence() -> void:
 				tween_count += 1
 
 		for deal_entry in opponent_deals:
-			var cards: Array = deal_entry["cards"]
-			var finals: Array = deal_entry["final_positions"]
+			var cards: Array[Control] = deal_entry["cards"]
+			var finals: Array[Vector2] = deal_entry["final_positions"]
 			if round_index >= cards.size():
 				continue
-			var opponent_card: Variant = cards[round_index]
-			if opponent_card == null or not is_instance_valid(opponent_card):
+			var opponent_card: Control = cards[round_index]
+			if not is_instance_valid(opponent_card):
 				continue
 			tween.tween_property(
 				opponent_card,
@@ -291,21 +310,19 @@ func _deal_visual_sequence() -> void:
 
 		AudioService.play_deal_card()
 		await tween.finished
+		if not _is_active():
+			_turn_locked = false
+			return
 		if round_index < card_count - 1:
 			await get_tree().create_timer(TableAnimations.DEAL_CARD_STAGGER_SEC).timeout
+			if not _is_active():
+				_turn_locked = false
+				return
 
 	for card_view in _hand_card_views:
 		card_view.mouse_filter = Control.MOUSE_FILTER_STOP
 	_refresh_human_hand_legality()
 	_turn_locked = false
-
-## Joue un son de distribution par carte, étalé dans le temps (voir
-## `DEAL_SFX_STAGGER_SEC`). Conservé pour compatibilité ; la distribution
-## animée déclenche désormais le son carte par carte dans
-## `_deal_visual_sequence()`.
-func _play_deal_sfx(count: int) -> void:
-	for i in count:
-		get_tree().create_timer(i * DEAL_SFX_STAGGER_SEC).timeout.connect(AudioService.play_deal_card)
 
 func _on_hand_card_mouse_entered(card_view: Control) -> void:
 	card_view.set_hovered(true)
@@ -338,7 +355,11 @@ func _on_human_card_selected(card_view: Control, card: CardModel) -> void:
 	var start_center: Vector2 = card_view.get_global_transform_with_canvas() * (card_view.size / 2.0)
 	_rebuild_human_hand()
 	await _animate_card_play(HUMAN_INDEX, card, start_center)
+	if not _is_active():
+		return
 	await _handle_post_play(result)
+	if not _is_active():
+		return
 	_turn_locked = false
 
 	if _match_manager.is_match_over():
@@ -361,6 +382,9 @@ func _run_ai_turns() -> void:
 
 	while _match_manager.phase == MatchManager.Phase.PLAYING and _match_manager.is_ai_controlled(_match_manager.current_player):
 		await get_tree().create_timer(AI_TURN_DELAY_SEC).timeout
+		if not _is_active():
+			_turn_locked = false
+			return
 
 		var player_index: int = _match_manager.current_player
 		var ai_player: AiPlayer = _match_manager.ai_players[player_index]
@@ -373,12 +397,18 @@ func _run_ai_turns() -> void:
 			DebugService.log_error("Table: l'IA du siège %d a proposé un coup invalide" % player_index)
 			break
 
-		var seat: Control = _seats[player_index]
+		var seat: PlayerSeat = _seats[player_index]
 		var start_center: Vector2 = seat.get_global_transform_with_canvas() * (seat.size / 2.0)
 		seat.hand_card_count = maxi(seat.hand_card_count - 1, 0)
 
 		await _animate_card_play(player_index, card, start_center)
+		if not _is_active():
+			_turn_locked = false
+			return
 		await _handle_post_play(result)
+		if not _is_active():
+			_turn_locked = false
+			return
 
 		if result.match_completed or _match_manager.is_match_over():
 			_turn_locked = false
@@ -400,6 +430,8 @@ func _animate_card_play(player_index: int, card: CardModel, start_center: Vector
 	var target_slot: Control = _trick_slots[player_index]
 	var target_center: Vector2 = target_slot.get_global_transform_with_canvas() * (target_slot.size / 2.0)
 	await TableAnimations.play_card_to_trick(self, traveling_card, target_center)
+	if not _is_active():
+		return
 	_trick_card_views[player_index] = traveling_card
 
 ## Crée la carte face visible qui glissera jusqu'au pli. Reste volontairement
@@ -427,6 +459,8 @@ func _handle_post_play(result: MatchManager.PlayResult) -> void:
 		return
 
 	await _resolve_trick_sequence(result.trick_winner, result.match_completed)
+	if not _is_active():
+		return
 	_refresh_scores()
 
 	if result.hand_completed:
@@ -434,8 +468,12 @@ func _handle_post_play(result: MatchManager.PlayResult) -> void:
 			_show_match_end_popup()
 			return
 		await _show_hand_end_popup()
+		if not _is_active():
+			return
 		_match_manager.start_new_hand()
 		await _deal_visual_sequence()
+		if not _is_active():
+			return
 		_refresh_scores()
 
 	_refresh_turn_ui()
@@ -447,6 +485,8 @@ func _resolve_trick_sequence(winner_index: int, is_final_match_trick: bool = fal
 	var winner_card_view: Control = _trick_card_views.get(winner_index)
 	if winner_card_view:
 		await TableAnimations.highlight_winning_card(self, winner_card_view)
+		if not _is_active():
+			return
 
 	var visible_duration: float = (
 		TableAnimations.MATCH_END_TRICK_VISIBLE_DURATION_SEC
@@ -454,14 +494,20 @@ func _resolve_trick_sequence(winner_index: int, is_final_match_trick: bool = fal
 		else TableAnimations.TRICK_VISIBLE_DURATION_SEC
 	)
 	await get_tree().create_timer(visible_duration).timeout
+	if not _is_active():
+		return
 
 	if is_final_match_trick:
 		return
 
-	var winner_seat: Control = _seats[winner_index]
+	var winner_seat: PlayerSeat = _seats[winner_index]
 	var target_center: Vector2 = winner_seat.get_global_transform_with_canvas() * (winner_seat.size / 2.0)
-	var card_views: Array = _trick_card_views.values()
+	var card_views: Array[Control] = []
+	for card_view in _trick_card_views.values():
+		card_views.append(card_view as Control)
 	await TableAnimations.collect_trick(self, card_views, target_center)
+	if not _is_active():
+		return
 	_trick_card_views.clear()
 
 # --- Rafraîchissement de l'affichage -----------------------------------------
@@ -569,6 +615,8 @@ func _show_hand_end_popup() -> void:
 		character_ids
 	)
 	await _hand_end_dialog.continue_requested
+	if not _is_active():
+		return
 
 
 func _show_match_end_popup() -> void:
