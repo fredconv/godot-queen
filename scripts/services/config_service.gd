@@ -18,6 +18,9 @@ const DEFAULT_MUSIC_VOLUME: float = 0.35
 const DEFAULT_MUSIC_ENABLED: bool = true
 const DEFAULT_LANGUAGE: String = "fr"
 const DEFAULT_TABLE_THEME: StringName = TableThemePaths.THEME_CLASSIC
+const SUPPORTED_LANGUAGES: Array[String] = ["fr", "en"]
+
+signal locale_changed(locale: String)
 
 var _sfx_volume: float = DEFAULT_SFX_VOLUME
 var _music_volume: float = DEFAULT_MUSIC_VOLUME
@@ -70,8 +73,16 @@ func get_language() -> String:
 
 func set_language(value: String) -> void:
 	_ensure_loaded()
-	_language = value
+	var normalized: String = normalize_language(value)
+	if _language == normalized:
+		return
+	_language = normalized
 	_save_config()
+	_apply_locale()
+
+
+static func normalize_language(value: String) -> String:
+	return "en" if value == "en" else "fr"
 
 ## --- Thème visuel de la table ---
 
@@ -98,8 +109,14 @@ func _ensure_loaded() -> void:
 	_sfx_volume = config.get("sfx_volume", DEFAULT_SFX_VOLUME)
 	_music_volume = config.get("music_volume", DEFAULT_MUSIC_VOLUME)
 	_music_enabled = config.get("music_enabled", DEFAULT_MUSIC_ENABLED)
-	_language = config.get("language", DEFAULT_LANGUAGE)
+	_language = normalize_language(config.get("language", DEFAULT_LANGUAGE))
 	_table_theme = TableThemePaths.normalize_theme_id(config.get("table_theme", DEFAULT_TABLE_THEME))
+	_apply_locale()
+
+
+func _apply_locale() -> void:
+	TranslationServer.set_locale(_language)
+	locale_changed.emit(_language)
 
 func _save_config() -> void:
 	var data: Dictionary = SaveService.load_data()
