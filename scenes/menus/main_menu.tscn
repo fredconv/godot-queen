@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_main_menu"]
 [ext_resource type="Theme" path="res://resources/themes/pixel_theme.tres" id="2_pixel_theme"]
+[ext_resource type="PackedScene" path="res://scenes/menus/settings_screen.tscn" id="3_settings"]
+[ext_resource type="PackedScene" path="res://scenes/menus/scores_screen.tscn" id="4_scores"]
 
 [node name="MainMenu" type="Control"]
 anchor_right = 1.0
@@ -43,47 +45,15 @@ text = "CONFIGURATION"
 custom_minimum_size = Vector2(240, 56)
 text = "QUITTER"
 
-; Recouvrement modal minimal pour Scores/Configuration (écrans détaillés à
-; construire dans une itération future, voir docs/ROADMAP.md Étape 7).
-[node name="StubOverlay" type="Control" parent="."]
-visible = false
+[node name="SettingsScreen" parent="." instance=ExtResource("3_settings")]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="Dim" type="ColorRect" parent="StubOverlay"]
+[node name="ScoresScreen" parent="." instance=ExtResource("4_scores")]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.6)
-
-[node name="Panel" type="PanelContainer" parent="StubOverlay"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -180.0
-offset_top = -90.0
-offset_right = 180.0
-offset_bottom = 90.0
-
-[node name="Margin" type="MarginContainer" parent="StubOverlay/Panel"]
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 24
-
-[node name="VBox" type="VBoxContainer" parent="StubOverlay/Panel/Margin"]
-theme_override_constants/separation = 16
-
-[node name="StubLabel" type="Label" parent="StubOverlay/Panel/Margin/VBox"]
-horizontal_alignment = 1
-autowrap_mode = 2
-text = "À venir"
-
-[node name="BtnStubClose" type="Button" parent="StubOverlay/Panel/Margin/VBox"]
-text = "FERMER"
 
 [connection signal="pressed" from="CenterContainer/Menu/BtnNewGame" to="." method="_on_btn_new_game_pressed"]
 [connection signal="pressed" from="CenterContainer/Menu/BtnScores" to="." method="_on_btn_scores_pressed"]
 [connection signal="pressed" from="CenterContainer/Menu/BtnSettings" to="." method="_on_btn_settings_pressed"]
 [connection signal="pressed" from="CenterContainer/Menu/BtnQuit" to="." method="_on_btn_quit_pressed"]
-[connection signal="pressed" from="StubOverlay/Panel/Margin/VBox/BtnStubClose" to="." method="_on_btn_stub_close_pressed"]

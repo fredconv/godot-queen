@@ -144,6 +144,13 @@ func set_music_enabled(enabled: bool) -> void:
 	else:
 		_music_player.stream_paused = false
 
+
+## Réapplique le volume musique depuis `ConfigService` (slider configuration).
+func refresh_music_volume() -> void:
+	if _music_player == null:
+		return
+	_music_player.volume_db = _music_volume_to_db()
+
 ## Ancienne API générique : conservée pour compatibilité mais non mappée à un
 ## son. Préférer les méthodes typées ci-dessus pour tout nouvel appel.
 func play_sfx(sfx_name: StringName) -> void:

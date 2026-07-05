@@ -17,11 +17,13 @@ const DEFAULT_SFX_VOLUME: float = 1.0
 const DEFAULT_MUSIC_VOLUME: float = 0.35
 const DEFAULT_MUSIC_ENABLED: bool = true
 const DEFAULT_LANGUAGE: String = "fr"
+const DEFAULT_TABLE_THEME: StringName = TableThemePaths.THEME_CLASSIC
 
 var _sfx_volume: float = DEFAULT_SFX_VOLUME
 var _music_volume: float = DEFAULT_MUSIC_VOLUME
 var _music_enabled: bool = DEFAULT_MUSIC_ENABLED
 var _language: String = DEFAULT_LANGUAGE
+var _table_theme: StringName = DEFAULT_TABLE_THEME
 var _loaded: bool = false
 
 func _ready() -> void:
@@ -71,6 +73,18 @@ func set_language(value: String) -> void:
 	_language = value
 	_save_config()
 
+## --- Thème visuel de la table ---
+
+func get_table_theme() -> StringName:
+	_ensure_loaded()
+	return _table_theme
+
+
+func set_table_theme(value: StringName) -> void:
+	_ensure_loaded()
+	_table_theme = TableThemePaths.normalize_theme_id(value)
+	_save_config()
+
 ## --- Persistance ---
 
 ## Charge la configuration une seule fois, à la première utilisation (getter,
@@ -85,6 +99,7 @@ func _ensure_loaded() -> void:
 	_music_volume = config.get("music_volume", DEFAULT_MUSIC_VOLUME)
 	_music_enabled = config.get("music_enabled", DEFAULT_MUSIC_ENABLED)
 	_language = config.get("language", DEFAULT_LANGUAGE)
+	_table_theme = TableThemePaths.normalize_theme_id(config.get("table_theme", DEFAULT_TABLE_THEME))
 
 func _save_config() -> void:
 	var data: Dictionary = SaveService.load_data()
@@ -93,5 +108,6 @@ func _save_config() -> void:
 		"music_volume": _music_volume,
 		"music_enabled": _music_enabled,
 		"language": _language,
+		"table_theme": _table_theme,
 	}
 	SaveService.save_data(data)

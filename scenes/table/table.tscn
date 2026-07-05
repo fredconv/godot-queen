@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/table.gd" id="1_table"]
 [ext_resource type="PackedScene" path="res://scenes/components/top_menu_bar.tscn" id="2_topbar"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/components/match_end_dialog.tscn" id="6_match_end_dialog"]
 [ext_resource type="PackedScene" path="res://scenes/components/match_scoreboard.tscn" id="7_scoreboard"]
 [ext_resource type="PackedScene" path="res://scenes/components/hand_end_dialog.tscn" id="8_hand_end"]
+[ext_resource type="PackedScene" path="res://scenes/menus/scores_screen.tscn" id="9_scores"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
 bg_color = Color(1, 1, 1, 0.08)
@@ -27,10 +28,24 @@ anchor_bottom = 1.0
 theme = ExtResource("4_pixel_theme")
 script = ExtResource("1_table")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="Control" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="ColorFill" type="ColorRect" parent="Background"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
 color = Color(0.043, 0.369, 0.173, 1)
+
+[node name="TextureFill" type="TextureRect" parent="Background"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
 
 [node name="PlayerSeats" type="Control" parent="."]
 anchor_right = 1.0
@@ -183,7 +198,11 @@ anchor_bottom = 1.0
 [node name="MatchScoreboard" parent="UILayer" instance=ExtResource("7_scoreboard")]
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -228.0
+offset_left = -260.0
 offset_top = 72.0
 offset_right = -12.0
-offset_bottom = 202.0
+offset_bottom = 220.0
+
+[node name="ScoresScreen" parent="UILayer" instance=ExtResource("9_scores")]
+anchor_right = 1.0
+anchor_bottom = 1.0

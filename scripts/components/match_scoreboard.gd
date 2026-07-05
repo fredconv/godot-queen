@@ -3,8 +3,8 @@ extends Control
 ## Panneau des scores cumulés de partie (objectif 100 pts), distinct des
 ## scores de manche affichés sous chaque avatar. Purement visuel.
 
-const ENTRY_COLOR: Color = Color(0.961, 0.941, 0.902, 1)
-const HUMAN_COLOR: Color = Color(0.831, 0.686, 0.216, 1)
+## Aligné sur `MatchManager.MATCH_SCORE_THRESHOLD` et le GDD.
+const MATCH_GOAL_POINTS: int = 100
 
 @onready var _title_label: Label = $Panel/Margin/TitleLabel
 @onready var _entries: VBoxContainer = $Panel/Margin/Entries
@@ -13,7 +13,7 @@ const HUMAN_COLOR: Color = Color(0.831, 0.686, 0.216, 1)
 ## par `player_index` (0-3). Les joueurs sont triés par score croissant (le plus
 ## bas est en tête, voir règles Hearts).
 func update_display(hand_number: int, player_names: Array, cumulative_scores: Array) -> void:
-	_title_label.text = "Partie — manche %d / 100 pts" % hand_number
+	_title_label.text = "Partie — manche %d / %d pts" % [hand_number, MATCH_GOAL_POINTS]
 
 	for child in _entries.get_children():
 		child.queue_free()
@@ -27,9 +27,11 @@ func update_display(hand_number: int, player_names: Array, cumulative_scores: Ar
 
 	for entry in ranked:
 		var player_index: int = entry["index"]
-		var label := Label.new()
-		var prefix: String = "★ " if player_index == 0 else "   "
-		label.text = "%s%s — %d" % [prefix, player_names[player_index], entry["score"]]
-		var color: Color = HUMAN_COLOR if player_index == 0 else ENTRY_COLOR
-		label.add_theme_color_override("font_color", color)
-		_entries.add_child(label)
+		var row := ScoreBarRow.new()
+		row.configure(
+			player_names[player_index],
+			entry["score"],
+			MATCH_GOAL_POINTS,
+			player_index == 0
+		)
+		_entries.add_child(row)
