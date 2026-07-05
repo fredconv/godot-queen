@@ -61,6 +61,7 @@ const TRICK_CARD_SCALE: float = 1.5
 @onready var _top_menu_bar: Control = $UILayer/TopMenuBar
 @onready var _confirm_dialog: Control = $UILayer/ConfirmDialog
 @onready var _match_end_dialog: Control = $UILayer/MatchEndDialog
+@onready var _match_scoreboard: Control = $UILayer/MatchScoreboard
 
 ## Sièges et emplacements de pli indexés par `player_index` (0-3), convention
 ## fixée en docs/DECISIONS.md ADR-020 : 0 = bas (humain), 1 = gauche, 2 = haut,
@@ -149,7 +150,8 @@ func _return_to_main_menu() -> void:
 ## chargement de la table et depuis le bouton "Rejouer" de `MatchEndDialog`.
 func _start_new_match(seed_value: int = -1) -> void:
 	_turn_locked = false
-	_trick_card_views.clear()
+	_match_end_dialog.close()
+	_clear_trick_cards()
 
 	_match_manager = MatchManager.new()
 	for player_index in range(1, HeartsRules.PLAYER_COUNT):
@@ -242,6 +244,8 @@ func _on_hand_card_gui_input(event: InputEvent, card_view: Control, card: CardMo
 func _on_human_card_selected(card_view: Control, card: CardModel) -> void:
 	if _turn_locked or _match_manager.current_player != HUMAN_INDEX:
 		return
+	if _match_manager.is_match_over():
+		return
 	if not _card_in_list(card, _current_human_legal_plays()):
 		return
 
@@ -256,6 +260,9 @@ func _on_human_card_selected(card_view: Control, card: CardModel) -> void:
 	await _handle_post_play(result)
 	_turn_locked = false
 
+	if _match_manager.is_match_over():
+		return
+
 	if _match_manager.phase == MatchManager.Phase.PLAYING and _match_manager.is_ai_controlled(_match_manager.current_player):
 		_run_ai_turns()
 
@@ -267,7 +274,7 @@ func _on_human_card_selected(card_view: Control, card: CardModel) -> void:
 ## directement : celle-ci joue tous les tours d'un coup, sans laisser de place
 ## à l'animation (voir docs/DECISIONS.md ADR-020).
 func _run_ai_turns() -> void:
-	if _turn_locked:
+	if _turn_locked or _match_manager.is_match_over():
 		return
 	_turn_locked = true
 
@@ -292,7 +299,7 @@ func _run_ai_turns() -> void:
 		await _animate_card_play(player_index, card, start_center)
 		await _handle_post_play(result)
 
-		if result.match_completed:
+		if result.match_completed or _match_manager.is_match_over():
 			_turn_locked = false
 			return
 
@@ -342,12 +349,13 @@ func _handle_post_play(result: MatchManager.PlayResult) -> void:
 	_refresh_scores()
 
 	if result.hand_completed:
-		if result.match_completed:
+		if result.match_completed or _match_manager.is_match_over():
 			_show_match_end_popup()
 			return
 		_match_manager.start_new_hand()
 		_rebuild_human_hand()
 		_refresh_opponent_hand_counts()
+		_refresh_scores()
 		_play_deal_sfx(_match_manager.hands[HUMAN_INDEX].count())
 
 	_refresh_turn_ui()
@@ -383,11 +391,23 @@ func _refresh_opponent_hand_counts() -> void:
 		_seats[player_index].hand_card_count = _match_manager.hands[player_index].count()
 
 func _refresh_scores() -> void:
-	var scores: Array = _match_manager.get_display_scores()
+	var hand_scores: Array = _match_manager.get_current_hand_raw_scores()
 	var hearts: Array = _match_manager.get_current_hand_hearts_captured()
 	for player_index in range(HeartsRules.PLAYER_COUNT):
-		_seats[player_index].score = scores[player_index]
+		_seats[player_index].score = hand_scores[player_index]
 		_seats[player_index].heart_penalty = hearts[player_index]
+	_refresh_cumulative_scoreboard()
+
+
+func _refresh_cumulative_scoreboard() -> void:
+	var names: Array = []
+	for seat in _seats:
+		names.append(seat.player_name)
+	_match_scoreboard.update_display(
+		_match_manager.hand_number,
+		names,
+		_match_manager.score_manager.get_scores()
+	)
 
 func _refresh_turn_ui() -> void:
 	var playing: bool = _match_manager.phase == MatchManager.Phase.PLAYING
@@ -399,7 +419,9 @@ func _refresh_turn_ui() -> void:
 			_top_menu_bar.set_turn_text(_human_turn_hint_text())
 		else:
 			_top_menu_bar.set_turn_text("%s joue..." % _seats[_match_manager.current_player].player_name)
-		_top_menu_bar.set_score_text("Score : %d" % _match_manager.get_display_scores()[HUMAN_INDEX])
+		var hand_score: int = _match_manager.get_current_hand_raw_scores()[HUMAN_INDEX]
+		var match_score: int = _match_manager.score_manager.get_score(HUMAN_INDEX)
+		_top_menu_bar.set_score_text("Manche : %d pts  |  Partie : %d pts" % [hand_score, match_score])
 
 	_refresh_human_hand_legality()
 
@@ -453,6 +475,8 @@ func _card_in_list(card: CardModel, cards: Array[CardModel]) -> bool:
 # --- Fin de partie ------------------------------------------------------------
 
 func _show_match_end_popup() -> void:
+	if _match_end_dialog.visible:
+		return
 	_refresh_turn_ui()
 	var winner_index: int = _match_manager.get_match_winner()
 	var names: Array = []
@@ -460,4 +484,10 @@ func _show_match_end_popup() -> void:
 	for player_index in range(HeartsRules.PLAYER_COUNT):
 		names.append(_seats[player_index].player_name)
 		character_ids.append(_seats[player_index].character_id)
-	_match_end_dialog.show_result(winner_index, names, _match_manager.score_manager.get_scores(), character_ids)
+	_match_end_dialog.show_result(
+		winner_index,
+		names,
+		_match_manager.score_manager.get_scores(),
+		_match_manager.last_hand_scores,
+		character_ids
+	)

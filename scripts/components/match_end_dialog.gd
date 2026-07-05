@@ -15,6 +15,7 @@ const DEFAULT_SCORE_COLOR: Color = Color(0.961, 0.941, 0.902, 1)
 
 @onready var _winner_avatar: Control = $Panel/Content/WinnerRow/WinnerAvatar
 @onready var _winner_name_label: Label = $Panel/Content/WinnerRow/WinnerNameLabel
+@onready var _winner_detail_label: Label = $Panel/Content/WinnerDetailLabel
 @onready var _scores_list: VBoxContainer = $Panel/Content/ScoresList
 
 ## Flèches indexées par index de joueur (0=bas, 1=gauche, 2=haut, 3=droite),
@@ -26,23 +27,52 @@ const DEFAULT_SCORE_COLOR: Color = Color(0.961, 0.941, 0.902, 1)
 	$ArrowRight,
 ]
 
-## Affiche le résultat de la partie. `player_names`/`scores`/`character_ids`
-## sont indexés par `player_index` (0-3, voir docs/DECISIONS.md ADR-019).
-func show_result(winner_index: int, player_names: Array, scores: Array, character_ids: Array) -> void:
+## Affiche le résultat de la partie. `player_names`, `cumulative_scores`,
+## `hand_scores` et `character_ids` sont indexés par `player_index` (0-3).
+func show_result(
+	winner_index: int,
+	player_names: Array,
+	cumulative_scores: Array,
+	hand_scores: Array,
+	character_ids: Array
+) -> void:
 	for arrow in _arrows_by_player:
 		(arrow as Control).visible = false
 	(_arrows_by_player[winner_index] as Control).visible = true
 
 	_winner_avatar.set("character_index", character_ids[winner_index])
 	_winner_name_label.text = "%s remporte la partie !" % player_names[winner_index]
+	if _winner_detail_label:
+		_winner_detail_label.text = "Dernière manche : %d pts  |  Total partie : %d pts" % [
+			hand_scores[winner_index],
+			cumulative_scores[winner_index],
+		]
 
 	for child in _scores_list.get_children():
 		child.queue_free()
+
+	var ranked: Array = []
 	for player_index in range(player_names.size()):
+		ranked.append({
+			"index": player_index,
+			"cumulative": cumulative_scores[player_index],
+			"hand": hand_scores[player_index],
+		})
+	ranked.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return a["cumulative"] < b["cumulative"]
+	)
+
+	for entry in ranked:
+		var player_index: int = entry["index"]
 		var is_winner: bool = player_index == winner_index
 		var label := Label.new()
-		var prefix: String = "★ " if is_winner else "    "
-		label.text = "%s%s — %d points" % [prefix, player_names[player_index], scores[player_index]]
+		var prefix: String = "★ " if is_winner else "   "
+		label.text = "%s%s — manche : %d | total : %d" % [
+			prefix,
+			player_names[player_index],
+			entry["hand"],
+			entry["cumulative"],
+		]
 		label.add_theme_color_override("font_color", WINNER_SCORE_COLOR if is_winner else DEFAULT_SCORE_COLOR)
 		_scores_list.add_child(label)
 

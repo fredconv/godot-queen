@@ -64,6 +64,11 @@ var current_player: int = -1
 var trick_leader: int = -1
 var hand_number: int = 0
 
+## Points marqués par chaque joueur lors de la dernière manche terminée
+## (après application éventuelle du « shoot the moon »). Utilisé par la popup
+## de fin de partie.
+var last_hand_scores: Array[int] = [0, 0, 0, 0]
+
 ## Cartes remportées par chaque joueur pendant la manche en cours (tous plis
 ## confondus), indexé par `player_index`. Remis à zéro à chaque nouvelle
 ## manche, consommé par `RuleEngine.score_hand()` en fin de manche.
@@ -275,6 +280,9 @@ func _end_hand(result: PlayResult) -> void:
 	result.hand_completed = true
 
 	var hand_scores := RuleEngine.score_hand(_tricks_taken)
+	last_hand_scores = [0, 0, 0, 0]
+	for player_index in hand_scores.keys():
+		last_hand_scores[player_index] = hand_scores[player_index]
 	score_manager.add_hand_scores(hand_scores)
 	for player_index in hand_scores.keys():
 		GameEvents.score_updated.emit(player_index, score_manager.get_score(player_index))
