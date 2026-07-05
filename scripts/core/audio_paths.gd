@@ -14,11 +14,15 @@ class_name AudioPaths
 ##   (CARD_HOVER, à volume réduit) : aucun asset dédié au survol n'a été
 ##   fourni, cette variante "légère" convient mieux qu'un doublon du son
 ##   principal de pose.
+## - QUEEN_BULLET_TIME : impact dramatique synchronisé avec le ralenti /
+##   zoom caméra quand la Dame de Pique est posée (voir `table.gd`).
 
 const DEAL_SINGLE_CARD: String = "res://assets/audio/Card Dealing one card.wav"
 const DEAL_BURST: String = "res://assets/audio/Card Dealing multiple.wav"
 const CARD_PLAYED: String = "res://assets/audio/Card Playing launching one card.wav"
 const CARD_PLAYED_ALT: String = "res://assets/audio/Card Playing launching one card alt.wav"
+const QUEEN_BULLET_TIME: String = \
+	"res://assets/audio/alexis_gaming_cam-impact-transition-impact-dramatic-boom-346103.mp3"
 
 ## Ramassage du pli après un pli résolu : réutilise DEAL_BURST (voir note ci-dessus).
 const TRICK_COLLECT: String = DEAL_BURST
@@ -31,6 +35,7 @@ const ALL_PATHS: Array[String] = [
 	DEAL_BURST,
 	CARD_PLAYED,
 	CARD_PLAYED_ALT,
+	QUEEN_BULLET_TIME,
 ]
 
 ## Musiques d'ambiance de fond, jouées en playlist mélangée par `AudioService`

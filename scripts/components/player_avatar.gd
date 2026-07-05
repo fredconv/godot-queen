@@ -1,3 +1,4 @@
+class_name PlayerAvatar
 extends Control
 ## PlayerAvatar
 ## Avatar animé d'un joueur : boucle d'idle (4 frames) tirée de la première
@@ -26,8 +27,17 @@ const CHARACTER_SHEETS: Array[String] = [
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
+var _turn_active: bool = false
+
 func _ready() -> void:
 	_refresh_sprite()
+	set_turn_active(false)
+
+
+## Active l'animation idle uniquement quand c'est le tour de ce joueur.
+func set_turn_active(active: bool) -> void:
+	_turn_active = active
+	_apply_turn_animation_state()
 
 ## Permet de définir directement le chemin de la feuille de sprites, sans
 ## passer par `character_index` (utile pour un personnage hors de
@@ -38,7 +48,19 @@ func set_character_sheet(sheet_path: String) -> void:
 		DebugService.log_error("PlayerAvatar: impossible de charger la feuille de sprites '%s'" % sheet_path)
 		return
 	_sprite.sprite_frames = _build_idle_sprite_frames(texture)
-	_sprite.play(IDLE_ANIMATION)
+	_apply_turn_animation_state()
+
+
+func _apply_turn_animation_state() -> void:
+	if not _sprite or _sprite.sprite_frames == null:
+		return
+	if _turn_active:
+		_sprite.play(IDLE_ANIMATION)
+	else:
+		_sprite.stop()
+		_sprite.animation = IDLE_ANIMATION
+		_sprite.frame = 0
+
 
 func _refresh_sprite() -> void:
 	if not _sprite:
@@ -59,3 +81,28 @@ func _build_idle_sprite_frames(sheet_texture: Texture2D) -> SpriteFrames:
 		atlas.region = Rect2(column * FRAME_SIZE, 0, FRAME_SIZE, FRAME_SIZE)
 		frames.add_frame(IDLE_ANIMATION, atlas)
 	return frames
+
+
+## Secousse légère (défaite de manche).
+func play_hand_loss_shake() -> void:
+	if not is_inside_tree():
+		return
+	var base_x: float = position.x
+	var tween: Tween = create_tween()
+	for _i in 3:
+		tween.tween_property(self, "position:x", base_x + 5.0, 0.04)
+		tween.tween_property(self, "position:x", base_x - 5.0, 0.04)
+	tween.tween_property(self, "position:x", base_x, 0.04)
+
+
+## Petits sauts de joie (victoire de manche).
+func play_hand_win_bounce(bounce_count: int = 3) -> void:
+	if not is_inside_tree():
+		return
+	var base_y: float = position.y
+	var tween: Tween = create_tween()
+	for _i in bounce_count:
+		tween.tween_property(self, "position:y", base_y - 14.0, 0.09) \
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.tween_property(self, "position:y", base_y, 0.11) \
+			.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)

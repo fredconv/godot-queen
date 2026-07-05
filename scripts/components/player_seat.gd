@@ -118,6 +118,8 @@ enum SeatOrientation { TOP, BOTTOM, LEFT, RIGHT }
 @onready var _turn_highlight: Control = $InfoBox/AvatarPlaceholder/TurnHighlight
 @onready var _avatar: Control = $InfoBox/AvatarPlaceholder/Avatar
 
+var _turn_pulse_tween: Tween
+
 const SCORE_TOOLTIP: String = (
 	"(N) : points de pénalité de la manche en cours\n"
 	+ "(Cœur = 1 pt, Dame de Pique = 13 pts).\n"
@@ -156,6 +158,35 @@ func _refresh_turn_highlight() -> void:
 	if not _turn_highlight:
 		return
 	_turn_highlight.visible = is_active_turn
+	_update_turn_pulse()
+	if _avatar is PlayerAvatar:
+		(_avatar as PlayerAvatar).set_turn_active(is_active_turn)
+
+
+func _update_turn_pulse() -> void:
+	if _turn_pulse_tween and _turn_pulse_tween.is_valid():
+		_turn_pulse_tween.kill()
+		_turn_pulse_tween = null
+	if not _avatar_placeholder:
+		return
+	if not is_active_turn:
+		_avatar_placeholder.modulate = Color.WHITE
+		return
+	_turn_pulse_tween = create_tween().set_loops()
+	_turn_pulse_tween.tween_property(_avatar_placeholder, "modulate", Color(1.25, 1.2, 1.05, 1.0), 0.55) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_turn_pulse_tween.tween_property(_avatar_placeholder, "modulate", Color.WHITE, 0.55) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+
+func play_hand_win_reaction() -> void:
+	if _avatar is PlayerAvatar:
+		(_avatar as PlayerAvatar).play_hand_win_bounce()
+
+
+func play_hand_loss_reaction() -> void:
+	if _avatar is PlayerAvatar:
+		(_avatar as PlayerAvatar).play_hand_loss_shake()
 
 func _refresh_avatar() -> void:
 	if not _avatar:

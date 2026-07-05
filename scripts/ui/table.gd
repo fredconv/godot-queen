@@ -18,6 +18,9 @@ extends Control
 
 const CardViewScene: PackedScene = preload("res://scenes/components/card_view.tscn")
 const MAIN_MENU_SCENE_PATH: String = "res://scenes/menus/main_menu.tscn"
+const AudioServiceScript = preload("res://scripts/services/audio_service.gd")
+const GameSessionScript = preload("res://scripts/services/game_session.gd")
+const DebugServiceScript = preload("res://scripts/services/debug_service.gd")
 
 ## Index du siège humain (voir docs/DECISIONS.md ADR-019 : siège 0 = humain,
 ## sièges 1-3 = IA).
@@ -60,6 +63,15 @@ const TRICK_CARD_SCALE: float = 1.5
 @onready var _match_end_dialog: Control = $UILayer/MatchEndDialog
 @onready var _hand_end_dialog: Control = $UILayer/HandEndDialog
 @onready var _match_scoreboard: Control = $UILayer/MatchScoreboard
+@onready var _trick_area: Control = $TrickArea
+
+var _lead_suit_indicator: Label
+var _victory_petals: VictoryPetals
+var _bullet_time_camera: Camera2D
+var _bullet_time_dim_layer: CanvasLayer
+var _bullet_time_dim: ColorRect
+var _queen_burst_layer: CanvasLayer
+var _queen_avatar_burst: QueenOfSpadesAvatarBurst
 
 ## Sièges et emplacements de pli indexés par `player_index` (0-3), convention
 ## fixée en docs/DECISIONS.md ADR-020 : 0 = bas (humain), 1 = gauche, 2 = haut,
@@ -104,6 +116,10 @@ var _turn_locked: bool = false
 var _scene_exiting: bool = false
 
 func _ready() -> void:
+	_setup_lead_suit_indicator()
+	_setup_victory_petals()
+	_setup_bullet_time_fx()
+	_setup_queen_avatar_burst()
 	_top_menu_bar.menu_pressed.connect(_on_top_menu_bar_menu_pressed)
 	_confirm_dialog.confirmed.connect(_on_leave_match_confirmed)
 	_match_end_dialog.replay_requested.connect(_on_match_end_replay_requested)
@@ -114,40 +130,122 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	_scene_exiting = true
+	if _bullet_time_camera:
+		_bullet_time_camera.enabled = false
+	if _bullet_time_dim:
+		_bullet_time_dim.visible = false
 
 
 func _is_active() -> bool:
 	return is_inside_tree() and not _scene_exiting
+
+
+func _setup_lead_suit_indicator() -> void:
+	var panel := PanelContainer.new()
+	panel.name = "LeadSuitIndicator"
+	panel.visible = false
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	panel.offset_top = 8.0
+	panel.offset_left = -120.0
+	panel.offset_right = 120.0
+	panel.offset_bottom = 40.0
+	_lead_suit_indicator = Label.new()
+	_lead_suit_indicator.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_lead_suit_indicator.add_theme_font_size_override("font_size", 18)
+	panel.add_child(_lead_suit_indicator)
+	_trick_area.add_child(panel)
+
+
+func _setup_victory_petals() -> void:
+	_victory_petals = VictoryPetals.new()
+	_victory_petals.name = "VictoryPetals"
+	_victory_petals.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_victory_petals.z_index = 5
+	add_child(_victory_petals)
+
+
+func _setup_bullet_time_fx() -> void:
+	_bullet_time_camera = Camera2D.new()
+	_bullet_time_camera.name = "BulletTimeCamera"
+	_bullet_time_camera.enabled = false
+	add_child(_bullet_time_camera)
+
+	_bullet_time_dim_layer = CanvasLayer.new()
+	_bullet_time_dim_layer.name = "BulletTimeDimLayer"
+	_bullet_time_dim_layer.layer = 5
+	_bullet_time_dim = ColorRect.new()
+	_bullet_time_dim.name = "BulletTimeDim"
+	_bullet_time_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_bullet_time_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_bullet_time_dim.color = Color(0.02, 0.03, 0.08, 1.0)
+	_bullet_time_dim.modulate.a = 0.0
+	_bullet_time_dim.visible = false
+	_bullet_time_dim_layer.add_child(_bullet_time_dim)
+	add_child(_bullet_time_dim_layer)
+
+
+func _setup_queen_avatar_burst() -> void:
+	_queen_burst_layer = CanvasLayer.new()
+	_queen_burst_layer.name = "QueenBurstLayer"
+	_queen_burst_layer.layer = 100
+	_queen_avatar_burst = QueenOfSpadesAvatarBurst.new()
+	_queen_avatar_burst.name = "QueenOfSpadesAvatarBurst"
+	_queen_burst_layer.add_child(_queen_avatar_burst)
+	add_child(_queen_burst_layer)
+
+
+func _refresh_lead_suit_indicator() -> void:
+	if _lead_suit_indicator == null or _match_manager == null:
+		return
+	var panel: Control = _lead_suit_indicator.get_parent()
+	var trick_manager: TrickManager = _match_manager.trick_manager
+	if trick_manager.played_count() == 0 or trick_manager.lead_suit < 0:
+		panel.visible = false
+		return
+	panel.visible = true
+	_lead_suit_indicator.text = Suit.to_lead_indicator_text(trick_manager.lead_suit)
+	match trick_manager.lead_suit:
+		Suit.HEARTS:
+			_lead_suit_indicator.add_theme_color_override("font_color", Color(0.95, 0.35, 0.4))
+		Suit.DIAMONDS:
+			_lead_suit_indicator.add_theme_color_override("font_color", Color(0.95, 0.55, 0.2))
+		Suit.CLUBS:
+			_lead_suit_indicator.add_theme_color_override("font_color", Color(0.85, 0.95, 0.85))
+		Suit.SPADES:
+			_lead_suit_indicator.add_theme_color_override("font_color", Color(0.88, 0.9, 1.0))
+		_:
+			_lead_suit_indicator.add_theme_color_override("font_color", Color.WHITE)
 
 ## Câble les boutons musique de `TopMenuBar` sur `AudioService` (voir
 ## docs/DECISIONS.md ADR-013). La musique elle-même démarre indépendamment,
 ## dès le lancement du jeu, depuis `AudioService._ready()` : cette table n'a
 ## qu'à synchroniser l'affichage du bouton et relayer les actions.
 func _setup_music_controls() -> void:
-	_top_menu_bar.set_music_enabled_display(AudioService.get_music_enabled())
+	_top_menu_bar.set_music_enabled_display(_audio().get_music_enabled())
 	_top_menu_bar.music_toggle_pressed.connect(_on_music_toggle_pressed)
 	_top_menu_bar.music_next_pressed.connect(_on_music_next_pressed)
 
 func _on_music_toggle_pressed() -> void:
-	var enabled: bool = not AudioService.get_music_enabled()
-	AudioService.set_music_enabled(enabled)
+	var enabled: bool = not _audio().get_music_enabled()
+	_audio().set_music_enabled(enabled)
 	_top_menu_bar.set_music_enabled_display(enabled)
 
 func _on_music_next_pressed() -> void:
-	AudioService.play_next()
+	_audio().play_next()
 
 ## Bouton "MENU" de la barre supérieure : retour au menu principal. Si une
 ## partie est en cours (`GameSession.match_in_progress`), demande confirmation
 ## avant de quitter ; sinon (partie non démarrée ou déjà terminée), retour
 ## direct sans confirmation.
 func _on_top_menu_bar_menu_pressed() -> void:
-	if GameSession.match_in_progress:
+	if _session().match_in_progress:
 		_confirm_dialog.open("Voulez-vous quitter la partie en cours ?")
 	else:
 		_return_to_main_menu()
 
 func _on_leave_match_confirmed() -> void:
-	GameSession.end_match()
+	_session().end_match()
 	_return_to_main_menu()
 
 func _return_to_main_menu() -> void:
@@ -193,6 +291,8 @@ func _clear_trick_cards() -> void:
 	for card_view in _trick_card_views.values():
 		(card_view as Control).queue_free()
 	_trick_card_views.clear()
+	if _match_manager:
+		_refresh_lead_suit_indicator()
 
 # --- Main du joueur humain ---------------------------------------------------
 
@@ -237,14 +337,14 @@ func _deal_visual_sequence() -> void:
 	_turn_locked = true
 	await get_tree().process_frame
 	if not _is_active():
-		_turn_locked = false
+		_unlock_turn()
 		return
 
 	_rebuild_human_hand()
 	_refresh_opponent_hand_counts()
 	await get_tree().process_frame
 	if not _is_active():
-		_turn_locked = false
+		_unlock_turn()
 		return
 
 	var human_final_positions: Array[Vector2] = []
@@ -269,7 +369,7 @@ func _deal_visual_sequence() -> void:
 	var card_count: int = human_final_positions.size()
 	for round_index in card_count:
 		if not _is_active():
-			_turn_locked = false
+			_unlock_turn()
 			return
 
 		var tween: Tween = create_tween()
@@ -308,27 +408,26 @@ func _deal_visual_sequence() -> void:
 		if tween_count == 0:
 			continue
 
-		AudioService.play_deal_card()
+		_audio().play_deal_card()
 		await tween.finished
 		if not _is_active():
-			_turn_locked = false
+			_unlock_turn()
 			return
 		if round_index < card_count - 1:
 			await get_tree().create_timer(TableAnimations.DEAL_CARD_STAGGER_SEC).timeout
 			if not _is_active():
-				_turn_locked = false
+				_unlock_turn()
 				return
 
 	for card_view in _hand_card_views:
 		card_view.mouse_filter = Control.MOUSE_FILTER_STOP
-	_refresh_human_hand_legality()
-	_turn_locked = false
+	_unlock_turn()
 
 func _on_hand_card_mouse_entered(card_view: Control) -> void:
 	if not is_inside_tree():
 		return
 	if card_view.playable:
-		AudioService.play_card_hover()
+		_audio().play_card_hover()
 	card_view.set_hovered(true)
 
 func _on_hand_card_mouse_exited(card_view: Control) -> void:
@@ -368,7 +467,7 @@ func _on_human_card_selected(card_view: Control, card: CardModel) -> void:
 	await _handle_post_play(result)
 	if not _is_active():
 		return
-	_turn_locked = false
+	_unlock_turn()
 
 	if _match_manager.is_match_over():
 		return
@@ -391,7 +490,7 @@ func _run_ai_turns() -> void:
 	while _match_manager.phase == MatchManager.Phase.PLAYING and _match_manager.is_ai_controlled(_match_manager.current_player):
 		await get_tree().create_timer(AI_TURN_DELAY_SEC).timeout
 		if not _is_active():
-			_turn_locked = false
+			_unlock_turn()
 			return
 
 		var player_index: int = _match_manager.current_player
@@ -402,7 +501,7 @@ func _run_ai_turns() -> void:
 
 		var result: MatchManager.PlayResult = _match_manager.play_card(player_index, card)
 		if not result.success:
-			DebugService.log_error("Table: l'IA du siège %d a proposé un coup invalide" % player_index)
+			_debug().log_error("Table: l'IA du siège %d a proposé un coup invalide" % player_index)
 			break
 
 		var seat: PlayerSeat = _seats[player_index]
@@ -411,18 +510,18 @@ func _run_ai_turns() -> void:
 
 		await _animate_card_play(player_index, card, start_center)
 		if not _is_active():
-			_turn_locked = false
+			_unlock_turn()
 			return
 		await _handle_post_play(result)
 		if not _is_active():
-			_turn_locked = false
+			_unlock_turn()
 			return
 
 		if result.match_completed or _match_manager.is_match_over():
-			_turn_locked = false
+			_unlock_turn()
 			return
 
-	_turn_locked = false
+	_unlock_turn()
 	_refresh_turn_ui()
 
 # --- Animation : pose d'une carte, résolution et ramassage d'un pli ---------
@@ -437,10 +536,22 @@ func _animate_card_play(player_index: int, card: CardModel, start_center: Vector
 	var traveling_card: Control = _spawn_traveling_card(card, start_center)
 	var target_slot: Control = _trick_slots[player_index]
 	var target_center: Vector2 = target_slot.get_global_transform_with_canvas() * (target_slot.size / 2.0)
-	await TableAnimations.play_card_to_trick(self, traveling_card, target_center)
+	if card.is_queen_of_spades():
+		_audio().play_queen_of_spades()
+		_queen_avatar_burst.play(_seats[player_index].character_id)
+		await TableAnimations.play_queen_bullet_time(
+			self,
+			traveling_card,
+			target_center,
+			_bullet_time_camera,
+			_bullet_time_dim
+		)
+	else:
+		await TableAnimations.play_card_to_trick(self, traveling_card, target_center)
 	if not _is_active():
 		return
 	_trick_card_views[player_index] = traveling_card
+	_refresh_lead_suit_indicator()
 
 ## Crée la carte face visible qui glissera jusqu'au pli. Reste volontairement
 ## sans rotation et avec `pivot_offset` à sa valeur par défaut `(0, 0)`, pour
@@ -543,6 +654,11 @@ func _refresh_cumulative_scoreboard() -> void:
 		_match_manager.score_manager.get_scores()
 	)
 
+func _unlock_turn() -> void:
+	_turn_locked = false
+	_refresh_human_hand_legality()
+
+
 func _refresh_turn_ui() -> void:
 	var playing: bool = _match_manager.phase == MatchManager.Phase.PLAYING
 	for player_index in range(HeartsRules.PLAYER_COUNT):
@@ -558,6 +674,7 @@ func _refresh_turn_ui() -> void:
 		_top_menu_bar.set_score_text("Manche : %d pts  |  Partie : %d pts" % [hand_score, match_score])
 
 	_refresh_human_hand_legality()
+	_refresh_lead_suit_indicator()
 
 ## Message de tour pour le joueur humain : rappelle les contraintes courantes
 ## (2 de Trèfle au 1er pli, Cœurs non défoncés) afin d'éviter l'impression
@@ -592,10 +709,11 @@ func _current_human_legal_plays() -> Array[CardModel]:
 ## docs/DECISIONS.md ADR-020).
 func _refresh_human_hand_legality() -> void:
 	var legal: Array[CardModel] = _current_human_legal_plays()
+	var allow_play: bool = not _turn_locked
 	for i in _hand_card_views.size():
 		var card_view: Control = _hand_card_views[i]
 		var card: CardModel = _hand_cards[i]
-		var is_legal: bool = _card_in_list(card, legal)
+		var is_legal: bool = allow_play and _card_in_list(card, legal)
 		card_view.modulate = Color.WHITE
 		card_view.set_playable(is_legal)
 		card_view.mouse_filter = Control.MOUSE_FILTER_STOP if is_legal else Control.MOUSE_FILTER_IGNORE
@@ -606,10 +724,31 @@ func _card_in_list(card: CardModel, cards: Array[CardModel]) -> bool:
 			return true
 	return false
 
+
+func _audio() -> Node:
+	return get_node("/root/AudioService") as AudioServiceScript
+
+
+func _session() -> Node:
+	return get_node("/root/GameSession") as GameSessionScript
+
+
+func _debug() -> Node:
+	return get_node("/root/DebugService") as DebugServiceScript
+
 # --- Fin de manche / fin de partie --------------------------------------------
+
+func _play_hand_end_seat_reactions(hand_winner_index: int) -> void:
+	for player_index in range(HeartsRules.PLAYER_COUNT):
+		if player_index == hand_winner_index:
+			_seats[player_index].play_hand_win_reaction()
+		else:
+			_seats[player_index].play_hand_loss_reaction()
+
 
 func _show_hand_end_popup() -> void:
 	var winner_index: int = _match_manager.get_last_hand_winner()
+	_play_hand_end_seat_reactions(winner_index)
 	var names: Array = []
 	var character_ids: Array = []
 	for player_index in range(HeartsRules.PLAYER_COUNT):
@@ -644,3 +783,5 @@ func _show_match_end_popup() -> void:
 		_match_manager.last_hand_scores,
 		character_ids
 	)
+	if winner_index == HUMAN_INDEX:
+		_victory_petals.play()

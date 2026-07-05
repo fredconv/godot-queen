@@ -26,3 +26,23 @@ static func to_display_name(suit: int) -> String:
 			return "Cœur"
 		_:
 			return "?"
+
+
+## Symbole Unicode pour l'affichage UI (indicateur de couleur demandée).
+static func to_symbol(suit: int) -> String:
+	match suit:
+		CLUBS:
+			return "♣"
+		DIAMONDS:
+			return "♦"
+		SPADES:
+			return "♠"
+		HEARTS:
+			return "♥"
+		_:
+			return "?"
+
+
+## Texte court pour l'indicateur de pli (« ♥ Cœur demandé »).
+static func to_lead_indicator_text(suit: int) -> String:
+	return "%s %s demandé" % [to_symbol(suit), to_display_name(suit)]

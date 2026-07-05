@@ -92,6 +92,13 @@ func play_card_played() -> void:
 func play_trick_collect() -> void:
 	_play_stream(AudioPaths.TRICK_COLLECT)
 
+
+## Dame de Pique posée : boom dramatique synchronisé avec le bullet time
+## (ralenti + zoom). Le son de pose standard est ignoré pour cette carte
+## (voir `_on_card_played`).
+func play_queen_of_spades() -> void:
+	_play_stream(AudioPaths.QUEEN_BULLET_TIME, 0.88)
+
 ## Démarre la playlist de musique d'ambiance dans un ordre mélangé. Appelée
 ## automatiquement au lancement du jeu (voir `_ready()`) si la musique est
 ## activée ; peut aussi être appelée directement (ex. après réactivation sans
@@ -189,7 +196,9 @@ func _volume_scale_to_db(volume_scale: float) -> float:
 		return -80.0
 	return linear_to_db(linear)
 
-func _on_card_played(_player_id: int, _card: CardModel) -> void:
+func _on_card_played(_player_id: int, card: CardModel) -> void:
+	if card.is_queen_of_spades():
+		return
 	play_card_played()
 
 func _on_trick_resolved(_winner_id: int, _points: int) -> void:
