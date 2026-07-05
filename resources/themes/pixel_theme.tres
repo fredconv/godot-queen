@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=2 format=3]
+[gd_resource type="Theme" load_steps=3 format=3]
 
 [ext_resource type="FontFile" path="res://assets/fonts/PixelifySans-VariableFont_wght.ttf" id="1_font"]
 
@@ -12,6 +12,28 @@
 ; Button des scènes qui héritent de ce thème (ex. Table, TopMenuBar). Taille de
 ; police non surchargée (garde la taille par défaut du moteur) pour ne pas
 ; perturber les mises en page existantes (voir ADR-009).
+;
+; TooltipPanel : fond quasi opaque pour rester lisible au-dessus des cartes
+; blanches de la main (voir player_seat.gd::SCORE_TOOLTIP).
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tooltip"]
+bg_color = Color(0.102, 0.102, 0.125, 0.97)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.831, 0.686, 0.216, 0.9)
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [resource]
 default_font = ExtResource("1_font")
+TooltipPanel/styles/panel = SubResource("StyleBoxFlat_tooltip")
+TooltipLabel/colors/font_color = Color(0.961, 0.941, 0.902, 1)
+TooltipLabel/font_sizes/font_size = 12
