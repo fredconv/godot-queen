@@ -11,6 +11,8 @@ const SEAT_FONT_SIZE: int = 8
 const MENU_TURN_FONT_SIZE: int = 10
 const MENU_SCORE_FONT_SIZE: int = 8
 const MENU_BUTTON_FONT_SIZE: int = 8
+const OVERLAY_TITLE_FONT_SIZE: int = 12
+const OVERLAY_BODY_FONT_SIZE: int = 9
 const LEAD_SUIT_FONT_SIZE: int = 10
 
 

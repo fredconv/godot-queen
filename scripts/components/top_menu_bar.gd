@@ -61,6 +61,8 @@ func refresh_locale() -> void:
 	_btn_settings.tooltip_text = tr(TableKeys.TOP_TOOLTIP_SETTINGS)
 	_turn_label.add_theme_font_size_override("font_size", LocaleFonts.MENU_TURN_FONT_SIZE)
 	_score_label.add_theme_font_size_override("font_size", LocaleFonts.MENU_SCORE_FONT_SIZE)
+	_turn_label.add_theme_color_override("font_color", UiPalette.CREAM)
+	_score_label.add_theme_color_override("font_color", UiPalette.GOLD_BRIGHT)
 	for btn: Button in [
 		_btn_help,
 		_btn_scores,

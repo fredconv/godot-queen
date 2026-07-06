@@ -75,12 +75,12 @@ Suivi des étapes de développement. Chaque étape doit être validée avant de 
 Objectif : qualité « store-ready » (Play Store) — UI/UX, audio et cohérence visuelle.
 
 ### Livré / en cours
-- Thème `pixel_theme.tres` : boutons (normal/hover/pressed/focus), panneaux or
+- Thème `pixel_theme.tres` : boutons, panneaux or, champs formulaire (LineEdit, sliders, OptionButton)
 - Menu principal : fond tapis, vignette, panneau encadré, pseudo joueur
+- Overlays harmonisés (config, scores, crédits, profil, dialogs table)
 - Palette partagée `UiPalette`
 
 ### À faire (itérations suivantes)
-- [ ] Harmoniser tous les overlays (scores, config, crédits, profil, popups table)
 - [ ] Barre de menu table : boutons texte avec le nouveau thème
 - [ ] Animation distribution cartes (visuelle)
 - [ ] Sons : volumes finaux, transitions musique

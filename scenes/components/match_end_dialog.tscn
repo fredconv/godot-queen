@@ -3,22 +3,8 @@
 [ext_resource type="Script" path="res://scripts/components/match_end_dialog.gd" id="1_match_end"]
 [ext_resource type="PackedScene" path="res://scenes/components/player_avatar.tscn" id="2_avatar"]
 
-; Voile sombre + panneau à bordure or : même style que `confirm_dialog.tscn`
-; (voir docs/DECISIONS.md ADR-017) pour rester cohérent avec le reste du chrome UI.
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backdrop"]
-bg_color = Color(0, 0, 0, 0.6)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.129, 0.129, 0.157, 0.98)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.831, 0.686, 0.216, 1)
-content_margin_left = 32.0
-content_margin_top = 24.0
-content_margin_right = 32.0
-content_margin_bottom = 24.0
+bg_color = Color(0, 0, 0, 0.62)
 
 [node name="MatchEndDialog" type="Control"]
 anchor_right = 1.0
@@ -32,9 +18,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_backdrop")
 
-; Flèches pointant vers le siège du vainqueur (une seule visible à la fois,
-; voir `match_end_dialog.gd::show_result`). Position calée sur les sièges de
-; `table.tscn` (SeatTop/SeatBottom/SeatLeft/SeatRight).
 [node name="ArrowTop" type="Label" parent="."]
 anchor_left = 0.5
 anchor_right = 0.5
@@ -100,14 +83,13 @@ offset_left = -240.0
 offset_top = -180.0
 offset_right = 240.0
 offset_bottom = 180.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="Content" type="VBoxContainer" parent="Panel"]
 theme_override_constants/separation = 14
 
 [node name="TitleLabel" type="Label" parent="Panel/Content"]
-theme_override_colors/font_color = Color(0.961, 0.941, 0.902, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.95, 0.82, 0.45, 1)
+theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 text = "Partie terminée !"
 
@@ -125,8 +107,6 @@ vertical_alignment = 1
 text = "Joueur remporte la partie !"
 
 [node name="WinnerDetailLabel" type="Label" parent="Panel/Content"]
-theme_override_colors/font_color = Color(0.961, 0.941, 0.902, 1)
-theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
 text = "Dernière manche : 0 pts  |  Total partie : 0 pts"
 

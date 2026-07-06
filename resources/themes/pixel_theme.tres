@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=8 format=3]
+[gd_resource type="Theme" load_steps=12 format=3]
 
 [ext_resource type="FontFile" path="res://assets/fonts/PressStart2P-Regular.ttf" id="1_font"]
 
@@ -62,6 +62,45 @@ content_margin_top = 18.0
 content_margin_right = 20.0
 content_margin_bottom = 18.0
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_line_edit"]
+bg_color = Color(0.07, 0.09, 0.11, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.831, 0.686, 0.216, 0.7)
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_line_edit_focus"]
+bg_color = Color(0.09, 0.12, 0.14, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.82, 0.45, 1)
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider"]
+bg_color = Color(0.07, 0.09, 0.11, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.831, 0.686, 0.216, 0.5)
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_fill"]
+bg_color = Color(0.831, 0.686, 0.216, 0.45)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tooltip"]
 bg_color = Color(0.102, 0.102, 0.125, 0.97)
 border_width_left = 2
@@ -76,7 +115,7 @@ content_margin_bottom = 8.0
 
 [resource]
 default_font = ExtResource("1_font")
-default_font_size = 11
+default_font_size = 9
 Button/colors/font_color = Color(0.961, 0.941, 0.902, 1)
 Button/colors/font_hover_color = Color(0.95, 0.82, 0.45, 1)
 Button/colors/font_pressed_color = Color(0.831, 0.686, 0.216, 1)
@@ -87,8 +126,32 @@ Button/styles/focus = SubResource("StyleBoxFlat_btn_focus")
 Button/styles/hover = SubResource("StyleBoxFlat_btn_hover")
 Button/styles/normal = SubResource("StyleBoxFlat_btn_normal")
 Button/styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+CheckButton/colors/font_color = Color(0.961, 0.941, 0.902, 1)
+CheckButton/colors/font_hover_color = Color(0.95, 0.82, 0.45, 1)
+CheckButton/colors/font_pressed_color = Color(0.831, 0.686, 0.216, 1)
+CheckButton/font_sizes/font_size = 9
+HSlider/styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
+HSlider/styles/slider = SubResource("StyleBoxFlat_slider")
+Label/colors/font_color = Color(0.961, 0.941, 0.902, 1)
+Label/font_sizes/font_size = 9
+LineEdit/colors/font_color = Color(0.961, 0.941, 0.902, 1)
+LineEdit/colors/font_placeholder_color = Color(0.961, 0.941, 0.902, 0.45)
+LineEdit/font_sizes/font_size = 9
+LineEdit/styles/focus = SubResource("StyleBoxFlat_line_edit_focus")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_line_edit")
+LineEdit/styles/read_only = SubResource("StyleBoxFlat_line_edit")
+OptionButton/colors/font_color = Color(0.961, 0.941, 0.902, 1)
+OptionButton/font_sizes/font_size = 9
+OptionButton/styles/disabled = SubResource("StyleBoxFlat_btn_normal")
+OptionButton/styles/focus = SubResource("StyleBoxFlat_btn_focus")
+OptionButton/styles/hover = SubResource("StyleBoxFlat_btn_hover")
+OptionButton/styles/normal = SubResource("StyleBoxFlat_btn_normal")
+OptionButton/styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
 Panel/styles/panel = SubResource("StyleBoxFlat_panel")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
+RichTextLabel/colors/default_color = Color(0.961, 0.941, 0.902, 1)
+RichTextLabel/font_sizes/normal_font_size = 9
 TooltipPanel/styles/panel = SubResource("StyleBoxFlat_tooltip")
 TooltipLabel/colors/font_color = Color(0.961, 0.941, 0.902, 1)
-TooltipLabel/font_sizes/font_size = 12
+TooltipLabel/font_sizes/font_size = 9
