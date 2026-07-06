@@ -4,13 +4,14 @@ extends Control
 ## lance une partie de démonstration sur `table.tscn`, quitte le jeu, ou
 ## affiche les écrans Scores / Configuration / Crédits.
 
-@onready var _title_label: Label = $CenterContainer/Menu/TitleLabel
-@onready var _btn_new_game: Button = $CenterContainer/Menu/BtnNewGame
-@onready var _btn_scores: Button = $CenterContainer/Menu/BtnScores
-@onready var _btn_settings: Button = $CenterContainer/Menu/BtnSettings
-@onready var _btn_credits: Button = $CenterContainer/Menu/BtnCredits
-@onready var _btn_quit: Button = $CenterContainer/Menu/BtnQuit
-@onready var _menu_root: Control = $CenterContainer/Menu
+@onready var _title_label: Label = $CenterContainer/MenuPanel/Margin/Menu/TitleLabel
+@onready var _btn_new_game: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnNewGame
+@onready var _btn_scores: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnScores
+@onready var _btn_settings: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnSettings
+@onready var _btn_credits: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnCredits
+@onready var _btn_quit: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnQuit
+@onready var _menu_root: Control = $CenterContainer/MenuPanel
+@onready var _player_label: Label = $PlayerLabel
 @onready var _settings_screen: Control = $SettingsScreen
 @onready var _scores_screen: Control = $ScoresScreen
 @onready var _credits_screen: Control = $CreditsScreen
@@ -26,6 +27,7 @@ func _ready() -> void:
 	_credits_screen.closed.connect(_on_overlay_closed)
 	_profile_setup_screen.completed.connect(_on_profile_setup_completed)
 	LocaleAware.bind(self, _refresh_locale)
+	PlayerProfileService.profile_changed.connect(_refresh_player_label)
 	_refresh_locale()
 	AudioService.ensure_music_playing()
 	call_deferred("_after_ready")
@@ -38,6 +40,13 @@ func _refresh_locale() -> void:
 	_btn_settings.text = tr(MenuKeys.SETTINGS)
 	_btn_credits.text = tr(MenuKeys.CREDITS)
 	_btn_quit.text = tr(MenuKeys.QUIT)
+	_refresh_player_label()
+
+
+func _refresh_player_label() -> void:
+	if not _player_label:
+		return
+	_player_label.text = PlayerProfileService.get_display_name()
 
 
 func _after_ready() -> void:

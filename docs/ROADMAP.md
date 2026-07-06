@@ -70,13 +70,26 @@ Suivi des étapes de développement. Chaque étape doit être validée avant de 
 - Identités siège, lobby local simulé, audit et design : voir `docs/MULTIPLAYER_DESIGN.md`.
 - Réseau réel (ENet, phases 7+) : **non implémenté**.
 
-## Étape 8 — Audio & polish visuel
+## Étape 8 — Audio & polish visuel (en cours)
 
-- Intégration des assets sonores via `AudioService`.
-- Animations de cartes, effets visuels (`assets/vfx/`).
-- Passage en revue de l'ergonomie et des retours visuels.
+Objectif : qualité « store-ready » (Play Store) — UI/UX, audio et cohérence visuelle.
 
-> Note : les animations de pose de carte et de ramassage de pli ont été **anticipées depuis l'étape 6** (`scripts/ui/table_animations.gd`, voir docs/DECISIONS.md ADR-021) : glissement de la carte jouée vers le pli en ~0.3s, mise en évidence de la carte gagnante, pli visible au moins 2s puis glissement groupé des 4 cartes vers le siège du vainqueur. Le popup de fin de partie (`scenes/components/match_end_dialog.tscn`) a également été livré en avance (vainqueur, avatar, flèche de siège, scores, bouton "Rejouer" qui redémarre une partie sur la même table). Reste hors scope pour une itération future : animation visuelle de la distribution des cartes (seul le son est actuellement étalé dans le temps).
+### Livré / en cours
+- Thème `pixel_theme.tres` : boutons (normal/hover/pressed/focus), panneaux or
+- Menu principal : fond tapis, vignette, panneau encadré, pseudo joueur
+- Palette partagée `UiPalette`
+
+### À faire (itérations suivantes)
+- [ ] Harmoniser tous les overlays (scores, config, crédits, profil, popups table)
+- [ ] Barre de menu table : boutons texte avec le nouveau thème
+- [ ] Animation distribution cartes (visuelle)
+- [ ] Sons : volumes finaux, transitions musique
+- [ ] Focus clavier / manette (navigation menus)
+- [ ] Icône app + splash screen export Android
+- [ ] Tests sur ratios mobile (safe area)
+- [ ] Cartes pixel art (optionnel, post-MVP)
+
+> Animations de pli, popup fin de partie et audio de base déjà anticipés aux étapes 6–7.
 
 ## Étape 9 — Tests end-to-end & stabilisation
 
