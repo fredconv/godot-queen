@@ -276,13 +276,8 @@ func _layout_seat() -> void:
 		SeatOrientation.LEFT:
 			_hand_back_column.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
 			_hand_back_column.offset_right = thickness
-			_info_box.anchor_left = 1.0
-			_info_box.anchor_top = 0.0
-			_info_box.anchor_right = 1.0
-			_info_box.anchor_bottom = 1.0
-			_info_box.offset_left = -(SIDE_INFO_BOX_WIDTH + SIDE_HAND_INFO_GAP + thickness)
-			_info_box.offset_right = -(thickness + SIDE_HAND_INFO_GAP)
-			_info_box.alignment = BoxContainer.ALIGNMENT_CENTER
+			_info_box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			_info_box.offset_left = thickness + SIDE_HAND_INFO_GAP
 		SeatOrientation.RIGHT:
 			_hand_back_column.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
 			_hand_back_column.offset_left = -thickness
