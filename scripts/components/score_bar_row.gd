@@ -28,7 +28,9 @@ func configure(display_name: String, score: int, max_score: int, is_human: bool)
 	_ensure_nodes()
 	_score = maxi(score, 0)
 	_max_score = maxi(max_score, 1)
-	var prefix: String = "★ " if is_human else ""
+	var prefix: String = TranslationServer.translate(
+		CommonKeys.WINNER_MARK if is_human else CommonKeys.WINNER_PAD
+	)
 	_name_label.text = "%s%s" % [prefix, display_name]
 	_name_label.add_theme_color_override("font_color", HUMAN_NAME_COLOR if is_human else ENTRY_NAME_COLOR)
 	_bar_fill.color = HUMAN_BAR_COLOR if is_human else ENTRY_BAR_COLOR

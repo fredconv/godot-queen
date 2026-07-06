@@ -46,7 +46,7 @@ func compare_rank(other: CardModel) -> int:
 ## un simple `to_string()` custom est refusé par Godot (nom réservé sur
 ## `Object`, avertissement traité comme erreur), voir docs/DECISIONS.md ADR-011.
 func _to_string() -> String:
-	return "%s de %s" % [Rank.to_display_name(rank), Suit.to_display_name(suit)]
+	return GameCopy.card_description(rank, suit)
 
 ## Construit une carte à partir de son identifiant unique (0-51).
 static func from_id(id: int) -> CardModel:

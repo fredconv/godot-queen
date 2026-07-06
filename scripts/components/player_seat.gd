@@ -68,7 +68,7 @@ enum SeatOrientation { TOP, BOTTOM, LEFT, RIGHT }
 		_layout_seat()
 		_refresh_hand_back()
 
-@export var player_name: String = "Joueur":
+@export var player_name: String = "":
 	set(value):
 		player_name = value
 		_refresh_labels()
@@ -120,22 +120,23 @@ enum SeatOrientation { TOP, BOTTOM, LEFT, RIGHT }
 
 var _turn_pulse_tween: Tween
 
-const SCORE_TOOLTIP: String = (
-	"(N) : points de pénalité de la manche en cours\n"
-	+ "(Cœur = 1 pt, Dame de Pique = 13 pts).\n"
-	+ "♥ N : nombre de cartes Cœur capturées.\n"
-	+ "Le total de la partie est en haut à droite."
-)
 
 func _ready() -> void:
+	if player_name.is_empty():
+		player_name = GameCopy.default_seat_name()
 	_layout_seat()
-	_refresh_labels()
+	LocaleAware.bind(self, _refresh_locale)
+	_refresh_locale()
 	_refresh_hand_back()
 	_refresh_turn_highlight()
 	_refresh_avatar()
-	_setup_score_tooltip()
 	_hand_back_row.resized.connect(_on_hand_back_container_resized)
 	_hand_back_column.resized.connect(_on_hand_back_container_resized)
+
+
+func _refresh_locale() -> void:
+	_refresh_labels()
+	_setup_score_tooltip()
 
 
 func _on_hand_back_container_resized() -> void:
@@ -149,7 +150,7 @@ func _on_hand_back_container_resized() -> void:
 func _setup_score_tooltip() -> void:
 	if _avatar_placeholder:
 		_avatar_placeholder.mouse_filter = Control.MOUSE_FILTER_STOP
-		_avatar_placeholder.tooltip_text = SCORE_TOOLTIP
+		_avatar_placeholder.tooltip_text = GameCopy.seat_score_tooltip()
 
 func set_active_turn(value: bool) -> void:
 	is_active_turn = value
@@ -205,8 +206,8 @@ func _refresh_labels() -> void:
 	if not _name_label:
 		return
 	_name_label.text = player_name
-	_score_label.text = "(%d)" % score
-	_heart_label.text = "♥ %d" % heart_penalty
+	_score_label.text = GameCopy.seat_score_parens(score)
+	_heart_label.text = GameCopy.seat_hearts_count(heart_penalty)
 
 ## Place la pile de cartes contre le bord de la table (haut/bas/gauche/droite
 ## selon l'orientation) et le bloc avatar/nom/score entre cette pile et le

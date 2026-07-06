@@ -36,4 +36,4 @@ static func match_score_row(prefix: String, player_name: String, hand_score: int
 
 
 static func winner_prefix(is_winner: bool) -> String:
-	return "★ " if is_winner else "   "
+	return TranslationServer.translate(CommonKeys.WINNER_MARK if is_winner else CommonKeys.WINNER_PAD)

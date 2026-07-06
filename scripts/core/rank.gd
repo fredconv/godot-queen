@@ -1,4 +1,5 @@
 class_name Rank
+extends RefCounted
 ## Rangs d'une carte à jouer. Valeurs entières explicites (2 à 14) plutôt
 ## qu'un enum 0-based : la valeur correspond directement au rang réel de la
 ## carte, ce qui rend les comparaisons de force et le débogage plus lisibles
@@ -27,16 +28,6 @@ const ALL: Array[int] = [
 	TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE,
 ]
 
-## Libellé français d'affichage (debug, UI future).
+
 static func to_display_name(rank: int) -> String:
-	match rank:
-		JACK:
-			return "Valet"
-		QUEEN:
-			return "Dame"
-		KING:
-			return "Roi"
-		ACE:
-			return "As"
-		_:
-			return str(rank)
+	return GameCopy.rank_name(rank)

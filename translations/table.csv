@@ -1,23 +1,23 @@
-keys,fr,en
-TB_PLAYER_YOU,Vous,You
-TB_PLAYER_OPPONENT,Adversaire %d,Opponent %d
-TB_SCORE_HAND_MATCH,Manche : %d pts  |  Partie : %d pts,Hand: %d pts  |  Match: %d pts
-TB_TURN_YOUR_PLAY,À vous de jouer,Your turn
-TB_TURN_TWO_CLUBS,À vous — jouez le 2 de Trèfle,Your turn — play the 2 of Clubs
-TB_TURN_FIRST_TRICK,À vous de jouer (1er pli : pas de points),Your turn (first trick: no penalty cards)
-TB_TURN_HEARTS_NOT_BROKEN,À vous — les Cœurs ne sont pas encore défoncés,Your turn — Hearts are not broken yet
-TB_TURN_OPPONENT,%s joue...,%s is playing...
-TB_SCOREBOARD_TITLE,Partie — manche %d / %d pts,Match — hand %d / %d pts
-TB_THEME_CLASSIC,Feutre vert,Green felt
-TB_THEME_TAPIS,Tapis,Tablecloth
-TB_TOP_HELP,AIDE,HELP
-TB_TOP_SCORES,SCORES,SCORES
-TB_TOP_NEW,NOUVEAU,NEW
-TB_TOP_MENU,MENU,MENU
-TB_TOP_MUSIC_ON,MUSIQUE : ON,MUSIC: ON
-TB_TOP_MUSIC_OFF,MUSIQUE : OFF,MUSIC: OFF
-TB_TOP_MUSIC_NEXT,SUIVANT,NEXT
-TB_TOP_TOOLTIP_MENU,Menu,Menu
-TB_TOP_TOOLTIP_MUSIC,Activer/couper la musique,Toggle music
-TB_TOP_TOOLTIP_MUSIC_NEXT,Piste suivante,Next track
-TB_TOP_TOOLTIP_SETTINGS,Réglages,Settings
+keys,fr,en,de,es,pt,zh
+TB_PLAYER_YOU,Vous,You,Du,Tú,Você,你
+TB_PLAYER_OPPONENT,Adversaire %d,Opponent %d,Gegner %d,Oponente %d,Oponente %d,对手 %d
+TB_SCORE_HAND_MATCH,Manche : %d pts  |  Partie : %d pts,Hand: %d pts  |  Match: %d pts,Stich: %d Pkt.  |  Spiel: %d Pkt.,Mano: %d pts  |  Partida: %d pts,Mão: %d pts  |  Partida: %d pts,本轮：%d 分  |  对局：%d 分
+TB_TURN_YOUR_PLAY,À vous de jouer,Your turn,Du bist dran,Te toca,É a sua vez,轮到你了
+TB_TURN_TWO_CLUBS,À vous — jouez le 2 de Trèfle,Your turn — play the 2 of Clubs,Du bist dran — spiele die Kreuz-2,Te toca — juega el 2 de tréboles,É a sua vez — jogue o 2 de paus,轮到你了 — 请出梅花 2
+TB_TURN_FIRST_TRICK,À vous de jouer (1er pli : pas de points),Your turn (first trick: no penalty cards),Du bist dran (1. Stich: keine Strafkarten),Te toca (1.er baza: sin cartas de penalización),É a sua vez (1.ª vaza: sem cartas de penalidade),轮到你了（首墩：无罚分牌）
+TB_TURN_HEARTS_NOT_BROKEN,À vous — les Cœurs ne sont pas encore défoncés,Your turn — Hearts are not broken yet,Du bist dran — Herzen sind noch nicht gebrochen,Te toca — los corazones aún no están rotos,É a sua vez — copas ainda não foram quebradas,轮到你了 — 红心尚未被打出
+TB_TURN_OPPONENT,%s joue...,%s is playing...,%s spielt...,%s está jugando...,%s está jogando...,%s 出牌中…
+TB_SCOREBOARD_TITLE,Partie — manche %d / %d pts,Match — hand %d / %d pts,Spiel — Stich %d / %d Pkt.,Partida — mano %d / %d pts,Partida — mão %d / %d pts,对局 — 第 %d 轮 / %d 分
+TB_THEME_CLASSIC,Feutre vert,Green felt,Grüner Filz,Fieltro verde,Feltro verde,绿色绒面
+TB_THEME_TAPIS,Tapis,Tablecloth,Tischtuch,Mantel,Mantel,桌布
+TB_TOP_HELP,AIDE,HELP,HILFE,AYUDA,AJUDA,帮助
+TB_TOP_SCORES,SCORES,SCORES,PUNKTE,PUNTOS,PONTOS,统计
+TB_TOP_NEW,NOUVEAU,NEW,NEU,NUEVO,NOVO,新建
+TB_TOP_MENU,MENU,MENU,MENÜ,MENÚ,MENU,菜单
+TB_TOP_MUSIC_ON,MUSIQUE : ON,MUSIC: ON,MUSIK: AN,MÚSICA: SÍ,MÚSICA: SIM,音乐：开
+TB_TOP_MUSIC_OFF,MUSIQUE : OFF,MUSIC: OFF,MUSIK: AUS,MÚSICA: NO,MÚSICA: NÃO,音乐：关
+TB_TOP_MUSIC_NEXT,SUIVANT,NEXT,NÄCHSTER,SIGUIENTE,PRÓXIMA,下一首
+TB_TOP_TOOLTIP_MENU,Menu,Menu,Menü,Menú,Menu,菜单
+TB_TOP_TOOLTIP_MUSIC,Activer/couper la musique,Toggle music,Musik ein/aus,Activar/desactivar música,Ativar/desativar música,开关音乐
+TB_TOP_TOOLTIP_MUSIC_NEXT,Piste suivante,Next track,Nächster Titel,Siguiente pista,Próxima faixa,下一曲
+TB_TOP_TOOLTIP_SETTINGS,Réglages,Settings,Einstellungen,Ajustes,Configurações,设置

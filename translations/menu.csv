@@ -1,20 +1,24 @@
-keys,fr,en
-MN_TITLE,Dame de pique,Hearts
-MN_NEW_GAME,NOUVELLE PARTIE,NEW GAME
-MN_SCORES,SCORES,SCORES
-MN_SETTINGS,CONFIGURATION,SETTINGS
-MN_QUIT,QUITTER,QUIT
-MN_SETTINGS_TITLE,Configuration,Settings
-MN_SETTINGS_SFX_VOLUME,Volume SFX,SFX volume
-MN_SETTINGS_MUSIC_VOLUME,Volume musique,Music volume
-MN_SETTINGS_MUSIC_ENABLED,Musique activée,Music enabled
-MN_SETTINGS_TABLE_THEME,Thème table,Table theme
-MN_SETTINGS_LANGUAGE,Langue,Language
-MN_SETTINGS_LANG_FR,Français,French
-MN_SETTINGS_LANG_EN,English,English
-MN_SCORES_TITLE,Statistiques,Statistics
-MN_SCORES_EMPTY,"Aucune partie terminée pour l'instant.\nLancez une nouvelle partie pour commencer votre historique.","No completed games yet.\nStart a new game to build your history."
-MN_SCORES_MATCHES,Parties terminées : %d,Games completed: %d
-MN_SCORES_WINS,Victoires : %d,Wins: %d
-MN_SCORES_LOSSES,Défaites : %d,Losses: %d
-MN_SCORES_WIN_RATE,Taux de victoire : %d %%,Win rate: %d %%
+keys,fr,en,de,es,pt,zh
+MN_TITLE,Dame de pique,Hearts,Herz Dame,Corazones,Copas,红心大战
+MN_NEW_GAME,NOUVELLE PARTIE,NEW GAME,NEUES SPIEL,NUEVA PARTIDA,NOVA PARTIDA,新游戏
+MN_SCORES,SCORES,SCORES,PUNKTE,PUNTUACIÓN,PONTUAÇÃO,统计
+MN_SETTINGS,CONFIGURATION,SETTINGS,EINSTELLUNGEN,CONFIGURACIÓN,CONFIGURAÇÃO,设置
+MN_QUIT,QUITTER,QUIT,BEENDEN,SALIR,SAIR,退出
+MN_SETTINGS_TITLE,Configuration,Settings,Einstellungen,Configuración,Configuração,设置
+MN_SETTINGS_SFX_VOLUME,Volume SFX,SFX volume,SFX-Lautstärke,Volumen SFX,Volume SFX,音效音量
+MN_SETTINGS_MUSIC_VOLUME,Volume musique,Music volume,Musiklautstärke,Volumen música,Volume música,音乐音量
+MN_SETTINGS_MUSIC_ENABLED,Musique activée,Music enabled,Musik aktiviert,Música activada,Música ativada,启用音乐
+MN_SETTINGS_TABLE_THEME,Thème table,Table theme,Tischthema,Tema de mesa,Tema da mesa,桌面主题
+MN_SETTINGS_LANGUAGE,Langue,Language,Sprache,Idioma,Idioma,语言
+MN_SETTINGS_LANG_FR,Français,French,Französisch,Francés,Francês,法语
+MN_SETTINGS_LANG_EN,English,English,Englisch,Inglés,Inglês,英语
+MN_SETTINGS_LANG_DE,Deutsch,German,Deutsch,Alemán,Alemão,德语
+MN_SETTINGS_LANG_ES,Español,Spanish,Spanisch,Español,Espanhol,西班牙语
+MN_SETTINGS_LANG_PT,Português,Portuguese,Portugiesisch,Portugués,Português,葡萄牙语
+MN_SETTINGS_LANG_ZH,中文,Chinese,Chinesisch,Chino,Chinês,中文
+MN_SCORES_TITLE,Statistiques,Statistics,Statistiken,Estadísticas,Estatísticas,统计数据
+MN_SCORES_EMPTY,"Aucune partie terminée pour l'instant.\nLancez une nouvelle partie pour commencer votre historique.","No completed games yet.\nStart a new game to build your history.","Noch keine abgeschlossene Partie.\nStarten Sie ein neues Spiel, um Ihre Historie aufzubauen.","Aún no hay partidas terminadas.\nInicia una nueva partida para crear tu historial.","Nenhuma partida concluída ainda.\nInicie uma nova partida para criar seu histórico.",尚无已完成的游戏。\n开始新游戏以建立您的记录。
+MN_SCORES_MATCHES,Parties terminées : %d,Games completed: %d,Abgeschlossene Partien: %d,Partidas terminadas: %d,Partidas concluídas: %d,已完成游戏：%d
+MN_SCORES_WINS,Victoires : %d,Wins: %d,Siege: %d,Victorias: %d,Vitórias: %d,胜利：%d
+MN_SCORES_LOSSES,Défaites : %d,Losses: %d,Niederlagen: %d,Derrotas: %d,Derrotas: %d,失败：%d
+MN_SCORES_WIN_RATE,Taux de victoire : %d %%,Win rate: %d %%,Siegquote: %d %%,Tasa de victoria: %d %%,Taxa de vitória: %d %%,胜率：%d %%

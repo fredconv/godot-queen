@@ -1,13 +1,13 @@
-keys,fr,en
-DL_CONFIRM_LEAVE_MATCH,Voulez-vous quitter la partie en cours ?,Do you want to leave the current game?
-DL_HAND_END_TITLE,Manche terminée,Hand complete
-DL_HAND_WINNER,%s remporte la manche !,%s wins the hand!
-DL_HAND_WINNER_DETAIL,Manche : %d pts  |  Total partie : %d pts,Hand: %d pts  |  Match total: %d pts
-DL_HAND_SCORE_ROW,%s%s — manche : %d | total : %d,%s%s — hand: %d | total: %d
-DL_HAND_CONTINUE,Manche suivante,Next hand
-DL_MATCH_END_TITLE,Partie terminée !,Match over!
-DL_MATCH_WINNER,%s remporte la partie !,%s wins the match!
-DL_MATCH_WINNER_DETAIL,Dernière manche : %d pts  |  Total partie : %d pts,Last hand: %d pts  |  Match total: %d pts
-DL_MATCH_SCORE_ROW,%s%s — manche : %d | total : %d,%s%s — hand: %d | total: %d
-DL_MATCH_REPLAY,Nouvelle partie,New game
-DL_MATCH_QUIT,Quitter la partie,Leave match
+keys,fr,en,de,es,pt,zh
+DL_CONFIRM_LEAVE_MATCH,Voulez-vous quitter la partie en cours ?,Do you want to leave the current game?,Möchten Sie das laufende Spiel verlassen?,¿Quieres abandonar la partida en curso?,Deseja sair da partida em curso?,确定要退出当前对局吗？
+DL_HAND_END_TITLE,Manche terminée,Hand complete,Stich beendet,Mano terminada,Mão concluída,本轮结束
+DL_HAND_WINNER,%s remporte la manche !,%s wins the hand!,%s gewinnt den Stich!,%s gana la mano!,%s vence a mão!,%s 赢得本轮！
+DL_HAND_WINNER_DETAIL,Manche : %d pts  |  Total partie : %d pts,Hand: %d pts  |  Match total: %d pts,Stich: %d Pkt.  |  Spiel gesamt: %d Pkt.,Mano: %d pts  |  Total partida: %d pts,Mão: %d pts  |  Total partida: %d pts,本轮：%d 分  |  对局总计：%d 分
+DL_HAND_SCORE_ROW,%s%s — manche : %d | total : %d,%s%s — hand: %d | total: %d,%s%s — Stich: %d | gesamt: %d,%s%s — mano: %d | total: %d,%s%s — mão: %d | total: %d,%s%s — 本轮：%d | 总计：%d
+DL_HAND_CONTINUE,Manche suivante,Next hand,Nächster Stich,Siguiente mano,Próxima mão,下一轮
+DL_MATCH_END_TITLE,Partie terminée !,Match over!,Spiel beendet!,¡Partida terminada!,Partida concluída!,对局结束！
+DL_MATCH_WINNER,%s remporte la partie !,%s wins the match!,%s gewinnt das Spiel!,%s gana la partida!,%s vence a partida!,%s 赢得对局！
+DL_MATCH_WINNER_DETAIL,Dernière manche : %d pts  |  Total partie : %d pts,Last hand: %d pts  |  Match total: %d pts,Letzter Stich: %d Pkt.  |  Spiel gesamt: %d Pkt.,Última mano: %d pts  |  Total partida: %d pts,Última mão: %d pts  |  Total partida: %d pts,最后一轮：%d 分  |  对局总计：%d 分
+DL_MATCH_SCORE_ROW,%s%s — manche : %d | total : %d,%s%s — hand: %d | total: %d,%s%s — Stich: %d | gesamt: %d,%s%s — mano: %d | total: %d,%s%s — mão: %d | total: %d,%s%s — 本轮：%d | 总计：%d
+DL_MATCH_REPLAY,Nouvelle partie,New game,Neues Spiel,Nueva partida,Nova partida,新对局
+DL_MATCH_QUIT,Quitter la partie,Leave match,Spiel verlassen,Salir de la partida,Sair da partida,退出对局

@@ -70,10 +70,10 @@ func _build_theme_options() -> void:
 func _build_language_options() -> void:
 	var selected_language: String = ConfigService.get_language()
 	_language_option.clear()
-	_language_option.add_item(tr(MenuKeys.SETTINGS_LANG_FR), 0)
-	_language_option.set_item_metadata(0, "fr")
-	_language_option.add_item(tr(MenuKeys.SETTINGS_LANG_EN), 1)
-	_language_option.set_item_metadata(1, "en")
+	for index in LocaleCatalog.LOCALES.size():
+		var locale: String = LocaleCatalog.LOCALES[index]
+		_language_option.add_item(tr(LocaleCatalog.label_key_for(locale)), index)
+		_language_option.set_item_metadata(index, locale)
 	_select_language_option(selected_language)
 
 
@@ -107,7 +107,7 @@ func _select_language_option(language: String) -> void:
 
 
 func _set_slider_label(label: Label, value: float) -> void:
-	label.text = "%d%%" % int(round(value))
+	label.text = tr(CommonKeys.PERCENT) % int(round(value))
 
 
 func _on_sfx_slider_changed(value: float) -> void:

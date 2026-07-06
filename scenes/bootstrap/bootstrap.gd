@@ -10,14 +10,17 @@ const MAIN_MENU_SCENE_PATH: String = "res://scenes/menus/main_menu.tscn"
 
 @onready var _status_label: Label = $CanvasLayer/StatusLabel
 
+
 func _ready() -> void:
 	DebugService.log_info("Bootstrap prêt — autoloads chargés.")
-	_status_label.text = "Dame de Pique - Bootstrap OK"
-	# Différé : appeler change_scene_to_file() directement dans le _ready() de
-	# la toute première scène du jeu entre en conflit avec l'ajout des nœuds
-	# encore en cours par le moteur (erreur "Parent node is busy adding/
-	# removing children"). call_deferred attend la fin de l'initialisation.
+	LocaleAware.bind(self, _refresh_locale)
+	_refresh_locale()
 	call_deferred("_go_to_main_menu")
+
+
+func _refresh_locale() -> void:
+	_status_label.text = tr(GameKeys.BOOTSTRAP_OK)
+
 
 func _go_to_main_menu() -> void:
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)

@@ -18,7 +18,7 @@ const DEFAULT_MUSIC_VOLUME: float = 0.35
 const DEFAULT_MUSIC_ENABLED: bool = true
 const DEFAULT_LANGUAGE: String = "fr"
 const DEFAULT_TABLE_THEME: StringName = TableThemePaths.THEME_CLASSIC
-const SUPPORTED_LANGUAGES: Array[String] = ["fr", "en"]
+const SUPPORTED_LANGUAGES: Array[String] = LocaleCatalog.LOCALES
 
 signal locale_changed(locale: String)
 
@@ -82,7 +82,7 @@ func set_language(value: String) -> void:
 
 
 static func normalize_language(value: String) -> String:
-	return "en" if value == "en" else "fr"
+	return LocaleCatalog.normalize(value)
 
 ## --- Thème visuel de la table ---
 

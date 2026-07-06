@@ -1,4 +1,7 @@
-keys,fr,en
-CM_BACK,RETOUR,BACK
-CM_YES,Oui,Yes
-CM_NO,Non,No
+keys,fr,en,de,es,pt,zh
+CM_BACK,RETOUR,BACK,ZURÜCK,VOLVER,VOLTAR,返回
+CM_YES,Oui,Yes,Ja,Sí,Sim,是
+CM_NO,Non,No,Nein,No,Não,否
+CM_PERCENT,%d%%,%d%%,%d%%,%d%%,%d%%,%d%%
+CM_WINNER_MARK,★ ,★ ,★ ,★ ,★ ,★ 
+CM_WINNER_PAD,   ,   ,   ,   ,   ,   
