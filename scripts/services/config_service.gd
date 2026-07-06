@@ -116,6 +116,7 @@ func _ensure_loaded() -> void:
 
 func _apply_locale() -> void:
 	TranslationServer.set_locale(_language)
+	LocaleFonts.apply_for_locale(_language)
 	locale_changed.emit(_language)
 
 func _save_config() -> void:

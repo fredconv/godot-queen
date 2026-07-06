@@ -48,7 +48,9 @@ Fichier de **continuité** : si le projet est mis en pause, reprendre ici pour s
 - [ ] **Écran Configuration** complet (remplacer le stub modal)
   - [ ] Sliders volume SFX / musique
   - [ ] Toggle musique
-  - [ ] Sélecteur langue (structure prête dans `ConfigService`, UI à brancher)
+- [x] Sélecteur langue (6 locales : fr, en, de, es, pt, zh + drapeaux)
+- [x] Textes UI via CSV modulaires (`menu`, `table`, `dialogs`, `common`, `game`)
+- [x] Rafraîchissement immédiat à la fermeture Configuration (`LocaleAware`)
   - [ ] Bouton retour / sauvegarde automatique à la fermeture
 - [ ] **Écran Scores** (remplacer le stub modal)
   - [ ] Définir le périmètre : stats session ? historique persisté ? classement IA ?
@@ -65,7 +67,7 @@ Fichier de **continuité** : si le projet est mis en pause, reprendre ici pour s
   - [ ] Persistance du choix via `ConfigService`
   - [ ] Panneau texte des règles (`rules_panel`)
 - [ ] Tests manuels accessibilité : navigation Tab, tooltips, contrastes
-- [ ] Nettoyer textes FR en dur → préparer clés de traduction (fichiers `.po` ou équivalent)
+- [x] Internationalisation : clés `scripts/core/i18n/`, CSV `translations/`, 6 langues
 
 ### B.4 Hors scope étape 7 (reporté)
 
