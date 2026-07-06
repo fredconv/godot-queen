@@ -49,6 +49,9 @@ const BOTTOM_INFO_BOX_WIDTH: float = 124.0
 const BOTTOM_INFO_BOX_HEIGHT: float = 98.0
 ## Marge sous le bloc avatar/nom/score pour éviter le rognage en bas d'écran.
 const BOTTOM_INFO_BOX_BOTTOM_OFFSET: float = 14.0
+## Largeur du bloc avatar pour les sièges latéraux (évite le chevauchement avec la pile).
+const SIDE_INFO_BOX_WIDTH: float = 112.0
+const SIDE_HAND_INFO_GAP: float = 14.0
 ## Rotation (degrés) des dos de carte des piles latérales : les cartes sont
 ## couchées (bord long horizontal) plutôt que debout, avec leur ancien bord
 ## "haut" tourné vers le centre de la table (symétrie gauche/droite).
@@ -206,6 +209,9 @@ func set_player_info(new_name: String, new_score: int, new_heart_penalty: int) -
 func _refresh_labels() -> void:
 	if not _name_label:
 		return
+	_name_label.add_theme_font_size_override("font_size", LocaleFonts.SEAT_FONT_SIZE)
+	_score_label.add_theme_font_size_override("font_size", LocaleFonts.SEAT_FONT_SIZE)
+	_heart_label.add_theme_font_size_override("font_size", LocaleFonts.SEAT_FONT_SIZE)
 	_name_label.text = player_name
 	_score_label.text = GameCopy.seat_score_parens(score)
 	_heart_label.text = GameCopy.seat_hearts_count(heart_penalty)
@@ -270,13 +276,23 @@ func _layout_seat() -> void:
 		SeatOrientation.LEFT:
 			_hand_back_column.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
 			_hand_back_column.offset_right = thickness
-			_info_box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			_info_box.offset_left = thickness + HAND_INFO_GAP
+			_info_box.anchor_left = 1.0
+			_info_box.anchor_top = 0.0
+			_info_box.anchor_right = 1.0
+			_info_box.anchor_bottom = 1.0
+			_info_box.offset_left = -(SIDE_INFO_BOX_WIDTH + SIDE_HAND_INFO_GAP + thickness)
+			_info_box.offset_right = -(thickness + SIDE_HAND_INFO_GAP)
+			_info_box.alignment = BoxContainer.ALIGNMENT_CENTER
 		SeatOrientation.RIGHT:
 			_hand_back_column.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
 			_hand_back_column.offset_left = -thickness
-			_info_box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			_info_box.offset_right = -(thickness + HAND_INFO_GAP)
+			_info_box.anchor_left = 0.0
+			_info_box.anchor_top = 0.0
+			_info_box.anchor_right = 0.0
+			_info_box.anchor_bottom = 1.0
+			_info_box.offset_left = 0.0
+			_info_box.offset_right = SIDE_INFO_BOX_WIDTH
+			_info_box.alignment = BoxContainer.ALIGNMENT_CENTER
 
 func _is_horizontal_stack() -> bool:
 	return orientation == SeatOrientation.TOP or orientation == SeatOrientation.BOTTOM

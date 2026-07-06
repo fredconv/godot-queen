@@ -30,11 +30,15 @@ static func refresh_lead_suit_indicator(ctx: TableContext) -> void:
 	if ctx.lead_suit_indicator == null or ctx.match_manager == null:
 		return
 	var panel: Control = ctx.lead_suit_indicator.get_parent()
+	_sync_lead_suit_indicator_position(ctx, panel)
 	var trick_manager: TrickManager = ctx.match_manager.trick_manager
 	if trick_manager.played_count() == 0 or trick_manager.lead_suit < 0:
 		panel.visible = false
 		return
+	if trick_manager.played_count() >= 2:
+		return
 	panel.visible = true
+	panel.modulate.a = 1.0
 	ctx.lead_suit_indicator.text = Suit.to_lead_indicator_text(trick_manager.lead_suit)
 	match trick_manager.lead_suit:
 		Suit.HEARTS:
@@ -54,16 +58,51 @@ static func _setup_lead_suit_indicator(ctx: TableContext) -> void:
 	panel.name = "LeadSuitIndicator"
 	panel.visible = false
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.set_anchors_preset(Control.PRESET_CENTER)
-	panel.offset_left = -130.0
-	panel.offset_top = -18.0
-	panel.offset_right = 130.0
-	panel.offset_bottom = 18.0
+	panel.z_index = 50
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.05, 0.06, 0.08, 0.82)
+	panel_style.content_margin_left = 12.0
+	panel_style.content_margin_top = 6.0
+	panel_style.content_margin_right = 12.0
+	panel_style.content_margin_bottom = 6.0
+	panel_style.corner_radius_top_left = 4
+	panel_style.corner_radius_top_right = 4
+	panel_style.corner_radius_bottom_right = 4
+	panel_style.corner_radius_bottom_left = 4
+	panel.add_theme_stylebox_override("panel", panel_style)
 	ctx.lead_suit_indicator = Label.new()
 	ctx.lead_suit_indicator.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	ctx.lead_suit_indicator.add_theme_font_size_override("font_size", 18)
+	ctx.lead_suit_indicator.add_theme_font_size_override("font_size", LocaleFonts.LEAD_SUIT_FONT_SIZE)
 	panel.add_child(ctx.lead_suit_indicator)
-	ctx.trick_area.add_child(panel)
+	ctx.animation_layer.add_child(panel)
+	_sync_lead_suit_indicator_position(ctx, panel)
+
+
+static func fade_lead_suit_indicator(ctx: TableContext, duration_sec: float) -> void:
+	if ctx.lead_suit_indicator == null:
+		return
+	var panel: Control = ctx.lead_suit_indicator.get_parent()
+	if panel == null or not panel.visible:
+		return
+	var tween: Tween = ctx.host.create_tween()
+	tween.tween_property(panel, "modulate:a", 0.0, duration_sec).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.finished.connect(
+		func() -> void:
+			if is_instance_valid(panel):
+				panel.visible = false
+				panel.modulate.a = 1.0,
+		CONNECT_ONE_SHOT
+	)
+
+
+static func _sync_lead_suit_indicator_position(ctx: TableContext, panel: Control) -> void:
+	if ctx.trick_area == null or ctx.animation_layer == null or panel == null:
+		return
+	var trick_center_global: Vector2 = ctx.trick_area.get_global_rect().get_center()
+	var panel_size: Vector2 = panel.size
+	if panel_size == Vector2.ZERO:
+		panel_size = Vector2(260.0, 36.0)
+	panel.global_position = trick_center_global - panel_size / 2.0
 
 
 static func _setup_victory_petals(ctx: TableContext) -> void:

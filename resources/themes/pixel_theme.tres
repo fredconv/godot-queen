@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=3 format=3]
 
-[ext_resource type="FontFile" path="res://assets/fonts/PixelifySans-VariableFont_wght.ttf" id="1_font"]
+[ext_resource type="FontFile" path="res://assets/fonts/PressStart2P-Regular.ttf" id="1_font"]
 
 ; Thème pixel art (voir docs/DECISIONS.md ADR-008/ADR-009 et docs/TECHNICAL_DESIGN.md
 ; section "Direction artistique UI — pixel art").
@@ -8,7 +8,7 @@
 ; police pixel et les couleurs de la palette proposée, au fur et à mesure de
 ; l'intégration des assets pixel art réels.
 ;
-; default_font : police "Pixelify Sans" appliquée par défaut à tous les Label/
+; default_font : police « Press Start 2P » appliquée par défaut à tous les Label/
 ; Button des scènes qui héritent de ce thème (ex. Table, TopMenuBar). Taille de
 ; police non surchargée (garde la taille par défaut du moteur) pour ne pas
 ; perturber les mises en page existantes (voir ADR-009).
@@ -34,6 +34,7 @@ corner_radius_bottom_left = 4
 
 [resource]
 default_font = ExtResource("1_font")
+default_font_size = 11
 TooltipPanel/styles/panel = SubResource("StyleBoxFlat_tooltip")
 TooltipLabel/colors/font_color = Color(0.961, 0.941, 0.902, 1)
 TooltipLabel/font_sizes/font_size = 12

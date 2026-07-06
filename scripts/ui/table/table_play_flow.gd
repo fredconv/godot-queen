@@ -91,6 +91,9 @@ static func animate_card_play(
 	var traveling_card: Control = _spawn_traveling_card(ctx, card, start_center)
 	var target_slot: Control = ctx.trick_slots[player_index]
 	var target_center: Vector2 = target_slot.get_global_transform_with_canvas() * (target_slot.size / 2.0)
+	var cards_in_trick: int = ctx.match_manager.trick_manager.played_count()
+	if cards_in_trick >= 2:
+		TableFx.fade_lead_suit_indicator(ctx, TableAnimations.CARD_PLAY_DURATION_SEC)
 	if card.is_queen_of_spades():
 		TableServiceAccess.audio(ctx.host).play_queen_of_spades()
 		ctx.queen_avatar_burst.play(ctx.seats[player_index].character_id)

@@ -2,24 +2,27 @@ extends Control
 ## MainMenu
 ## Écran de menu principal (étape 7 de docs/ROADMAP.md). Contrôleur minimal :
 ## lance une partie de démonstration sur `table.tscn`, quitte le jeu, ou
-## affiche les écrans Scores / Configuration.
+## affiche les écrans Scores / Configuration / Crédits.
 
 @onready var _title_label: Label = $CenterContainer/Menu/TitleLabel
 @onready var _btn_new_game: Button = $CenterContainer/Menu/BtnNewGame
 @onready var _btn_scores: Button = $CenterContainer/Menu/BtnScores
 @onready var _btn_settings: Button = $CenterContainer/Menu/BtnSettings
+@onready var _btn_credits: Button = $CenterContainer/Menu/BtnCredits
 @onready var _btn_quit: Button = $CenterContainer/Menu/BtnQuit
 @onready var _menu_root: Control = $CenterContainer/Menu
 @onready var _settings_screen: Control = $SettingsScreen
 @onready var _scores_screen: Control = $ScoresScreen
+@onready var _credits_screen: Control = $CreditsScreen
 
 var _menu_buttons: Array[Button] = []
 
 
 func _ready() -> void:
-	_menu_buttons = [_btn_new_game, _btn_scores, _btn_settings, _btn_quit]
+	_menu_buttons = [_btn_new_game, _btn_scores, _btn_settings, _btn_credits, _btn_quit]
 	_settings_screen.closed.connect(_on_overlay_closed)
 	_scores_screen.closed.connect(_on_overlay_closed)
+	_credits_screen.closed.connect(_on_overlay_closed)
 	LocaleAware.bind(self, _refresh_locale)
 	_refresh_locale()
 	AudioService.ensure_music_playing()
@@ -31,6 +34,7 @@ func _refresh_locale() -> void:
 	_btn_new_game.text = tr(MenuKeys.NEW_GAME)
 	_btn_scores.text = tr(MenuKeys.SCORES)
 	_btn_settings.text = tr(MenuKeys.SETTINGS)
+	_btn_credits.text = tr(MenuKeys.CREDITS)
 	_btn_quit.text = tr(MenuKeys.QUIT)
 
 
@@ -47,7 +51,7 @@ func _set_menu_interactive(enabled: bool) -> void:
 
 
 func _is_overlay_open() -> bool:
-	return _settings_screen.visible or _scores_screen.visible
+	return _settings_screen.visible or _scores_screen.visible or _credits_screen.visible
 
 
 func _on_btn_new_game_pressed() -> void:
@@ -62,6 +66,10 @@ func _on_btn_scores_pressed() -> void:
 
 func _on_btn_settings_pressed() -> void:
 	_open_overlay(_settings_screen)
+
+
+func _on_btn_credits_pressed() -> void:
+	_open_overlay(_credits_screen)
 
 
 func _open_overlay(overlay: Control) -> void:

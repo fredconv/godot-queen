@@ -110,9 +110,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -165.0
-offset_top = -230.0
+offset_top = -150.0
 offset_right = 165.0
-offset_bottom = 70.0
+offset_bottom = 150.0
 mouse_filter = 2
 
 [node name="TrickCardTop" type="Panel" parent="TrickArea"]

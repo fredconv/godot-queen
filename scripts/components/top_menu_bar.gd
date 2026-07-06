@@ -25,10 +25,13 @@ signal music_next_pressed
 @onready var _btn_menu: Button = $Margin/Bar/RightButtons/BtnMenu
 @onready var _btn_settings: Button = $Margin/Bar/RightButtons/BtnSettings
 
+const PIXEL_THEME: Theme = preload("res://resources/themes/pixel_theme.tres")
+
 var _music_enabled: bool = true
 
 
 func _ready() -> void:
+	theme = PIXEL_THEME
 	LocaleAware.bind(self, refresh_locale)
 	refresh_locale()
 
@@ -56,6 +59,17 @@ func refresh_locale() -> void:
 	_btn_toggle_music.tooltip_text = tr(TableKeys.TOP_TOOLTIP_MUSIC)
 	_btn_next_music.tooltip_text = tr(TableKeys.TOP_TOOLTIP_MUSIC_NEXT)
 	_btn_settings.tooltip_text = tr(TableKeys.TOP_TOOLTIP_SETTINGS)
+	_turn_label.add_theme_font_size_override("font_size", LocaleFonts.MENU_TURN_FONT_SIZE)
+	_score_label.add_theme_font_size_override("font_size", LocaleFonts.MENU_SCORE_FONT_SIZE)
+	for btn: Button in [
+		_btn_help,
+		_btn_scores,
+		_btn_new,
+		_btn_toggle_music,
+		_btn_next_music,
+		_btn_menu,
+	]:
+		btn.add_theme_font_size_override("font_size", LocaleFonts.MENU_BUTTON_FONT_SIZE)
 	set_music_enabled_display(_music_enabled)
 
 

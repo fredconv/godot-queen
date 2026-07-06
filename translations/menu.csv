@@ -3,6 +3,7 @@ MN_TITLE,Dame de pique,Hearts,Herz Dame,Corazones,Copas,红心大战
 MN_NEW_GAME,NOUVELLE PARTIE,NEW GAME,NEUES SPIEL,NUEVA PARTIDA,NOVA PARTIDA,新游戏
 MN_SCORES,SCORES,SCORES,PUNKTE,PUNTUACIÓN,PONTUAÇÃO,统计
 MN_SETTINGS,CONFIGURATION,SETTINGS,EINSTELLUNGEN,CONFIGURACIÓN,CONFIGURAÇÃO,设置
+MN_CREDITS,CRÉDITS,CREDITS,DANKSAGUNG,CRÉDITOS,CRÉDITOS,致谢
 MN_QUIT,QUITTER,QUIT,BEENDEN,SALIR,SAIR,退出
 MN_SETTINGS_TITLE,Configuration,Settings,Einstellungen,Configuración,Configuração,设置
 MN_SETTINGS_SFX_VOLUME,Volume SFX,SFX volume,SFX-Lautstärke,Volumen SFX,Volume SFX,音效音量
@@ -22,3 +23,5 @@ MN_SCORES_MATCHES,Parties terminées : %d,Games completed: %d,Abgeschlossene Par
 MN_SCORES_WINS,Victoires : %d,Wins: %d,Siege: %d,Victorias: %d,Vitórias: %d,胜利：%d
 MN_SCORES_LOSSES,Défaites : %d,Losses: %d,Niederlagen: %d,Derrotas: %d,Derrotas: %d,失败：%d
 MN_SCORES_WIN_RATE,Taux de victoire : %d %%,Win rate: %d %%,Siegquote: %d %%,Tasa de victoria: %d %%,Taxa de vitória: %d %%,胜率：%d %%
+MN_CREDITS_TITLE,Crédits,Credits,Danksagung,Créditos,Créditos,致谢
+MN_CREDITS_SFX_ATTRIBUTION,Effet sonore par %s sur %s,Sound Effect by %s from %s,Soundeffekt von %s auf %s,Efecto de sonido por %s en %s,Efeito sonoro por %s em %s,音效来源：%s（%s）
