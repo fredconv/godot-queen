@@ -21,7 +21,7 @@ func open() -> void:
 	_error_label.visible = false
 	_refresh_locale()
 	show()
-	call_deferred("_name_edit.grab_focus")
+	_name_edit.call_deferred("grab_focus")
 
 
 func _refresh_locale() -> void:

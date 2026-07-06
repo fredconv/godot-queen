@@ -5,10 +5,7 @@ extends RefCounted
 const MIN_LENGTH: int = 2
 const MAX_LENGTH: int = 16
 const FALLBACK_NAME: String = "Joueur"
-
-const _FORBIDDEN_CHARS: Array[String] = [
-	"<", ">", "&", "\"", "'", "\\", "/", "{", "}", "[", "]", "|", "`", "\n", "\r", "\t",
-]
+const FORBIDDEN_CHARS: String = "<>&\"'\\/{[]}|`"
 
 
 static func sanitize(raw: String) -> String:
@@ -19,9 +16,11 @@ static func is_valid(raw: String) -> bool:
 	var name := sanitize(raw)
 	if name.length() < MIN_LENGTH or name.length() > MAX_LENGTH:
 		return false
-	for forbidden in _FORBIDDEN_CHARS:
-		if name.contains(forbidden):
+	for index in FORBIDDEN_CHARS.length():
+		if name.contains(FORBIDDEN_CHARS.substr(index, 1)):
 			return false
+	if name.contains("\n") or name.contains("\r") or name.contains("\t"):
+		return false
 	return true
 
 
