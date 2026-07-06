@@ -51,7 +51,7 @@ func _to_string() -> String:
 ## Construit une carte à partir de son identifiant unique (0-51).
 static func from_id(id: int) -> CardModel:
 	assert(id >= 0 and id < 52, "id de carte invalide : %d" % id)
-	var suit_value: int = id / CARDS_PER_SUIT
+	var suit_value: int = int(id / float(CARDS_PER_SUIT))
 	var rank_value: int = (id % CARDS_PER_SUIT) + Rank.MIN
 	return CardModel.new(suit_value, rank_value)
 

@@ -12,6 +12,12 @@ const KEY_SCORE_HISTORY: String = "score_history"
 ## Clé historique (v0) encore lue lors de la migration.
 const LEGACY_CONFIG_KEY: String = "config"
 
+const DEFAULT_SFX_VOLUME: float = 1.0
+const DEFAULT_MUSIC_VOLUME: float = 0.35
+const DEFAULT_MUSIC_ENABLED: bool = true
+const DEFAULT_LANGUAGE: String = "fr"
+const DEFAULT_TABLE_THEME: StringName = TableThemePaths.THEME_CLASSIC
+
 
 static func default_document() -> Dictionary:
 	return normalize({})
@@ -67,11 +73,11 @@ static func _normalize_settings(raw: Variant) -> Dictionary:
 	if raw is not Dictionary:
 		raw = {}
 	return {
-		"sfx_volume": clampf(float(raw.get("sfx_volume", ConfigService.DEFAULT_SFX_VOLUME)), 0.0, 1.0),
-		"music_volume": clampf(float(raw.get("music_volume", ConfigService.DEFAULT_MUSIC_VOLUME)), 0.0, 1.0),
-		"music_enabled": bool(raw.get("music_enabled", ConfigService.DEFAULT_MUSIC_ENABLED)),
-		"language": ConfigService.normalize_language(str(raw.get("language", ConfigService.DEFAULT_LANGUAGE))),
-		"table_theme": str(TableThemePaths.normalize_theme_id(raw.get("table_theme", ConfigService.DEFAULT_TABLE_THEME))),
+		"sfx_volume": clampf(float(raw.get("sfx_volume", DEFAULT_SFX_VOLUME)), 0.0, 1.0),
+		"music_volume": clampf(float(raw.get("music_volume", DEFAULT_MUSIC_VOLUME)), 0.0, 1.0),
+		"music_enabled": bool(raw.get("music_enabled", DEFAULT_MUSIC_ENABLED)),
+		"language": LocaleCatalog.normalize(str(raw.get("language", DEFAULT_LANGUAGE))),
+		"table_theme": str(TableThemePaths.normalize_theme_id(raw.get("table_theme", DEFAULT_TABLE_THEME))),
 	}
 
 
