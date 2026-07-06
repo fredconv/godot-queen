@@ -1,10 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_main_menu"]
 [ext_resource type="Theme" path="res://resources/themes/pixel_theme.tres" id="2_pixel_theme"]
 [ext_resource type="PackedScene" path="res://scenes/menus/settings_screen.tscn" id="3_settings"]
 [ext_resource type="PackedScene" path="res://scenes/menus/scores_screen.tscn" id="4_scores"]
 [ext_resource type="PackedScene" path="res://scenes/menus/credits_screen.tscn" id="5_credits"]
+[ext_resource type="PackedScene" path="res://scenes/menus/profile_setup_screen.tscn" id="6_profile_setup"]
 
 [node name="MainMenu" type="Control"]
 anchor_right = 1.0
@@ -59,6 +60,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="CreditsScreen" parent="." instance=ExtResource("5_credits")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ProfileSetupScreen" parent="." instance=ExtResource("6_profile_setup")]
 anchor_right = 1.0
 anchor_bottom = 1.0
 

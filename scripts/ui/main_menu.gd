@@ -14,6 +14,7 @@ extends Control
 @onready var _settings_screen: Control = $SettingsScreen
 @onready var _scores_screen: Control = $ScoresScreen
 @onready var _credits_screen: Control = $CreditsScreen
+@onready var _profile_setup_screen: Control = $ProfileSetupScreen
 
 var _menu_buttons: Array[Button] = []
 
@@ -23,10 +24,11 @@ func _ready() -> void:
 	_settings_screen.closed.connect(_on_overlay_closed)
 	_scores_screen.closed.connect(_on_overlay_closed)
 	_credits_screen.closed.connect(_on_overlay_closed)
+	_profile_setup_screen.completed.connect(_on_profile_setup_completed)
 	LocaleAware.bind(self, _refresh_locale)
 	_refresh_locale()
 	AudioService.ensure_music_playing()
-	call_deferred("_focus_default_button")
+	call_deferred("_after_ready")
 
 
 func _refresh_locale() -> void:
@@ -38,7 +40,23 @@ func _refresh_locale() -> void:
 	_btn_quit.text = tr(MenuKeys.QUIT)
 
 
+func _after_ready() -> void:
+	if PlayerProfileService.needs_setup():
+		_set_menu_interactive(false)
+		_profile_setup_screen.open()
+	else:
+		PlayerProfileService.touch_last_used()
+		_focus_default_button()
+
+
+func _on_profile_setup_completed() -> void:
+	_set_menu_interactive(true)
+	_focus_default_button()
+
+
 func _focus_default_button() -> void:
+	if _profile_setup_screen.visible:
+		return
 	if _is_overlay_open():
 		return
 	_btn_new_game.grab_focus()
@@ -51,7 +69,7 @@ func _set_menu_interactive(enabled: bool) -> void:
 
 
 func _is_overlay_open() -> bool:
-	return _settings_screen.visible or _scores_screen.visible or _credits_screen.visible
+	return _settings_screen.visible or _scores_screen.visible or _credits_screen.visible or _profile_setup_screen.visible
 
 
 func _on_btn_new_game_pressed() -> void:

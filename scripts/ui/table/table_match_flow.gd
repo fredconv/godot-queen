@@ -9,10 +9,11 @@ static func start_new_match(ctx: TableContext, seed_value: int = -1) -> void:
 	ctx.hand_end_dialog.close()
 	clear_trick_cards(ctx)
 
-	ctx.match_manager = MatchManager.new()
+	ctx.match_controller = LocalMatchController.new()
+	ctx.match_manager = ctx.match_controller.match_manager
 	for player_index in range(1, HeartsRules.PLAYER_COUNT):
 		ctx.match_manager.set_ai_player(player_index, AiPlayer.new())
-	ctx.match_manager.start_new_match(seed_value)
+	ctx.match_controller.start_new_match(seed_value)
 
 	await TableDealing.play_sequence(ctx)
 	if not ctx.is_active():

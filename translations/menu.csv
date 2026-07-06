@@ -25,3 +25,9 @@ MN_SCORES_LOSSES,Défaites : %d,Losses: %d,Niederlagen: %d,Derrotas: %d,Derrotas
 MN_SCORES_WIN_RATE,Taux de victoire : %d %%,Win rate: %d %%,Siegquote: %d %%,Tasa de victoria: %d %%,Taxa de vitória: %d %%,胜率：%d %%
 MN_CREDITS_TITLE,Crédits,Credits,Danksagung,Créditos,Créditos,致谢
 MN_CREDITS_SFX_ATTRIBUTION,Effet sonore par %s sur %s,Sound Effect by %s from %s,Soundeffekt von %s auf %s,Efecto de sonido por %s en %s,Efeito sonoro por %s em %s,音效来源：%s（%s）
+MN_PROFILE_SETUP_TITLE,Choisissez un pseudo,Choose a display name,Wählen Sie einen Namen,Elige un nombre de usuario,Escolha um nome de usuário,选择昵称
+MN_PROFILE_SETUP_HINT,Ce nom sera affiché en solo et proposé en multijoueur.,Shown in solo and suggested for multiplayer.,Wird im Solo- und Mehrspielermodus angezeigt.,Se muestra en solitario y se propone en multijugador.,Exibido no solo e sugerido no multijogador.,在单人游戏中显示，多人游戏中建议使用。
+MN_PROFILE_SETUP_PLACEHOLDER,Pseudo,Display name,Spielername,Nombre de usuario,Nome de usuário,昵称
+MN_PROFILE_SETUP_CONFIRM,CONFIRMER,CONFIRM,BESTÄTIGEN,CONFIRMAR,CONFIRMAR,确认
+MN_PROFILE_SETUP_INVALID,"Pseudo invalide (2-16 caractères, caractères interdits filtrés).","Invalid name (2-16 characters, forbidden characters filtered).","Ungültiger Name (2-16 Zeichen, verbotene Zeichen gefiltert).","Nombre inválido (2-16 caracteres, caracteres prohibidos filtrados).","Nome inválido (2-16 caracteres, caracteres proibidos filtrados).",无效昵称（2-16 个字符，禁止特殊字符）。
+MN_SETTINGS_DISPLAY_NAME,Pseudo,Display name,Spielername,Nombre de usuario,Nome de usuário,昵称

@@ -296,3 +296,20 @@ Registre des décisions d'architecture importantes, au format court : contexte, 
 - `TableAnimations` (`scripts/ui/table_animations.gd`) regroupe les trois animations (pose, surbrillance, collecte) en fonctions statiques sans état, appelées depuis `table.gd`.
 - Les 86 tests GdUnit4 existants restent inchangés et verts : aucune modification dans `scripts/rules/`, `scripts/match/` ou `scripts/ai/`.
 - Limite connue : comme en ADR-020, aucun test automatisé dédié à `table.gd`/`TableAnimations` (logique couplée à l'arbre de scène et à des `Tween`/minuteurs asynchrones, priorité UI/e2e la plus basse selon `docs/TEST_PLAN.md`).
+
+---
+
+## ADR-022 — Préparation multijoueur : actions, snapshots et sauvegarde profil v1
+
+**Contexte** : objectif long terme = 4 joueurs humains en ligne/LAN avec serveur autoritaire. Le gameplay solo ne doit pas être cassé ; le réseau ne doit pas être intégré prématurément dans `table.gd`.
+
+**Décision** :
+- Introduire `PlayCardAction` / `ActionResult` et `LocalMatchController` comme couche entre UI et `MatchManager` (phases 1 et 4).
+- Événements et snapshots sérialisables (`scripts/game_events/`, `GameSnapshotBuilder`) pour la synchro future (phases 2-3).
+- Identités siège (`PlayerProfile`, `LobbyService`) distinctes du profil local persisté (`LocalPlayerProfile` + `PlayerProfileService` autoload).
+- Sauvegarde `user://savegame.json` versionnée (`GameSaveStore` v1) : `player_profile`, `settings`, `stats`, `score_history` ; migration depuis l'ancienne clé `config`.
+- `player_id` local stable ≠ `display_name` ; stats locales solo ≠ stats serveur futures.
+- Champs auth/newsletter réservés dans le profil (`auth_provider = "local"`, pas d'OAuth ni d'email marketing).
+- `NetworkService` reste un stub ; ENet reporté à la phase 7.
+
+**Conséquences** : `table_play_flow.gd` passe par `match_controller.submit_action()` ; tests unitaires sur actions, snapshots, sauvegarde et lobby. Voir `docs/MULTIPLAYER_DESIGN.md` et `docs/MULTIPLAYER_AUDIT.md`.

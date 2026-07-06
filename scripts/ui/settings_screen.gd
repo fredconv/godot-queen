@@ -16,6 +16,8 @@ signal closed
 @onready var _theme_option: OptionButton = $Panel/Margin/VBox/ThemeRow/ThemeOption
 @onready var _language_label: Label = $Panel/Margin/VBox/LanguageRow/LanguageLabel
 @onready var _language_option: OptionButton = $Panel/Margin/VBox/LanguageRow/LanguageOption
+@onready var _display_name_label: Label = $Panel/Margin/VBox/DisplayNameRow/DisplayNameLabel
+@onready var _display_name_edit: LineEdit = $Panel/Margin/VBox/DisplayNameRow/DisplayNameEdit
 @onready var _btn_back: Button = $Panel/Margin/VBox/BtnBack
 
 
@@ -49,6 +51,7 @@ func _refresh_locale() -> void:
 	_music_toggle.text = tr(MenuKeys.SETTINGS_MUSIC_ENABLED)
 	_theme_label.text = tr(MenuKeys.SETTINGS_TABLE_THEME)
 	_language_label.text = tr(MenuKeys.SETTINGS_LANGUAGE)
+	_display_name_label.text = tr(MenuKeys.SETTINGS_DISPLAY_NAME)
 	_btn_back.text = tr(CommonKeys.BACK)
 	_build_theme_options()
 	_build_language_options()
@@ -88,6 +91,7 @@ func _load_from_config() -> void:
 	_music_toggle.set_pressed_no_signal(ConfigService.get_music_enabled())
 	_select_theme_option(ConfigService.get_table_theme())
 	_select_language_option(ConfigService.get_language())
+	_display_name_edit.text = PlayerProfileService.get_display_name()
 
 
 func _select_theme_option(theme_id: StringName) -> void:
@@ -143,7 +147,12 @@ func _on_language_option_selected(index: int) -> void:
 
 
 func _on_btn_back_pressed() -> void:
+	_save_display_name()
 	close()
+
+
+func _save_display_name() -> void:
+	PlayerProfileService.set_display_name(_display_name_edit.text)
 
 
 func _unhandled_input(event: InputEvent) -> void:

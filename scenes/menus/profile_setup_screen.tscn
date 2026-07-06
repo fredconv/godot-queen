@@ -1,0 +1,77 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/profile_setup_screen.gd" id="1_profile_setup"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backdrop"]
+bg_color = Color(0, 0, 0, 0.75)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.129, 0.129, 0.157, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.831, 0.686, 0.216, 1)
+content_margin_left = 24.0
+content_margin_top = 20.0
+content_margin_right = 24.0
+content_margin_bottom = 20.0
+
+[node name="ProfileSetupScreen" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+visible = false
+script = ExtResource("1_profile_setup")
+
+[node name="Backdrop" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_backdrop")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -120.0
+offset_right = 240.0
+offset_bottom = 120.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/VBox"]
+theme_override_colors/font_color = Color(0.831, 0.686, 0.216, 1)
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+text = "Choisissez un pseudo"
+
+[node name="HintLabel" type="Label" parent="Panel/Margin/VBox"]
+autowrap_mode = 2
+horizontal_alignment = 1
+text = "Ce nom sera affiché en solo et proposé en multijoueur."
+
+[node name="NameEdit" type="LineEdit" parent="Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 36)
+max_length = 16
+placeholder_text = "Pseudo"
+
+[node name="ErrorLabel" type="Label" parent="Panel/Margin/VBox"]
+theme_override_colors/font_color = Color(0.95, 0.35, 0.4, 1)
+horizontal_alignment = 1
+text = "Pseudo invalide"
+
+[node name="BtnConfirm" type="Button" parent="Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 40)
+text = "CONFIRMER"
+
+[connection signal="pressed" from="Panel/Margin/VBox/BtnConfirm" to="." method="_on_btn_confirm_pressed"]

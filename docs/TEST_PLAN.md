@@ -50,6 +50,8 @@ Cible en priorité les fonctions **pures**, sans dépendance à une scène insta
   - calcul du score d'une manche (Cœurs = 1 pt, Dame de Pique = 13 pts).
   - détection du « shooting the moon » (0 pt pour le joueur, 26 pts pour les autres).
 - **IA** (`scripts/ai/`, `tests/unit/test_ai_player.gd`) : l'IA ne propose jamais un coup invalide (test croisé avec `RuleEngine`/`MatchManager` sur des manches complètes simulées), déterminisme par seed (même seed → même choix à état identique), comportements ciblés de `HeuristicStrategy` (évite d'entamer avec une carte à points quand une alternative existe, défausse en priorité la Dame de Pique puis les Cœurs hauts quand elle ne peut pas suivre la couleur, "ducke" ou minimise la carte gagnante quand elle le peut).
+- **Profil & sauvegarde** (`scripts/core/player/`, `scripts/core/save/`, `tests/unit/test_*_profile*.gd`, `test_game_save_store.gd`) : pseudo validé, migration sauvegarde v1, JSON corrompu → backup + défauts.
+- **Préparation multijoueur** (`scripts/game_actions/`, `scripts/game_events/`, `scripts/match/snapshots/`, `scripts/network/`) : `PlayCardAction`, événements sérialisables, snapshots public/privé, lobby local simulé — voir `docs/MULTIPLAYER_DESIGN.md`.
 
 ## Tests d'intégration (GdUnit4) — `tests/integration/`
 

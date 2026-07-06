@@ -39,6 +39,7 @@ class PlayResult:
 	var rule_violation: int = RuleEngine.ValidationResult.VALID
 	var trick_completed: bool = false
 	var trick_winner: int = -1
+	var trick_points: int = 0
 	var hand_completed: bool = false
 	var match_completed: bool = false
 
@@ -276,6 +277,7 @@ func _resolve_trick(result: PlayResult) -> void:
 
 	result.trick_completed = true
 	result.trick_winner = winner
+	result.trick_points = points
 	GameEvents.trick_resolved.emit(winner, points)
 
 	trick_manager.reset()

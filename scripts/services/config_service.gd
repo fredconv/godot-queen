@@ -104,13 +104,13 @@ func _ensure_loaded() -> void:
 	if _loaded:
 		return
 	_loaded = true
-	var data: Dictionary = SaveService.load_data()
-	var config: Dictionary = data.get("config", {})
-	_sfx_volume = config.get("sfx_volume", DEFAULT_SFX_VOLUME)
-	_music_volume = config.get("music_volume", DEFAULT_MUSIC_VOLUME)
-	_music_enabled = config.get("music_enabled", DEFAULT_MUSIC_ENABLED)
-	_language = normalize_language(config.get("language", DEFAULT_LANGUAGE))
-	_table_theme = TableThemePaths.normalize_theme_id(config.get("table_theme", DEFAULT_TABLE_THEME))
+	var data: Dictionary = SaveService.load_document()
+	var settings: Dictionary = data.get(GameSaveStore.KEY_SETTINGS, {})
+	_sfx_volume = settings.get("sfx_volume", DEFAULT_SFX_VOLUME)
+	_music_volume = settings.get("music_volume", DEFAULT_MUSIC_VOLUME)
+	_music_enabled = settings.get("music_enabled", DEFAULT_MUSIC_ENABLED)
+	_language = normalize_language(settings.get("language", DEFAULT_LANGUAGE))
+	_table_theme = TableThemePaths.normalize_theme_id(settings.get("table_theme", DEFAULT_TABLE_THEME))
 	_apply_locale()
 
 
@@ -120,12 +120,12 @@ func _apply_locale() -> void:
 	locale_changed.emit(_language)
 
 func _save_config() -> void:
-	var data: Dictionary = SaveService.load_data()
-	data["config"] = {
+	var data: Dictionary = SaveService.load_document()
+	data[GameSaveStore.KEY_SETTINGS] = {
 		"sfx_volume": _sfx_volume,
 		"music_volume": _music_volume,
 		"music_enabled": _music_enabled,
 		"language": _language,
 		"table_theme": _table_theme,
 	}
-	SaveService.save_data(data)
+	SaveService.save_document(data)

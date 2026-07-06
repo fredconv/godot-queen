@@ -28,14 +28,14 @@ func _ensure_loaded() -> void:
 	if _loaded:
 		return
 	_loaded = true
-	var data: Dictionary = SaveService.load_data()
-	_stats = StatsStoreClass.normalize(data.get("stats", {}))
+	var data: Dictionary = SaveService.load_document()
+	_stats = StatsStoreClass.normalize(data.get(GameSaveStore.KEY_STATS, {}))
 
 
 func _save_stats() -> void:
-	var data: Dictionary = SaveService.load_data()
-	data["stats"] = _stats.duplicate()
-	SaveService.save_data(data)
+	var data: Dictionary = SaveService.load_document()
+	data[GameSaveStore.KEY_STATS] = _stats.duplicate()
+	SaveService.save_document(data)
 
 
 func _on_match_ended(winner_id: int) -> void:

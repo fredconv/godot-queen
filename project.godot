@@ -24,6 +24,7 @@ locale/fallback="fr"
 
 GameEvents="*res://scripts/services/game_events.gd"
 SaveService="*res://scripts/services/save_service.gd"
+PlayerProfileService="*res://scripts/services/player_profile_service.gd"
 ConfigService="*res://scripts/services/config_service.gd"
 StatsService="*res://scripts/services/stats_service.gd"
 AudioService="*res://scripts/services/audio_service.gd"

@@ -56,13 +56,19 @@ Suivi des étapes de développement. Chaque étape doit être validée avant de 
 - Composants réutilisés tels quels (`card_view`, `player_seat`, `top_menu_bar`), aucune modification de la maquette visuelle statique de `table.tscn` (ajout uniquement de `AnimationLayer` et `MatchEndDialog`, voir ADR-021).
 - Pas de nouveau test automatisé GdUnit4 pour cette étape (logique UI couplée à l'arbre de scène/minuteurs asynchrones, priorité plus basse — voir docs/TEST_PLAN.md) : validation par relecture du câblage et exécution headless (compilation des scripts). Les 86 tests GdUnit4 des étapes 2-5 restent inchangés et verts.
 
-## Étape 7 — Menus & UX
+## Étape 7 — Menus & UX ✅
 
-- Menu principal, écran de fin de manche, écran de fin de partie.
-- Options (volume, langue) branchées sur `ConfigService`.
-- Sauvegarde de la progression via `SaveService`.
+- Menu principal, écrans Scores / Configuration / Crédits, popup fin de manche/partie.
+- Options (volume, langue, thème table) branchées sur `ConfigService` (clé `settings` dans sauvegarde v1).
+- Statistiques locales via `StatsService` ; profil joueur via `PlayerProfileService` (pseudo, `player_id` stable).
+- Sauvegarde versionnée `GameSaveStore` v1 (`user://savegame.json`), migration depuis l'ancien format `config`.
 
-> Note : un premier **menu principal** (`scenes/menus/main_menu.tscn`) a été mis en place en avance de phase : fond tapis vert identique à `table.tscn`, boutons « NOUVELLE PARTIE » (charge `table.tscn` via `GameSession.start_match()`), « SCORES » et « CONFIGURATION » (recouvrement modal provisoire « à venir », écrans détaillés restant à construire) et « QUITTER ». `Bootstrap` (`run/main_scene`) enchaîne désormais sur ce menu au lieu d'afficher un écran de statut isolé, et le bouton « MENU » de la table y ramène (avec confirmation si une partie est en cours, via `GameSession`).
+## Étape 7.5 — Préparation multijoueur (phases 0-6) ✅
+
+- Actions (`PlayCardAction`), événements sérialisables, snapshots public/privé.
+- `LocalMatchController` entre UI et `MatchManager`.
+- Identités siège, lobby local simulé, audit et design : voir `docs/MULTIPLAYER_DESIGN.md`.
+- Réseau réel (ENet, phases 7+) : **non implémenté**.
 
 ## Étape 8 — Audio & polish visuel
 

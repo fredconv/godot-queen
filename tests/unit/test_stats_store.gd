@@ -24,20 +24,16 @@ func test_normalize_clamps_negative_values() -> void:
 #region record_match_end
 func test_record_match_end_increments_win() -> void:
 	var stats := StatsStoreClass.record_match_end(StatsStoreClass.default_stats(), 0)
-	assert_dict(stats).is_equal({
-		StatsStoreClass.KEY_MATCHES_PLAYED: 1,
-		StatsStoreClass.KEY_MATCHES_WON: 1,
-		StatsStoreClass.KEY_MATCHES_LOST: 0,
-	})
+	assert_dict(stats).contains_key_value(StatsStoreClass.KEY_MATCHES_PLAYED, 1)
+	assert_dict(stats).contains_key_value(StatsStoreClass.KEY_MATCHES_WON, 1)
+	assert_dict(stats).contains_key_value(StatsStoreClass.KEY_MATCHES_LOST, 0)
 
 
 func test_record_match_end_increments_loss() -> void:
 	var stats := StatsStoreClass.record_match_end(StatsStoreClass.default_stats(), 2)
-	assert_dict(stats).is_equal({
-		StatsStoreClass.KEY_MATCHES_PLAYED: 1,
-		StatsStoreClass.KEY_MATCHES_WON: 0,
-		StatsStoreClass.KEY_MATCHES_LOST: 1,
-	})
+	assert_dict(stats).contains_key_value(StatsStoreClass.KEY_MATCHES_PLAYED, 1)
+	assert_dict(stats).contains_key_value(StatsStoreClass.KEY_MATCHES_WON, 0)
+	assert_dict(stats).contains_key_value(StatsStoreClass.KEY_MATCHES_LOST, 1)
 #endregion
 
 

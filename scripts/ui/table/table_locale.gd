@@ -15,4 +15,7 @@ static func apply(ctx: TableContext) -> void:
 
 static func refresh_seat_names(ctx: TableContext) -> void:
 	for player_index in range(ctx.seats.size()):
-		ctx.seats[player_index].player_name = TableCopy.default_player_name(player_index)
+		if player_index == 0:
+			ctx.seats[player_index].player_name = PlayerProfileService.get_display_name()
+		else:
+			ctx.seats[player_index].player_name = TableCopy.default_player_name(player_index)

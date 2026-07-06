@@ -13,8 +13,11 @@ static func on_human_card_selected(ctx: TableContext, card_view: Control, card: 
 	if not TableDisplay.card_in_list(card, TableDisplay.current_human_legal_plays(ctx)):
 		return
 
-	var result: MatchManager.PlayResult = ctx.match_manager.play_card(TableConstants.HUMAN_INDEX, card)
-	if not result.success:
+	var action_result: ActionResult = ctx.match_controller.submit_action(
+		PlayCardAction.new(TableConstants.HUMAN_INDEX, card)
+	)
+	var result: MatchManager.PlayResult = action_result.play_result
+	if result == null or not result.success:
 		return
 
 	ctx.turn_locked = true
@@ -54,8 +57,11 @@ static func run_ai_turns(ctx: TableContext) -> void:
 		var context: Dictionary = ctx.match_manager.build_ai_context(player_index)
 		var card: CardModel = ai_player.choose_card(legal, context)
 
-		var result: MatchManager.PlayResult = ctx.match_manager.play_card(player_index, card)
-		if not result.success:
+		var action_result: ActionResult = ctx.match_controller.submit_action(
+			PlayCardAction.new(player_index, card)
+		)
+		var result: MatchManager.PlayResult = action_result.play_result
+		if result == null or not result.success:
 			TableServiceAccess.debug(ctx.host).log_error(
 				"Table: l'IA du siège %d a proposé un coup invalide" % player_index
 			)

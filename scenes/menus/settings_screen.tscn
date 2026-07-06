@@ -35,9 +35,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -260.0
-offset_top = -220.0
+offset_top = -240.0
 offset_right = 260.0
-offset_bottom = 220.0
+offset_bottom = 240.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
@@ -115,6 +115,17 @@ text = "Langue"
 
 [node name="LanguageOption" type="OptionButton" parent="Panel/Margin/VBox/LanguageRow"]
 size_flags_horizontal = 3
+
+[node name="DisplayNameRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+theme_override_constants/separation = 10
+
+[node name="DisplayNameLabel" type="Label" parent="Panel/Margin/VBox/DisplayNameRow"]
+custom_minimum_size = Vector2(120, 0)
+text = "Pseudo"
+
+[node name="DisplayNameEdit" type="LineEdit" parent="Panel/Margin/VBox/DisplayNameRow"]
+size_flags_horizontal = 3
+max_length = 16
 
 [node name="BtnBack" type="Button" parent="Panel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 44)
