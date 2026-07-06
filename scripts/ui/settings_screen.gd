@@ -21,6 +21,7 @@ signal closed
 
 func _ready() -> void:
 	visible = false
+	_language_option.add_theme_constant_override("icon_max_width", 24)
 	_sfx_slider.value_changed.connect(_on_sfx_slider_changed)
 	_music_slider.value_changed.connect(_on_music_slider_changed)
 	_music_toggle.toggled.connect(_on_music_toggle_changed)
@@ -72,7 +73,11 @@ func _build_language_options() -> void:
 	_language_option.clear()
 	for index in LocaleCatalog.LOCALES.size():
 		var locale: String = LocaleCatalog.LOCALES[index]
-		_language_option.add_item(tr(LocaleCatalog.label_key_for(locale)), index)
+		_language_option.add_icon_item(
+			LocaleFlagIcons.get_icon(locale),
+			tr(LocaleCatalog.label_key_for(locale)),
+			index
+		)
 		_language_option.set_item_metadata(index, locale)
 	_select_language_option(selected_language)
 

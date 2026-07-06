@@ -133,6 +133,9 @@ static func handle_post_play(ctx: TableContext, result: MatchManager.PlayResult)
 		if not ctx.is_active():
 			return
 		TableDisplay.refresh_scores(ctx)
+		await TablePlayFlow.run_ai_turns(ctx)
+		if not ctx.is_active():
+			return
 
 	TableDisplay.refresh_turn_ui(ctx)
 

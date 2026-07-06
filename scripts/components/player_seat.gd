@@ -41,19 +41,14 @@ const HAND_INFO_GAP: float = 4.0
 ## l'avatar doit lui rester entièrement visible sous cette barre. Ce décalage
 ## fixe le haut de l'avatar en dessous du haut du siège pour garantir cela.
 const TOP_INFO_BOX_OFFSET: float = 50.0
-## Décale vers la droite le bord gauche du conteneur de la pile de dos de
-## carte (TOP), rapprochant visuellement la pile du centre de la table. Le
-## bord droit du conteneur reste fixé sur la ligne médiane du siège (voir
-## `_layout_seat`) : augmenter cette constante ne peut donc jamais faire
-## chevaucher la pile avec `InfoBox`, seulement réduire la largeur du
-## conteneur (et donc l'espace vide autour de la pile centrée dedans).
-const TOP_HAND_BACK_LEFT_OFFSET: float = 240.0
-## Décale vers la gauche le bord droit du conteneur `InfoBox` (TOP),
-## rapprochant visuellement l'avatar/nom/score du centre de la table.
-## Symétrique de `TOP_HAND_BACK_LEFT_OFFSET` : le bord gauche du conteneur
-## reste fixé sur la ligne médiane, donc aucun risque de chevauchement avec
-## la pile de dos de carte.
-const TOP_INFO_BOX_RIGHT_OFFSET: float = 240.0
+## Largeur réservée à la pile de dos (jusqu'à 13 cartes empilées).
+const TOP_HAND_STACK_MAX_WIDTH: float = 320.0
+const TOP_INFO_BOX_WIDTH: float = 128.0
+## Siège humain sans pile de dos : bloc avatar ancré en bas à droite du siège.
+const BOTTOM_INFO_BOX_WIDTH: float = 124.0
+const BOTTOM_INFO_BOX_HEIGHT: float = 98.0
+## Marge sous le bloc avatar/nom/score pour éviter le rognage en bas d'écran.
+const BOTTOM_INFO_BOX_BOTTOM_OFFSET: float = 14.0
 ## Rotation (degrés) des dos de carte des piles latérales : les cartes sont
 ## couchées (bord long horizontal) plutôt que debout, avec leur ancien bord
 ## "haut" tourné vers le centre de la table (symétrie gauche/droite).
@@ -132,6 +127,12 @@ func _ready() -> void:
 	_refresh_avatar()
 	_hand_back_row.resized.connect(_on_hand_back_container_resized)
 	_hand_back_column.resized.connect(_on_hand_back_container_resized)
+	resized.connect(_on_seat_resized)
+
+
+func _on_seat_resized() -> void:
+	if orientation == SeatOrientation.TOP:
+		_layout_seat()
 
 
 func _refresh_locale() -> void:
@@ -227,38 +228,45 @@ func _layout_seat() -> void:
 
 	match orientation:
 		SeatOrientation.TOP:
-			# Disposition horizontale (et non plus pile puis info en dessous,
-			# voir docstring de classe) : pile de dos de carte à gauche,
-			# bloc avatar/nom/score à droite, pour dégager tout le centre du
-			# haut de table (zone de `TrickCardTop`, définie dans
-			# `table.tscn`). Chaque bloc est ancré indépendamment depuis le
-			# haut du siège (pas de `PRESET_FULL_RECT`) : le siège est
-			# volontairement positionné haut dans `table.tscn`, assez pour
-			# que la pile déborde légèrement sous la barre de menu (rognage
-			# volontaire, voir ADR de mise en page), tandis que l'avatar
-			# démarre plus bas (`TOP_INFO_BOX_OFFSET`) pour rester visible.
+			# Pile + avatar centrés horizontalement dans le siège (espacement fixe
+			# entre les deux) pour éviter le déséquilibre vers la gauche.
+			var block_width: float = _top_block_width()
+			var hand_left: float = maxf(0.0, (size.x - block_width) / 2.0)
+			var hand_right: float = hand_left + TOP_HAND_STACK_MAX_WIDTH
+			var info_left: float = hand_right + HAND_INFO_GAP
+			var info_right: float = info_left + TOP_INFO_BOX_WIDTH
 			_hand_back_row.anchor_left = 0.0
 			_hand_back_row.anchor_top = 0.0
-			_hand_back_row.anchor_right = 0.5
+			_hand_back_row.anchor_right = 0.0
 			_hand_back_row.anchor_bottom = 0.0
-			_hand_back_row.offset_left = TOP_HAND_BACK_LEFT_OFFSET
+			_hand_back_row.offset_left = hand_left
 			_hand_back_row.offset_top = 0.0
-			_hand_back_row.offset_right = -HAND_INFO_GAP / 2.0
+			_hand_back_row.offset_right = hand_right
 			_hand_back_row.offset_bottom = thickness
-			_info_box.anchor_left = 0.5
+			_info_box.anchor_left = 0.0
 			_info_box.anchor_top = 0.0
-			_info_box.anchor_right = 1.0
+			_info_box.anchor_right = 0.0
 			_info_box.anchor_bottom = 0.0
-			_info_box.offset_left = HAND_INFO_GAP / 2.0
-			_info_box.offset_right = -TOP_INFO_BOX_RIGHT_OFFSET
+			_info_box.offset_left = info_left
+			_info_box.offset_right = info_right
 			_info_box.offset_top = TOP_INFO_BOX_OFFSET
 			_info_box.offset_bottom = thickness
 			_info_box.alignment = BoxContainer.ALIGNMENT_BEGIN
 		SeatOrientation.BOTTOM:
 			_hand_back_row.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 			_hand_back_row.offset_top = -thickness
-			_info_box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			_info_box.offset_bottom = -(thickness + HAND_INFO_GAP)
+			if show_hand_back:
+				_info_box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				_info_box.offset_bottom = -(thickness + HAND_INFO_GAP)
+			else:
+				_info_box.anchor_left = 1.0
+				_info_box.anchor_top = 1.0
+				_info_box.anchor_right = 1.0
+				_info_box.anchor_bottom = 1.0
+				_info_box.offset_left = -BOTTOM_INFO_BOX_WIDTH
+				_info_box.offset_top = -(BOTTOM_INFO_BOX_HEIGHT + BOTTOM_INFO_BOX_BOTTOM_OFFSET)
+				_info_box.offset_right = 0.0
+				_info_box.offset_bottom = -BOTTOM_INFO_BOX_BOTTOM_OFFSET
 		SeatOrientation.LEFT:
 			_hand_back_column.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
 			_hand_back_column.offset_right = thickness
@@ -272,6 +280,10 @@ func _layout_seat() -> void:
 
 func _is_horizontal_stack() -> bool:
 	return orientation == SeatOrientation.TOP or orientation == SeatOrientation.BOTTOM
+
+
+func _top_block_width() -> float:
+	return TOP_HAND_STACK_MAX_WIDTH + HAND_INFO_GAP + TOP_INFO_BOX_WIDTH
 
 ## Échelle des dos de carte selon l'orientation : `CARD_BACK_SCALE` pour les
 ## piles horizontales (TOP/BOTTOM), `CARD_BACK_SCALE_SIDE` pour les piles

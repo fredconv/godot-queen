@@ -6,8 +6,10 @@ extends RefCounted
 const THEME_CLASSIC: StringName = &"classic"
 const THEME_TAPIS: StringName = &"tapis"
 
-const CLASSIC_COLOR: Color = Color(0.043, 0.369, 0.173, 1.0)
+const CLASSIC_COLOR: Color = Color(0.028, 0.26, 0.12, 1.0)
 const TAPIS_TEXTURE_PATH: String = "res://assets/sprites/texture_tapis.jpg"
+## Assombrit la texture tapis pour améliorer le contraste avec les cartes.
+const TAPIS_TEXTURE_MODULATE: Color = Color(0.52, 0.56, 0.52, 1.0)
 
 const THEME_IDS: Array[StringName] = [THEME_CLASSIC, THEME_TAPIS]
 
@@ -31,6 +33,7 @@ static func apply_to_nodes(color_rect: ColorRect, texture_rect: TextureRect, the
 			_apply_classic(color_rect, texture_rect)
 			return
 		texture_rect.texture = texture
+		texture_rect.modulate = TAPIS_TEXTURE_MODULATE
 		texture_rect.visible = true
 		color_rect.visible = false
 	else:
@@ -41,3 +44,4 @@ static func _apply_classic(color_rect: ColorRect, texture_rect: TextureRect) -> 
 	color_rect.color = CLASSIC_COLOR
 	color_rect.visible = true
 	texture_rect.visible = false
+	texture_rect.modulate = Color.WHITE

@@ -91,4 +91,10 @@ static func play_sequence(ctx: TableContext) -> void:
 
 	for card_view in ctx.hand_card_views:
 		card_view.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var is_first_hand: bool = ctx.match_manager.hand_number == 1
+	await TableHandStart.play(ctx, is_first_hand)
+	if not ctx.is_active():
+		ctx.unlock_turn()
+		return
 	ctx.unlock_turn()

@@ -29,6 +29,10 @@ const WINNER_HIGHLIGHT_DURATION_SEC: float = 0.1
 const DEAL_CARD_DURATION_SEC: float = 0.1
 ## Pause entre l'arrivée de deux cartes consécutives (même siège).
 const DEAL_CARD_STAGGER_SEC: float = 0.023
+## Pause lisible après la distribution, avant le premier coup de la manche.
+const HAND_START_BANNER_VISIBLE_SEC: float = 2.0
+const HAND_START_BANNER_EXIT_SEC: float = 0.35
+const HAND_START_BANNER_EXIT_OFFSET_Y: float = -140.0
 const CARD_LAND_BOUNCE_UP_PX: float = 6.0
 const CARD_LAND_BOUNCE_UP_SEC: float = 0.05
 const CARD_LAND_BOUNCE_DOWN_SEC: float = 0.07

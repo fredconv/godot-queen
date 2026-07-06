@@ -71,6 +71,7 @@ func _open_overlay(overlay: Control) -> void:
 
 func _on_overlay_closed() -> void:
 	_set_menu_interactive(true)
+	_refresh_locale()
 	call_deferred("_focus_default_button")
 
 

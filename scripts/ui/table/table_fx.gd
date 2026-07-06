@@ -54,11 +54,11 @@ static func _setup_lead_suit_indicator(ctx: TableContext) -> void:
 	panel.name = "LeadSuitIndicator"
 	panel.visible = false
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	panel.offset_top = 8.0
-	panel.offset_left = -120.0
-	panel.offset_right = 120.0
-	panel.offset_bottom = 40.0
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	panel.offset_left = -130.0
+	panel.offset_top = -18.0
+	panel.offset_right = 130.0
+	panel.offset_bottom = 18.0
 	ctx.lead_suit_indicator = Label.new()
 	ctx.lead_suit_indicator.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	ctx.lead_suit_indicator.add_theme_font_size_override("font_size", 18)
