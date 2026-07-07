@@ -52,9 +52,4 @@ static func music_toggle_label(enabled: bool) -> String:
 
 
 static func help_rules_body() -> String:
-	return "\n".join([
-		_t(TableKeys.HELP_RULE_1),
-		_t(TableKeys.HELP_RULE_2),
-		_t(TableKeys.HELP_RULE_3),
-		_t(TableKeys.HELP_RULE_4),
-	])
+	return _t(TableKeys.HELP_RULES_BODY)

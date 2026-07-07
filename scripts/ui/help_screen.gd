@@ -8,6 +8,7 @@ extends ModalOverlayScreen
 
 func _ready() -> void:
 	super._ready()
+	_body_label.bbcode_enabled = true
 	_body_label.add_theme_color_override("default_color", Color(0.961, 0.941, 0.902, 1.0))
 	UiFocusNav.chain_vertical([_btn_back])
 	LocaleAware.bind(self, _refresh_locale)

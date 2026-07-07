@@ -27,9 +27,10 @@ func test_human_turn_hint_two_of_clubs() -> void:
 
 
 #region help_rules_body
-func test_help_rules_body_contains_all_rule_keys() -> void:
+func test_help_rules_body_contains_key_sections() -> void:
 	TranslationServer.set_locale("fr")
 	var body: String = TableCopy.help_rules_body()
-	assert_str(body).contains(TranslationServer.translate(TableKeys.HELP_RULE_1))
-	assert_str(body).contains(TranslationServer.translate(TableKeys.HELP_RULE_4))
+	assert_str(body).contains("avoir le moins de points possible")
+	assert_str(body).contains("fait la lune")
+	assert_str(body).contains("100 points")
 #endregion

@@ -22,12 +22,9 @@ const SAMPLE_KEYS: Array[String] = [
 #region csv
 func test_each_csv_row_has_all_locale_columns() -> void:
 	for csv_path in CSV_PATHS:
-		var rows: PackedStringArray = FileAccess.get_file_as_string(csv_path).split("\n")
+		var rows: Array = _parse_csv_file(FileAccess.get_file_as_string(csv_path))
 		for row_index in range(1, rows.size()):
-			var row: String = rows[row_index].strip_edges()
-			if row.is_empty():
-				continue
-			var columns: PackedStringArray = _parse_csv_row(row)
+			var columns: PackedStringArray = rows[row_index]
 			assert_int(columns.size()).append_failure_message(csv_path).is_greater_equal(7)
 			for column_index in range(1, 7):
 				var cell: String = columns[column_index]
@@ -47,6 +44,38 @@ func test_sample_keys_translate_in_every_locale() -> void:
 			var translated: String = TranslationServer.translate(key)
 			assert_str(translated).append_failure_message("%s @ %s" % [key, locale]).is_not_equal(key)
 #endregion
+
+
+static func _parse_csv_file(content: String) -> Array:
+	var rows: Array = []
+	var buffer: String = ""
+	for raw_line in content.split("\n"):
+		if buffer.is_empty():
+			buffer = raw_line
+		else:
+			buffer += "\n" + raw_line
+		if _has_unclosed_quotes(buffer):
+			continue
+		if buffer.strip_edges().is_empty():
+			buffer = ""
+			continue
+		rows.append(_parse_csv_row(buffer))
+		buffer = ""
+	return rows
+
+
+static func _has_unclosed_quotes(line: String) -> bool:
+	var in_quotes: bool = false
+	var index: int = 0
+	while index < line.length():
+		var character: String = line[index]
+		if character == "\"":
+			if index + 1 < line.length() and line[index + 1] == "\"":
+				index += 2
+				continue
+			in_quotes = not in_quotes
+		index += 1
+	return in_quotes
 
 
 static func _parse_csv_row(row: String) -> PackedStringArray:
