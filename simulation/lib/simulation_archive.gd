@@ -12,7 +12,7 @@ const LAST_JSON_PATH: String = "simulation/results/last_summary.json"
 const LAST_REPORT_PATH: String = "simulation/results/last_report.txt"
 
 const INDEX_CSV_HEADER: String = (
-	"run_id,timestamp,count,start_seed,completed,"
+	"run_id,timestamp,personality_mode,count,start_seed,completed,"
 	+ "wins_0,wins_1,wins_2,wins_3,"
 	+ "win_rate_0,win_rate_1,win_rate_2,win_rate_3,"
 	+ "avg_hands,avg_score_0,avg_score_1,avg_score_2,avg_score_3,"
@@ -90,6 +90,7 @@ func _append_to_index(summary: Dictionary, report_path: String) -> void:
 	entries.append({
 		"run_id": summary["run_id"],
 		"timestamp": summary["timestamp"],
+		"personality_mode": summary.get("strategy", ""),
 		"count": summary["match_count"],
 		"start_seed": summary["start_seed"],
 		"strategy": summary.get("strategy", ""),
@@ -128,9 +129,10 @@ func _write_index_csv(entries: Array) -> void:
 		var avg_scores: Array = entry.get("avg_final_scores", [0.0, 0.0, 0.0, 0.0])
 		var paths: Dictionary = entry.get("paths", {})
 		lines.append(
-			"%s,%s,%d,%d,%d,%d,%d,%d,%d,%.4f,%.4f,%.4f,%.4f,%.2f,%.1f,%.1f,%.1f,%.1f,%s,%s,%s" % [
+			"%s,%s,%s,%d,%d,%d,%d,%d,%d,%d,%.4f,%.4f,%.4f,%.4f,%.2f,%.1f,%.1f,%.1f,%.1f,%s,%s,%s" % [
 				entry.get("run_id", ""),
 				entry.get("timestamp", ""),
+				entry.get("personality_mode", ""),
 				int(entry.get("count", 0)),
 				int(entry.get("start_seed", 0)),
 				int(entry.get("completed_matches", 0)),

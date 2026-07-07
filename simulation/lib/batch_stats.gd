@@ -36,16 +36,21 @@ func summarize(results: Array[Dictionary]) -> Dictionary:
 	}
 
 
-func format_report(summary: Dictionary) -> String:
+func format_report(summary: Dictionary, personality_mode: String = "") -> String:
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append("=== Simulation Dame de Pique ===")
+	if not personality_mode.is_empty():
+		lines.append("Mode IA : %s" % personality_mode)
 	lines.append("Parties : %d (%d terminées)" % [
 		summary["match_count"],
 		summary["completed_matches"],
 	])
 	lines.append("Manches moyennes / partie : %.1f" % summary["avg_hands_per_match"])
 	lines.append("")
-	lines.append("Victoires par siège (IA identique HeuristicStrategy, seeds différentes) :")
+	if personality_mode.is_empty():
+		lines.append("Victoires par siège :")
+	else:
+		lines.append("Victoires par siège (%s) :" % personality_mode)
 	var wins: Array = summary["wins_by_seat"]
 	var rates: Array = summary["win_rates"]
 	var avg_scores: Array = summary["avg_final_scores"]

@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://cfalsojoxssoq"
+
+[deps]
+
+files=["res://simulation/results/index.timestamp.translation", "res://simulation/results/index.count.translation", "res://simulation/results/index.start.translation", "res://simulation/results/index.completed.translation", "res://simulation/results/index.wins.translation", "res://simulation/results/index.wins.translation", "res://simulation/results/index.wins.translation", "res://simulation/results/index.wins.translation", "res://simulation/results/index.win.translation", "res://simulation/results/index.win.translation", "res://simulation/results/index.win.translation", "res://simulation/results/index.win.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.matches.translation", "res://simulation/results/index.summary.translation", "res://simulation/results/index.report.translation"]
+
+source_file="res://simulation/results/index.csv"
+dest_files=["res://simulation/results/index.timestamp.translation", "res://simulation/results/index.count.translation", "res://simulation/results/index.start.translation", "res://simulation/results/index.completed.translation", "res://simulation/results/index.wins.translation", "res://simulation/results/index.wins.translation", "res://simulation/results/index.wins.translation", "res://simulation/results/index.wins.translation", "res://simulation/results/index.win.translation", "res://simulation/results/index.win.translation", "res://simulation/results/index.win.translation", "res://simulation/results/index.win.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.avg.translation", "res://simulation/results/index.matches.translation", "res://simulation/results/index.summary.translation", "res://simulation/results/index.report.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

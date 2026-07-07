@@ -20,11 +20,13 @@ func _ready() -> void:
 
 	var stats := BatchStats.new()
 	var summary: Dictionary = stats.summarize(results)
-	var report_text: String = stats.format_report(summary)
+	var mode_label: String = AiPersonalityCatalog.get_mode_label()
+	var report_text: String = stats.format_report(summary, mode_label)
 	print(report_text)
+	print(AiPersonalityCatalog.format_table_line())
 
 	var archive := SimulationArchive.new()
-	var saved: Dictionary = archive.save_run(count, start_seed, results, summary, report_text)
+	var saved: Dictionary = archive.save_run(count, start_seed, results, summary, report_text, mode_label)
 
 	print("")
 	print("=== Fichiers enregistrés ===")

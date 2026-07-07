@@ -2,6 +2,24 @@
 
 Outil **hors livrable** : ce dossier n'est pas référencé par `project.godot` (pas d'autoload, pas de scène). Tu peux le supprimer ou l'exclure des presets d'export sans impacter le jeu.
 
+## Personnalités IA (adversaires)
+
+Par défaut (`scripts/ai/ai_personality_catalog.gd`) :
+
+| Siège | Personnalité |
+|-------|----------------|
+| 1 | Chasseur de lune (`MoonShooterStrategy`) |
+| 2 | Passive (`PassiveStrategy`) |
+| 3 | Équilibrée (`HeuristicStrategy`) |
+
+**Revenir aux 3 IA équilibrées** : dans `ai_personality_catalog.gd`, passer :
+
+```gdscript
+const USE_MIXED_PERSONALITIES: bool = false
+```
+
+Le mode est enregistré dans `index.csv` (colonne `personality_mode`).
+
 ## Lancer une simulation
 
 ```powershell

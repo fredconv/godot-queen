@@ -8,8 +8,8 @@ const MAX_HANDS: int = 200
 var strategy_factory: Callable = _default_strategy_factory
 
 
-func _default_strategy_factory(_player_index: int, _seed_value: int) -> AiStrategy:
-	return HeuristicStrategy.new()
+func _default_strategy_factory(player_index: int, _seed_value: int) -> AiStrategy:
+	return AiPersonalityCatalog.create_for_seat(player_index)
 
 
 func play_match(seed_value: int) -> Dictionary:
