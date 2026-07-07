@@ -1,5 +1,5 @@
 extends ModalOverlayScreen
-## Écran Crédits : attributions (sons, assets…). Overlay modal du menu principal.
+## Écran Aide : règles essentielles du jeu. Overlay modal réutilisable.
 
 @onready var _title_label: Label = $Panel/Margin/VBox/TitleLabel
 @onready var _body_label: RichTextLabel = $Panel/Margin/VBox/ScrollContainer/BodyLabel
@@ -9,8 +9,6 @@ extends ModalOverlayScreen
 func _ready() -> void:
 	super._ready()
 	_body_label.add_theme_color_override("default_color", Color(0.961, 0.941, 0.902, 1.0))
-	_body_label.add_theme_color_override("font_link_color", Color(0.55, 0.82, 1.0, 1.0))
-	_body_label.meta_clicked.connect(_on_meta_clicked)
 	UiFocusNav.chain_vertical([_btn_back])
 	LocaleAware.bind(self, _refresh_locale)
 
@@ -24,15 +22,9 @@ func _on_overlay_opened() -> void:
 
 
 func _refresh_locale() -> void:
-	_title_label.text = tr(MenuKeys.CREDITS_TITLE)
+	_title_label.text = tr(TableKeys.HELP_TITLE)
 	_btn_back.set_button_text(tr(CommonKeys.BACK))
-	_body_label.text = MenuCopy.credits_sfx_attribution_bbcode()
-
-
-func _on_meta_clicked(meta: Variant) -> void:
-	var url: String = str(meta)
-	if url.begins_with("http://") or url.begins_with("https://"):
-		OS.shell_open(url)
+	_body_label.text = TableCopy.help_rules_body()
 
 
 func _on_btn_back_pressed() -> void:

@@ -9,8 +9,8 @@ signal confirmed
 signal cancelled
 
 @onready var _message_label: Label = $Panel/Content/MessageLabel
-@onready var _btn_yes: Button = $Panel/Content/Buttons/BtnConfirmYes
-@onready var _btn_no: Button = $Panel/Content/Buttons/BtnConfirmNo
+@onready var _btn_yes: NinePatchButton = $Panel/Content/Buttons/BtnConfirmYes
+@onready var _btn_no: NinePatchButton = $Panel/Content/Buttons/BtnConfirmNo
 
 
 func _ready() -> void:
@@ -31,8 +31,8 @@ func close() -> void:
 
 
 func refresh_locale() -> void:
-	_btn_yes.text = tr(CommonKeys.YES)
-	_btn_no.text = tr(CommonKeys.NO)
+	_btn_yes.set_button_text(tr(CommonKeys.YES))
+	_btn_no.set_button_text(tr(CommonKeys.NO))
 
 
 func _on_btn_confirm_yes_pressed() -> void:

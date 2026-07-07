@@ -1,3 +1,4 @@
+class_name HandEndDialog
 extends Control
 ## HandEndDialog
 ## Popup de fin de manche : vainqueur de la manche (score le plus bas) et
@@ -6,15 +7,12 @@ extends Control
 
 signal continue_requested
 
-const WINNER_SCORE_COLOR: Color = Color(0.831, 0.686, 0.216, 1)
-const DEFAULT_SCORE_COLOR: Color = Color(0.961, 0.941, 0.902, 1)
-
 @onready var _title_label: Label = $Panel/Content/TitleLabel
 @onready var _winner_avatar: Control = $Panel/Content/WinnerRow/WinnerAvatar
 @onready var _winner_name_label: Label = $Panel/Content/WinnerRow/WinnerNameLabel
 @onready var _winner_detail_label: Label = $Panel/Content/WinnerDetailLabel
 @onready var _scores_list: VBoxContainer = $Panel/Content/ScoresList
-@onready var _btn_continue: Button = $Panel/Content/BtnContinue
+@onready var _btn_continue: NinePatchButton = $Panel/Content/BtnContinue
 
 var _last_result: Dictionary = {}
 
@@ -49,7 +47,7 @@ func close() -> void:
 
 func _refresh_locale() -> void:
 	_title_label.text = tr(DialogKeys.HAND_END_TITLE)
-	_btn_continue.text = tr(DialogKeys.HAND_CONTINUE)
+	_btn_continue.set_button_text(tr(DialogKeys.HAND_CONTINUE))
 	if not _last_result.is_empty():
 		_render_result()
 
@@ -69,33 +67,13 @@ func _render_result() -> void:
 		hand_scores[hand_winner_index],
 		cumulative_scores[hand_winner_index]
 	)
-
-	for child in _scores_list.get_children():
-		child.queue_free()
-
-	var ranked: Array = []
-	for player_index in range(player_names.size()):
-		ranked.append({
-			"index": player_index,
-			"hand": hand_scores[player_index],
-			"cumulative": cumulative_scores[player_index],
-		})
-	ranked.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-		return a["hand"] < b["hand"]
+	ScoreResultsList.populate_hand_rows(
+		_scores_list,
+		player_names,
+		hand_scores,
+		cumulative_scores,
+		hand_winner_index
 	)
-
-	for entry in ranked:
-		var player_index: int = entry["index"]
-		var is_winner: bool = player_index == hand_winner_index
-		var label := Label.new()
-		label.text = DialogCopy.hand_score_row(
-			DialogCopy.winner_prefix(is_winner),
-			player_names[player_index],
-			entry["hand"],
-			entry["cumulative"]
-		)
-		label.add_theme_color_override("font_color", WINNER_SCORE_COLOR if is_winner else DEFAULT_SCORE_COLOR)
-		_scores_list.add_child(label)
 
 
 func _on_btn_continue_pressed() -> void:

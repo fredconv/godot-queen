@@ -24,3 +24,12 @@ func test_human_turn_hint_two_of_clubs() -> void:
 	TranslationServer.set_locale("fr")
 	assert_str(TableCopy.human_turn_hint(true, true, false)).contains("2 de Trèfle")
 #endregion
+
+
+#region help_rules_body
+func test_help_rules_body_contains_all_rule_keys() -> void:
+	TranslationServer.set_locale("fr")
+	var body: String = TableCopy.help_rules_body()
+	assert_str(body).contains(TranslationServer.translate(TableKeys.HELP_RULE_1))
+	assert_str(body).contains(TranslationServer.translate(TableKeys.HELP_RULE_4))
+#endregion

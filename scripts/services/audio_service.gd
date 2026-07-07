@@ -154,7 +154,7 @@ func refresh_music_volume() -> void:
 ## Ancienne API générique : conservée pour compatibilité mais non mappée à un
 ## son. Préférer les méthodes typées ci-dessus pour tout nouvel appel.
 func play_sfx(sfx_name: StringName) -> void:
-	push_warning("AudioService.play_sfx: événement générique non mappé (%s)" % sfx_name)
+	DebugService.log_warning("AudioService.play_sfx: événement générique non mappé (%s)" % sfx_name)
 
 ## --- Détails internes ---
 
@@ -164,7 +164,7 @@ func _preload_streams() -> void:
 		if stream:
 			_sfx_streams[path] = stream
 		else:
-			push_warning("AudioService: impossible de charger le son %s" % path)
+			DebugService.log_warning("AudioService: impossible de charger le son %s" % path)
 
 func _build_player_pool() -> void:
 	for _i in SFX_PLAYER_POOL_SIZE:
@@ -175,7 +175,7 @@ func _build_player_pool() -> void:
 func _play_stream(path: String, volume_scale: float = 1.0) -> void:
 	var stream: AudioStream = _sfx_streams.get(path)
 	if not stream:
-		push_warning("AudioService: son non préchargé (%s)" % path)
+		DebugService.log_warning("AudioService: son non préchargé (%s)" % path)
 		return
 	var player: AudioStreamPlayer = _next_available_player()
 	player.stream = stream
@@ -219,7 +219,7 @@ func _preload_music() -> void:
 		if stream:
 			_music_streams[path] = stream
 		else:
-			push_warning("AudioService: impossible de charger la musique %s" % path)
+			DebugService.log_warning("AudioService: impossible de charger la musique %s" % path)
 
 func _build_music_player() -> void:
 	_music_player = AudioStreamPlayer.new()
@@ -243,7 +243,7 @@ func _play_track_at_playlist_pos() -> void:
 func _play_track(path: String) -> void:
 	var stream: AudioStream = _music_streams.get(path)
 	if not stream:
-		push_warning("AudioService: musique non préchargée (%s)" % path)
+		DebugService.log_warning("AudioService: musique non préchargée (%s)" % path)
 		return
 	_current_music_path = path
 	_music_player.stream = stream

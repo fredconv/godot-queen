@@ -1,8 +1,6 @@
-extends Control
+extends ModalOverlayScreen
 ## Écran Configuration : volumes, musique, thème de table et langue.
 ## Overlay modal du menu principal (voir `main_menu.gd`).
-
-signal closed
 
 @onready var _title_label: Label = $Panel/Margin/VBox/TitleLabel
 @onready var _sfx_label: Label = $Panel/Margin/VBox/SfxRow/SfxLabel
@@ -18,11 +16,11 @@ signal closed
 @onready var _language_option: OptionButton = $Panel/Margin/VBox/LanguageRow/LanguageOption
 @onready var _display_name_label: Label = $Panel/Margin/VBox/DisplayNameRow/DisplayNameLabel
 @onready var _display_name_edit: LineEdit = $Panel/Margin/VBox/DisplayNameRow/DisplayNameEdit
-@onready var _btn_back: Button = $Panel/Margin/VBox/BtnBack
+@onready var _btn_back: NinePatchButton = $Panel/Margin/VBox/BtnBack
 
 
 func _ready() -> void:
-	visible = false
+	super._ready()
 	_language_option.add_theme_constant_override("icon_max_width", 24)
 	_sfx_slider.value_changed.connect(_on_sfx_slider_changed)
 	_music_slider.value_changed.connect(_on_music_slider_changed)
@@ -41,16 +39,21 @@ func _ready() -> void:
 	LocaleAware.bind(self, _refresh_locale)
 
 
-func open() -> void:
+func _before_open() -> void:
 	_load_from_config()
 	_refresh_locale()
-	show()
-	UiFocusNav.grab_first([_sfx_slider, _music_slider, _music_toggle, _theme_option, _language_option, _display_name_edit, _btn_back])
 
 
-func close() -> void:
-	hide()
-	closed.emit()
+func _on_overlay_opened() -> void:
+	UiFocusNav.grab_first([
+		_sfx_slider,
+		_music_slider,
+		_music_toggle,
+		_theme_option,
+		_language_option,
+		_display_name_edit,
+		_btn_back,
+	])
 
 
 func _refresh_locale() -> void:
@@ -61,7 +64,7 @@ func _refresh_locale() -> void:
 	_theme_label.text = tr(MenuKeys.SETTINGS_TABLE_THEME)
 	_language_label.text = tr(MenuKeys.SETTINGS_LANGUAGE)
 	_display_name_label.text = tr(MenuKeys.SETTINGS_DISPLAY_NAME)
-	_btn_back.text = tr(CommonKeys.BACK)
+	_btn_back.set_button_text(tr(CommonKeys.BACK))
 	_build_theme_options()
 	_build_language_options()
 	_select_language_option(ConfigService.get_language())
@@ -162,11 +165,3 @@ func _on_btn_back_pressed() -> void:
 
 func _save_display_name() -> void:
 	PlayerProfileService.set_display_name(_display_name_edit.text)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if not visible:
-		return
-	if UiFocusNav.is_cancel_pressed(event):
-		close()
-		get_viewport().set_input_as_handled()

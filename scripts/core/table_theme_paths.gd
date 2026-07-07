@@ -29,7 +29,7 @@ static func apply_to_nodes(color_rect: ColorRect, texture_rect: TextureRect, the
 	if normalized == THEME_TAPIS:
 		var texture: Texture2D = load(TAPIS_TEXTURE_PATH) as Texture2D
 		if texture == null:
-			push_warning("TableThemePaths: texture tapis introuvable, repli sur le feutre vert")
+			DebugService.log_warning("TableThemePaths: texture tapis introuvable, repli sur le feutre vert")
 			_apply_classic(color_rect, texture_rect)
 			return
 		texture_rect.texture = texture

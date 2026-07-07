@@ -11,6 +11,10 @@ static func leave_match_confirm() -> String:
 	return _t(DialogKeys.CONFIRM_LEAVE_MATCH)
 
 
+static func restart_match_confirm() -> String:
+	return _t(DialogKeys.CONFIRM_RESTART_MATCH)
+
+
 static func hand_winner_line(player_name: String) -> String:
 	return _t(DialogKeys.HAND_WINNER) % player_name
 

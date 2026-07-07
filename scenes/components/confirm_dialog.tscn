@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/components/confirm_dialog.gd" id="1_confirm_dialog"]
+[ext_resource type="PackedScene" uid="uid://bns58tswniro6" path="res://scenes/menus/button_template.tscn" id="2_button"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backdrop"]
 bg_color = Color(0, 0, 0, 0.62)
@@ -39,13 +40,11 @@ text = "Voulez-vous quitter la partie en cours ?"
 alignment = 1
 theme_override_constants/separation = 16
 
-[node name="BtnConfirmYes" type="Button" parent="Panel/Content/Buttons"]
-custom_minimum_size = Vector2(100, 40)
-text = "Oui"
+[node name="BtnConfirmYes" parent="Panel/Content/Buttons" instance=ExtResource("2_button")]
+layout_mode = 2
 
-[node name="BtnConfirmNo" type="Button" parent="Panel/Content/Buttons"]
-custom_minimum_size = Vector2(100, 40)
-text = "Non"
+[node name="BtnConfirmNo" parent="Panel/Content/Buttons" instance=ExtResource("2_button")]
+layout_mode = 2
 
 [connection signal="pressed" from="Panel/Content/Buttons/BtnConfirmYes" to="." method="_on_btn_confirm_yes_pressed"]
 [connection signal="pressed" from="Panel/Content/Buttons/BtnConfirmNo" to="." method="_on_btn_confirm_no_pressed"]

@@ -3,6 +3,7 @@ extends RefCounted
 ## Clés des dialogues modaux (`translations/dialogs.csv`).
 
 const CONFIRM_LEAVE_MATCH: String = "DL_CONFIRM_LEAVE_MATCH"
+const CONFIRM_RESTART_MATCH: String = "DL_CONFIRM_RESTART_MATCH"
 
 const HAND_END_TITLE: String = "DL_HAND_END_TITLE"
 const HAND_WINNER: String = "DL_HAND_WINNER"

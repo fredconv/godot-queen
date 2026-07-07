@@ -2,8 +2,8 @@ extends Control
 ## TopMenuBar
 ## Barre de menu supérieure (style bois) : affiche les infos de tour/scores
 ## et expose des signaux pour les actions des boutons. Ne contient aucune
-## règle de jeu ; le câblage réel se fera plus tard via `GameEvents` ou par
-## connexion directe depuis la scène qui possède cette barre.
+## règle de jeu ; le câblage se fait par connexion directe depuis la scène
+## propriétaire (`table.gd`, `main_menu.gd`), pas via `GameEvents`.
 
 signal hamburger_pressed
 signal help_pressed

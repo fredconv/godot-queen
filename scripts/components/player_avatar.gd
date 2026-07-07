@@ -28,6 +28,7 @@ const CHARACTER_SHEETS: Array[String] = [
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 var _turn_active: bool = false
+var _fx_tween: Tween
 
 func _ready() -> void:
 	_refresh_sprite()
@@ -83,26 +84,34 @@ func _build_idle_sprite_frames(sheet_texture: Texture2D) -> SpriteFrames:
 	return frames
 
 
+func _kill_fx_tween() -> void:
+	if _fx_tween != null and _fx_tween.is_valid():
+		_fx_tween.kill()
+	_fx_tween = null
+
+
 ## Secousse légère (défaite de manche).
 func play_hand_loss_shake() -> void:
 	if not is_inside_tree():
 		return
+	_kill_fx_tween()
 	var base_x: float = position.x
-	var tween: Tween = create_tween()
+	_fx_tween = create_tween()
 	for _i in 3:
-		tween.tween_property(self, "position:x", base_x + 5.0, 0.04)
-		tween.tween_property(self, "position:x", base_x - 5.0, 0.04)
-	tween.tween_property(self, "position:x", base_x, 0.04)
+		_fx_tween.tween_property(self, "position:x", base_x + 5.0, 0.04)
+		_fx_tween.tween_property(self, "position:x", base_x - 5.0, 0.04)
+	_fx_tween.tween_property(self, "position:x", base_x, 0.04)
 
 
 ## Petits sauts de joie (victoire de manche).
 func play_hand_win_bounce(bounce_count: int = 3) -> void:
 	if not is_inside_tree():
 		return
+	_kill_fx_tween()
 	var base_y: float = position.y
-	var tween: Tween = create_tween()
+	_fx_tween = create_tween()
 	for _i in bounce_count:
-		tween.tween_property(self, "position:y", base_y - 14.0, 0.09) \
+		_fx_tween.tween_property(self, "position:y", base_y - 14.0, 0.09) \
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		tween.tween_property(self, "position:y", base_y, 0.11) \
+		_fx_tween.tween_property(self, "position:y", base_y, 0.11) \
 			.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)

@@ -1,5 +1,6 @@
 keys,fr,en,de,es,pt,zh
 DL_CONFIRM_LEAVE_MATCH,Voulez-vous quitter la partie en cours ?,Do you want to leave the current game?,Möchten Sie das laufende Spiel verlassen?,¿Quieres abandonar la partida en curso?,Deseja sair da partida em curso?,确定要退出当前对局吗？
+DL_CONFIRM_RESTART_MATCH,Démarrer une nouvelle partie ? La partie en cours sera perdue.,Start a new game? The current match will be lost.,Neues Spiel starten? Das laufende Spiel geht verloren.,¿Empezar una partida nueva? Se perderá la partida actual.,Iniciar nova partida? A partida atual será perdida.,开始新对局？当前对局进度将丢失。
 DL_HAND_END_TITLE,Manche terminée,Hand complete,Stich beendet,Mano terminada,Mão concluída,本轮结束
 DL_HAND_WINNER,%s remporte la manche !,%s wins the hand!,%s gewinnt den Stich!,%s gana la mano!,%s vence a mão!,%s 赢得本轮！
 DL_HAND_WINNER_DETAIL,Manche : %d pts  |  Total partie : %d pts,Hand: %d pts  |  Match total: %d pts,Stich: %d Pkt.  |  Spiel gesamt: %d Pkt.,Mano: %d pts  |  Total partida: %d pts,Mão: %d pts  |  Total partida: %d pts,本轮：%d 分  |  对局总计：%d 分

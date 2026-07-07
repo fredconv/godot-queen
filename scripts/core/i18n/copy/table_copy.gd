@@ -49,3 +49,12 @@ static func theme_label(theme_id: StringName) -> String:
 
 static func music_toggle_label(enabled: bool) -> String:
 	return _t(TableKeys.TOP_MUSIC_ON) if enabled else _t(TableKeys.TOP_MUSIC_OFF)
+
+
+static func help_rules_body() -> String:
+	return "\n".join([
+		_t(TableKeys.HELP_RULE_1),
+		_t(TableKeys.HELP_RULE_2),
+		_t(TableKeys.HELP_RULE_3),
+		_t(TableKeys.HELP_RULE_4),
+	])

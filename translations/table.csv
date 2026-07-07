@@ -21,5 +21,10 @@ TB_TOP_TOOLTIP_MENU,Menu,Menu,Menü,Menú,Menu,菜单
 TB_TOP_TOOLTIP_MUSIC,Activer/couper la musique,Toggle music,Musik ein/aus,Activar/desactivar música,Ativar/desativar música,开关音乐
 TB_TOP_TOOLTIP_MUSIC_NEXT,Piste suivante,Next track,Nächster Titel,Siguiente pista,Próxima faixa,下一曲
 TB_TOP_TOOLTIP_SETTINGS,Réglages,Settings,Einstellungen,Ajustes,Configurações,设置
+TB_HELP_TITLE,Règles du jeu,Game rules,Spielregeln,Reglas del juego,Regras do jogo,游戏规则
+TB_HELP_RULE_1,4 joueurs — évitez les points : Cœur = 1 pt, Dame de Pique = 13 pts.,4 players — avoid points: Heart = 1 pt, Queen of Spades = 13 pts.,4 Spieler — vermeide Punkte: Herz = 1 Pkt., Pik-Dame = 13 Pkt.,4 jugadores — evita puntos: corazón = 1 pt, dama de picas = 13 pts.,4 jogadores — evite pontos: copas = 1 pt, dama de espadas = 13 pts.,4 名玩家 — 避免得分：红心 = 1 分，黑桃 Q = 13 分。
+TB_HELP_RULE_2,Pas de Cœur tant qu'aucun n'a été défoncé. Au 1er pli : pas de Dame de Pique si possible.,No Hearts until broken. On the first trick: avoid Queen of Spades if possible.,Keine Herzen bis gebrochen. Beim 1. Stich: Pik-Dame vermeiden wenn möglich.,Sin corazones hasta que se rompan. En la 1.ª baza: evita la dama de picas si puedes.,Sem copas até serem quebradas. Na 1.ª vaza: evite a dama de espadas se possível.,红心未被打出前不能领出。首墩：尽量不出黑桃 Q。
+TB_HELP_RULE_3,Suivez la couleur demandée si vous le pouvez.,Follow suit if you can.,Bedienen wenn möglich.,Sigue el palo si puedes.,Cumpra o naipe se puder.,有同花色必须跟牌。
+TB_HELP_RULE_4,Shooting the moon : 0 pt pour vous, 26 pts pour les autres.,Shooting the moon: 0 pts for you, 26 for others.,Mond schießen: 0 Pkt. für dich, 26 für die anderen.,Llevarse la luna: 0 pts para ti, 26 para los demás.,Levar a lua: 0 pts para você, 26 para os outros.,收全红心：你得 0 分，其他人各得 26 分。
 TB_MATCH_START_BANNER,La partie commence !!,The match begins!!,Das Spiel beginnt!!,¡La partida comienza!!,A partida começa!!,对局开始！！
 TB_HAND_START_BANNER,La manche commence !!,The hand begins!!,Der Stich beginnt!!,¡La mano comienza!!,A mão começa!!,本轮开始！！
