@@ -19,5 +19,8 @@ mono_crash.*.json
 # Rapports de tests GdUnit4 (générés localement, voir docs/TEST_PLAN.md)
 reports/
 
+# Sorties du simulateur batch (hors livrable, voir simulation/README.md)
+simulation/results/*.csv
+
 # Config MCP locale (clé API Context7) — copier depuis .cursor/mcp.example.json
 .cursor/mcp.json
