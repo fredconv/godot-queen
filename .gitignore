@@ -20,8 +20,12 @@ mono_crash.*.json
 reports/
 
 # Sorties du simulateur batch (hors livrable, voir simulation/README.md)
-simulation/results/*.csv
-simulation/results/*.json
+simulation/results/runs/
+simulation/results/last_*
+simulation/results/index.csv
+simulation/results/index.json
+!simulation/results/.gitkeep
+!simulation/results/README.md
 
 # Config MCP locale (clé API Context7) — copier depuis .cursor/mcp.example.json
 .cursor/mcp.json

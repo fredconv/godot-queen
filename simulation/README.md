@@ -2,20 +2,7 @@
 
 Outil **hors livrable** : ce dossier n'est pas référencé par `project.godot` (pas d'autoload, pas de scène). Tu peux le supprimer ou l'exclure des presets d'export sans impacter le jeu.
 
-## GDScript ou Python ?
-
-| | **GDScript (recommandé)** | **Python** |
-|---|---|---|
-| **Moteur de jeu** | Réutilise `MatchManager`, `RuleEngine`, `AiPlayer` — **identique au jeu** | Il faudrait **réécrire** toutes les règles Hearts, ou lancer Godot en sous-processus |
-| **Setup** | Déjà en place (`tests/integration/test_match_ai_simulation.gd` fait la même chose pour 1 partie) | Dépendances externes, duplication ou glue fragile |
-| **Perf 1000 parties** | ~quelques secondes en headless (RefCounted, pas de rendu) | Lent si 1000× subprocess Godot ; rapide seulement si moteur réimplémenté |
-| **Évolution** | Une modification des règles IA se propage automatiquement | Risque de divergence avec le vrai jeu |
-
-**Conclusion :** pour des stats fiables (« est-ce toujours le même bot qui gagne ? »), **GDScript headless** est le choix naturel sur ce projet. Python reste utile en **post-traitement** (pandas, graphiques) sur le CSV exporté.
-
 ## Lancer une simulation
-
-Depuis la racine du projet, avec Godot 4.7 :
 
 ```powershell
 & "C:\chemin\vers\Godot_v4.7-stable_win64.exe" `
@@ -24,47 +11,43 @@ Depuis la racine du projet, avec Godot 4.7 :
   -- --count 1000 --seed 1
 ```
 
-Par défaut, deux fichiers sont écrits dans `simulation/results/` :
+Arguments : `--count` (défaut 1000), `--seed` (défaut 1).
 
-| Fichier | Contenu |
-|---------|---------|
-| `last_run.csv` | 1 ligne par partie (seed, vainqueur, scores, nb manches) |
-| `last_summary.json` | Agrégats (taux de victoire, scores moyens, etc.) |
+## Fichiers enregistrés (historique consultable)
 
-Arguments après `--` :
+Chaque run est **archivé** dans `simulation/results/` :
 
-| Argument | Défaut | Description |
-|----------|--------|-------------|
-| `--count` | 1000 | Nombre de parties |
-| `--seed` | 1 | Première seed (chaque partie utilise `seed + index`) |
-| `--csv` | `simulation/results/last_run.csv` | Chemin CSV |
-| `--json` | `simulation/results/last_summary.json` | Chemin récap JSON |
+| Fichier | Rôle |
+|---------|------|
+| `index.csv` | **Index de tous les runs** — ouvrir dans Excel pour comparer dans le temps |
+| `index.json` | Même index, format JSON |
+| `last_run.csv` / `last_summary.json` / `last_report.txt` | Copie du **dernier** run |
+| `runs/<id>/matches.csv` | Détail : 1 ligne par partie |
+| `runs/<id>/summary.json` | Agrégats du run (taux de victoire, scores moyens…) |
+| `runs/<id>/report.txt` | Rapport texte lisible |
+
+Exemple d'id de dossier : `20260707_134500_count1000_seed1`
+
+Voir aussi `simulation/results/README.md`.
 
 ## Interpréter les résultats
 
-- **4 IA identiques** (`HeuristicStrategy`) avec seeds **différentes** par siège → les taux de victoire devraient être **proches de 25 %** chacun si le hasard distribution / tie-break est équilibré.
-- Un siège qui domine (> 35–40 % sur 1000 parties) peut indiquer un **biais** (stratégie, ordre de jeu, convention siège 0, etc.) — piste d'équilibrage IA.
-- Compare des stratégies en modifiant `MatchSimulator.strategy_factory` dans un script dérivé.
+- 4 IA `HeuristicStrategy`, seeds différentes par siège → taux de victoire attendus ~25 % chacun.
+- Écart durable (> 30–35 % sur 1000+ parties) → piste de biais (stratégie, ordre de jeu, siège).
+- Modifier `MatchSimulator.strategy_factory` pour comparer des IA.
 
 ## Exclure du livrable
 
-1. Ne pas ajouter ce dossier aux scènes exportées (rien à faire si tu n'y touches pas).
-2. Dans l'éditeur : **Projet → Exporter → Filtres → Exclure** → ajouter `simulation/`.
-3. Ou supprimer le dossier avant release : `rm -r simulation/`.
+1. Exclure `simulation/` dans les presets d'export Godot.
+2. Ou supprimer le dossier avant release.
 
-## Fichiers
+## Fichiers code
 
 ```
 simulation/
-  README.md
-  simulation_main.tscn   # entrée CLI (charge les autoloads)
-  simulation_main.gd
-  lib/
-    match_simulator.gd  # 1 partie complète, 4 IA
-    batch_stats.gd      # agrégation + rapport texte
-  results/              # CSV générés (gitignored)
+  simulation_main.tscn / .gd
+  lib/match_simulator.gd
+  lib/batch_stats.gd
+  lib/simulation_archive.gd
+  results/          ← données locales (gitignored sauf README)
 ```
-
-## Lien avec les tests existants
-
-`tests/integration/test_match_ai_simulation.gd` valide déjà qu'une partie 4-IA se termine sans erreur. Ce dossier **étend** ce pattern en batch + statistiques, sans polluer GdUnit4 ni le build jeu.
