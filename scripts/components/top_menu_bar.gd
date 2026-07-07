@@ -14,6 +14,9 @@ signal settings_pressed
 signal music_toggle_pressed
 signal music_next_pressed
 
+const LEGACY_ICON_HAMBURGER: Rect2i = Rect2i(603, 49, 144, 128)
+const LEGACY_ICON_SETTINGS: Rect2i = Rect2i(603, 592, 144, 128)
+
 @onready var _btn_hamburger: Button = $Margin/Bar/LeftButtons/BtnHamburger
 @onready var _btn_help: Button = $Margin/Bar/LeftButtons/BtnHelp
 @onready var _btn_scores: Button = $Margin/Bar/LeftButtons/BtnScores
@@ -28,10 +31,25 @@ signal music_next_pressed
 const PIXEL_THEME: Theme = preload("res://resources/themes/pixel_theme.tres")
 
 var _music_enabled: bool = true
+var _text_buttons: Array[Button] = []
+var _all_buttons: Array[Button] = []
 
 
 func _ready() -> void:
 	theme = PIXEL_THEME
+	_text_buttons = [_btn_help, _btn_scores, _btn_new, _btn_toggle_music, _btn_next_music, _btn_menu]
+	_all_buttons = [
+		_btn_hamburger,
+		_btn_help,
+		_btn_scores,
+		_btn_new,
+		_btn_toggle_music,
+		_btn_next_music,
+		_btn_menu,
+		_btn_settings,
+	]
+	_apply_compact_button_styles()
+	UiFocusNav.chain_horizontal(_all_buttons)
 	LocaleAware.bind(self, refresh_locale)
 	refresh_locale()
 
@@ -63,16 +81,28 @@ func refresh_locale() -> void:
 	_score_label.add_theme_font_size_override("font_size", LocaleFonts.MENU_SCORE_FONT_SIZE)
 	_turn_label.add_theme_color_override("font_color", UiPalette.CREAM)
 	_score_label.add_theme_color_override("font_color", UiPalette.GOLD_BRIGHT)
-	for btn: Button in [
-		_btn_help,
-		_btn_scores,
-		_btn_new,
-		_btn_toggle_music,
-		_btn_next_music,
-		_btn_menu,
-	]:
-		btn.add_theme_font_size_override("font_size", LocaleFonts.MENU_BUTTON_FONT_SIZE)
+	for btn: Button in _text_buttons:
+		btn.add_theme_font_size_override("font_size", LocaleFonts.TOP_BAR_BUTTON_FONT_SIZE)
 	set_music_enabled_display(_music_enabled)
+
+
+func _apply_compact_button_styles() -> void:
+	var bar_height: int = LocaleFonts.TOP_BAR_BUTTON_HEIGHT
+	var icon_size: int = LocaleFonts.TOP_BAR_ICON_BUTTON_SIZE
+	for btn: Button in _text_buttons:
+		btn.custom_minimum_size = Vector2(0, bar_height)
+		_apply_flat_button_states(btn)
+	_btn_hamburger.custom_minimum_size = Vector2(icon_size, bar_height)
+	_btn_settings.custom_minimum_size = Vector2(icon_size, bar_height)
+	UiStyleFactory.configure_legacy_icon_button(_btn_hamburger, LEGACY_ICON_HAMBURGER, 26)
+	UiStyleFactory.configure_legacy_icon_button(_btn_settings, LEGACY_ICON_SETTINGS, 26)
+
+
+func _apply_flat_button_states(btn: Button) -> void:
+	for style_name: StringName in ["normal", "hover", "pressed", "focus", "disabled"]:
+		var stylebox: StyleBox = PIXEL_THEME.get_stylebox(style_name, &"Button")
+		if stylebox != null:
+			btn.add_theme_stylebox_override(style_name, stylebox)
 
 
 func _on_btn_hamburger_pressed() -> void:

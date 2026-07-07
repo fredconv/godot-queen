@@ -29,6 +29,15 @@ func _ready() -> void:
 	_music_toggle.toggled.connect(_on_music_toggle_changed)
 	_theme_option.item_selected.connect(_on_theme_option_selected)
 	_language_option.item_selected.connect(_on_language_option_selected)
+	UiFocusNav.chain_vertical([
+		_sfx_slider,
+		_music_slider,
+		_music_toggle,
+		_theme_option,
+		_language_option,
+		_display_name_edit,
+		_btn_back,
+	])
 	LocaleAware.bind(self, _refresh_locale)
 
 
@@ -36,7 +45,7 @@ func open() -> void:
 	_load_from_config()
 	_refresh_locale()
 	show()
-	call_deferred("_btn_back.grab_focus")
+	UiFocusNav.grab_first([_sfx_slider, _music_slider, _music_toggle, _theme_option, _language_option, _display_name_edit, _btn_back])
 
 
 func close() -> void:
@@ -158,6 +167,6 @@ func _save_display_name() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
-	if event.is_action_pressed("ui_cancel"):
+	if UiFocusNav.is_cancel_pressed(event):
 		close()
 		get_viewport().set_input_as_handled()

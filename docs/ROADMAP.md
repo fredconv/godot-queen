@@ -77,14 +77,15 @@ Objectif : qualité « store-ready » (Play Store) — UI/UX, audio et cohérenc
 ### Livré / en cours
 - Thème `pixel_theme.tres` : boutons, panneaux or, champs formulaire (LineEdit, sliders, OptionButton)
 - Menu principal : fond tapis, vignette, panneau encadré, pseudo joueur
+- **UIBundleFree** : thème Medieval (enseigne + boutons bois), catalog + slices (`ui/DesignSystem.md`)
 - Overlays harmonisés (config, scores, crédits, profil, dialogs table)
+- Barre menu table compacte (thème, bordure or, icônes + boutons texte)
+- Navigation clavier / manette (`UiFocusNav`) sur menus et overlays
 - Palette partagée `UiPalette`
 
 ### À faire (itérations suivantes)
-- [ ] Barre de menu table : boutons texte avec le nouveau thème
 - [ ] Animation distribution cartes (visuelle)
 - [ ] Sons : volumes finaux, transitions musique
-- [ ] Focus clavier / manette (navigation menus)
 - [ ] Icône app + splash screen export Android
 - [ ] Tests sur ratios mobile (safe area)
 - [ ] Cartes pixel art (optionnel, post-MVP)

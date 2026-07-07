@@ -15,6 +15,7 @@ signal cancelled
 
 func _ready() -> void:
 	LocaleAware.bind(self, refresh_locale)
+	UiFocusNav.chain_horizontal([_btn_yes, _btn_no])
 	refresh_locale()
 
 
@@ -22,6 +23,7 @@ func open(message: String = "") -> void:
 	if message != "":
 		_message_label.text = message
 	visible = true
+	UiFocusNav.grab_first([_btn_no, _btn_yes])
 
 
 func close() -> void:
@@ -41,3 +43,11 @@ func _on_btn_confirm_yes_pressed() -> void:
 func _on_btn_confirm_no_pressed() -> void:
 	close()
 	cancelled.emit()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if UiFocusNav.is_cancel_pressed(event):
+		_on_btn_confirm_no_pressed()
+		get_viewport().set_input_as_handled()

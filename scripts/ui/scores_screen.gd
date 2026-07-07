@@ -14,6 +14,7 @@ const StatsStoreClass = preload("res://scripts/core/stats_store.gd")
 
 func _ready() -> void:
 	visible = false
+	UiFocusNav.chain_vertical([_btn_back])
 	LocaleAware.bind(self, _refresh_locale)
 
 
@@ -65,6 +66,6 @@ func _on_btn_back_pressed() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
-	if event.is_action_pressed("ui_cancel"):
+	if UiFocusNav.is_cancel_pressed(event):
 		close()
 		get_viewport().set_input_as_handled()

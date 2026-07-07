@@ -32,6 +32,7 @@ var _last_result: Dictionary = {}
 
 func _ready() -> void:
 	LocaleAware.bind(self, _refresh_locale)
+	UiFocusNav.chain_horizontal([_btn_replay, _btn_quit])
 
 
 func show_result(
@@ -50,6 +51,7 @@ func show_result(
 	}
 	_render_result()
 	visible = true
+	UiFocusNav.grab_first([_btn_replay, _btn_quit])
 
 
 func close() -> void:
@@ -121,3 +123,11 @@ func _on_btn_replay_pressed() -> void:
 func _on_btn_quit_pressed() -> void:
 	close()
 	quit_requested.emit()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if UiFocusNav.is_cancel_pressed(event):
+		_on_btn_quit_pressed()
+		get_viewport().set_input_as_handled()

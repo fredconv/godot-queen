@@ -1,53 +1,16 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/components/top_menu_bar.gd" id="1_top_menu_bar"]
-[ext_resource type="Texture2D" path="res://assets/sprites/8bit-color-retro-pixel-art-buttons-interface-menu-icons-old-video-game-symbols.png" id="2_ui_sprites"]
 
-; Feuille de sprites boutons (voir docs/DECISIONS.md ADR-009 pour le détail de la
-; grille). Seuls les 2 boutons ronds "unis" (sans texte/icône incrustés) sont
-; réutilisés ici, pour les boutons icône (hamburger, réglages) : les autres
-; sprites (pilules et badges) portent du texte/icônes anglais incrustés dans
-; l'image et ne correspondent pas aux libellés français des autres boutons.
-[sub_resource type="AtlasTexture" id="AtlasTexture_hamburger"]
-atlas = ExtResource("2_ui_sprites")
-region = Rect2(603, 49, 144, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_settings"]
-atlas = ExtResource("2_ui_sprites")
-region = Rect2(603, 592, 144, 128)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hamburger"]
-content_margin_left = 6.0
-content_margin_top = 6.0
-content_margin_right = 6.0
-content_margin_bottom = 6.0
-texture = SubResource("AtlasTexture_hamburger")
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_settings"]
-content_margin_left = 6.0
-content_margin_top = 6.0
-content_margin_right = 6.0
-content_margin_bottom = 6.0
-texture = SubResource("AtlasTexture_settings")
-
-; Fond bois de la barre (voir docs/DECISIONS.md ADR-017) : un `Panel` +
-; `StyleBoxFlat` est utilisé plutôt qu'un `ColorRect`, ce dernier ne se
-; dessinant pas de façon fiable une fois niché dans un `CanvasLayer` en
-; exécutable exporté (bug constaté à l'export Windows, absent en éditeur).
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
 bg_color = Color(0.294, 0.212, 0.125, 1)
+border_width_bottom = 2
+border_color = Color(0.831, 0.686, 0.216, 0.85)
 
-; `custom_minimum_size.y` fixe la hauteur (voir docs/DECISIONS.md ADR-017) :
-; en exécutable exporté, l'`offset_bottom` seul ne suffit pas à garantir la
-; hauteur d'un `Control` racine de scène instanciée sous un `CanvasLayer`
-; (bug constaté à l'export Windows où la hauteur calculée retombe à 0, alors
-; qu'elle est correcte en éditeur/scène directe) ; `custom_minimum_size`
-; force un plancher de taille toujours respecté par le moteur, quelle que
-; soit l'issue du calcul d'ancre.
 [node name="TopMenuBar" type="Control"]
 anchor_right = 1.0
-offset_bottom = 64.0
-custom_minimum_size = Vector2(0, 64)
+offset_bottom = 56.0
+custom_minimum_size = Vector2(0, 56)
 script = ExtResource("1_top_menu_bar")
 
 [node name="Background" type="Panel" parent="."]
@@ -58,22 +21,21 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_background")
 [node name="Margin" type="MarginContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
 
 [node name="Bar" type="HBoxContainer" parent="Margin"]
-theme_override_constants/separation = 16
+theme_override_constants/separation = 8
 
 [node name="LeftButtons" type="HBoxContainer" parent="Margin/Bar"]
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="BtnHamburger" type="Button" parent="Margin/Bar/LeftButtons"]
-custom_minimum_size = Vector2(46, 42)
+custom_minimum_size = Vector2(36, 32)
 tooltip_text = "Menu"
-theme_override_styles/normal = SubResource("StyleBoxTexture_hamburger")
-text = "☰"
+focus_mode = 2
 
 [node name="BtnHelp" type="Button" parent="Margin/Bar/LeftButtons"]
 text = "AIDE"
@@ -94,7 +56,7 @@ horizontal_alignment = 1
 text = "Manche 1 · Scores — Vous (0) · Adversaire 1 (0) · Adversaire 2 (0) · Adversaire 3 (0)"
 
 [node name="RightButtons" type="HBoxContainer" parent="Margin/Bar"]
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="BtnNew" type="Button" parent="Margin/Bar/RightButtons"]
 text = "NOUVEAU"
@@ -111,10 +73,9 @@ text = "SUIVANT"
 text = "MENU"
 
 [node name="BtnSettings" type="Button" parent="Margin/Bar/RightButtons"]
-custom_minimum_size = Vector2(46, 42)
+custom_minimum_size = Vector2(36, 32)
 tooltip_text = "Réglages"
-theme_override_styles/normal = SubResource("StyleBoxTexture_settings")
-text = "⚙"
+focus_mode = 2
 
 [connection signal="pressed" from="Margin/Bar/LeftButtons/BtnHamburger" to="." method="_on_btn_hamburger_pressed"]
 [connection signal="pressed" from="Margin/Bar/LeftButtons/BtnHelp" to="." method="_on_btn_help_pressed"]

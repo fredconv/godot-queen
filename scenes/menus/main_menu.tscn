@@ -1,12 +1,13 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3 uid="uid://dmv3okse7m3uy"]
 
-[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_main_menu"]
-[ext_resource type="Theme" path="res://resources/themes/pixel_theme.tres" id="2_pixel_theme"]
-[ext_resource type="Texture2D" path="res://assets/sprites/texture_tapis.jpg" id="3_tapis"]
-[ext_resource type="PackedScene" path="res://scenes/menus/settings_screen.tscn" id="4_settings"]
-[ext_resource type="PackedScene" path="res://scenes/menus/scores_screen.tscn" id="5_scores"]
-[ext_resource type="PackedScene" path="res://scenes/menus/credits_screen.tscn" id="6_credits"]
-[ext_resource type="PackedScene" path="res://scenes/menus/profile_setup_screen.tscn" id="7_profile_setup"]
+[ext_resource type="Script" uid="uid://crmqbvdhf5sa6" path="res://scripts/ui/main_menu.gd" id="1_main_menu"]
+[ext_resource type="Theme" uid="uid://ddhm44lokfxyx" path="res://resources/themes/pixel_theme.tres" id="2_pixel_theme"]
+[ext_resource type="Texture2D" uid="uid://yxnudhuoljs5" path="res://assets/sprites/texture_tapis.jpg" id="3_tapis"]
+[ext_resource type="PackedScene" path="res://scenes/menus/settings_screen.tscn" id="5_settings"]
+[ext_resource type="PackedScene" path="res://scenes/menus/scores_screen.tscn" id="6_scores"]
+[ext_resource type="PackedScene" path="res://scenes/menus/credits_screen.tscn" id="7_credits"]
+[ext_resource type="PackedScene" path="res://scenes/menus/profile_setup_screen.tscn" id="8_profile_setup"]
+[ext_resource type="PackedScene" uid="uid://bns58tswniro6" path="res://scenes/menus/button_template.tscn" id="9_button_template"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -25,19 +26,21 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 color = Color(0.028, 0.26, 0.12, 1)
 
 [node name="BackgroundTexture" type="TextureRect" parent="."]
+modulate = Color(0.52, 0.56, 0.52, 1)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("3_tapis")
 expand_mode = 1
 stretch_mode = 6
-modulate = Color(0.52, 0.56, 0.52, 1)
 
 [node name="Vignette" type="ColorRect" parent="."]
 layout_mode = 1
@@ -57,47 +60,42 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MenuPanel" type="PanelContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(300, 0)
-
-[node name="Margin" type="MarginContainer" parent="CenterContainer/MenuPanel"]
-theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
-
-[node name="Menu" type="VBoxContainer" parent="CenterContainer/MenuPanel/Margin"]
-theme_override_constants/separation = 14
+[node name="MenuColumn" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 24
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/MenuPanel/Margin/Menu"]
+[node name="TitleLabel" type="Label" parent="CenterContainer/MenuColumn"]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.82, 0.45, 1)
-theme_override_font_sizes/font_size = 14
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 12
 text = "Dame de pique"
+horizontal_alignment = 1
 
-[node name="TitleSpacer" type="Control" parent="CenterContainer/MenuPanel/Margin/Menu"]
-custom_minimum_size = Vector2(0, 6)
+[node name="ButtonStack" type="VBoxContainer" parent="CenterContainer/MenuColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
 
-[node name="BtnNewGame" type="Button" parent="CenterContainer/MenuPanel/Margin/Menu"]
-custom_minimum_size = Vector2(260, 48)
-text = "NOUVELLE PARTIE"
+[node name="BtnNewGame" parent="CenterContainer/MenuColumn/ButtonStack" instance=ExtResource("9_button_template")]
+layout_mode = 2
+size_flags_horizontal = 4
 
-[node name="BtnScores" type="Button" parent="CenterContainer/MenuPanel/Margin/Menu"]
-custom_minimum_size = Vector2(260, 44)
-text = "SCORES"
+[node name="BtnScores" parent="CenterContainer/MenuColumn/ButtonStack" instance=ExtResource("9_button_template")]
+layout_mode = 2
+size_flags_horizontal = 4
 
-[node name="BtnSettings" type="Button" parent="CenterContainer/MenuPanel/Margin/Menu"]
-custom_minimum_size = Vector2(260, 44)
-text = "CONFIGURATION"
+[node name="BtnSettings" parent="CenterContainer/MenuColumn/ButtonStack" instance=ExtResource("9_button_template")]
+layout_mode = 2
+size_flags_horizontal = 4
 
-[node name="BtnCredits" type="Button" parent="CenterContainer/MenuPanel/Margin/Menu"]
-custom_minimum_size = Vector2(260, 44)
-text = "CRÉDITS"
+[node name="BtnCredits" parent="CenterContainer/MenuColumn/ButtonStack" instance=ExtResource("9_button_template")]
+layout_mode = 2
+size_flags_horizontal = 4
 
-[node name="BtnQuit" type="Button" parent="CenterContainer/MenuPanel/Margin/Menu"]
-custom_minimum_size = Vector2(260, 40)
-text = "QUITTER"
+[node name="BtnQuit" parent="CenterContainer/MenuColumn/ButtonStack" instance=ExtResource("9_button_template")]
+layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="PlayerLabel" type="Label" parent="."]
 layout_mode = 1
@@ -114,10 +112,10 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.831, 0.686, 0.216, 0.9)
 theme_override_font_sizes/font_size = 8
-horizontal_alignment = 1
 text = "Joueur"
+horizontal_alignment = 1
 
-[node name="SettingsScreen" parent="." instance=ExtResource("4_settings")]
+[node name="SettingsScreen" parent="." instance=ExtResource("5_settings")]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -126,7 +124,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2_pixel_theme")
 
-[node name="ScoresScreen" parent="." instance=ExtResource("5_scores")]
+[node name="ScoresScreen" parent="." instance=ExtResource("6_scores")]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -135,7 +133,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2_pixel_theme")
 
-[node name="CreditsScreen" parent="." instance=ExtResource("6_credits")]
+[node name="CreditsScreen" parent="." instance=ExtResource("7_credits")]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -144,7 +142,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2_pixel_theme")
 
-[node name="ProfileSetupScreen" parent="." instance=ExtResource("7_profile_setup")]
+[node name="ProfileSetupScreen" parent="." instance=ExtResource("8_profile_setup")]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -153,8 +151,8 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2_pixel_theme")
 
-[connection signal="pressed" from="CenterContainer/MenuPanel/Margin/Menu/BtnNewGame" to="." method="_on_btn_new_game_pressed"]
-[connection signal="pressed" from="CenterContainer/MenuPanel/Margin/Menu/BtnScores" to="." method="_on_btn_scores_pressed"]
-[connection signal="pressed" from="CenterContainer/MenuPanel/Margin/Menu/BtnSettings" to="." method="_on_btn_settings_pressed"]
-[connection signal="pressed" from="CenterContainer/MenuPanel/Margin/Menu/BtnCredits" to="." method="_on_btn_credits_pressed"]
-[connection signal="pressed" from="CenterContainer/MenuPanel/Margin/Menu/BtnQuit" to="." method="_on_btn_quit_pressed"]
+[connection signal="pressed" from="CenterContainer/MenuColumn/ButtonStack/BtnNewGame" to="." method="_on_btn_new_game_pressed"]
+[connection signal="pressed" from="CenterContainer/MenuColumn/ButtonStack/BtnScores" to="." method="_on_btn_scores_pressed"]
+[connection signal="pressed" from="CenterContainer/MenuColumn/ButtonStack/BtnSettings" to="." method="_on_btn_settings_pressed"]
+[connection signal="pressed" from="CenterContainer/MenuColumn/ButtonStack/BtnCredits" to="." method="_on_btn_credits_pressed"]
+[connection signal="pressed" from="CenterContainer/MenuColumn/ButtonStack/BtnQuit" to="." method="_on_btn_quit_pressed"]

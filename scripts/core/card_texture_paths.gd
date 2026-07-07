@@ -31,8 +31,15 @@ const RANK_FILE_NAMES: Dictionary = {
 	Rank.ACE: "ace",
 }
 
+static var _texture_cache: Dictionary = {}
+
 static func get_front_texture_path(card: CardModel) -> String:
 	return "%s%s_%s.png" % [BASE_PATH, SUIT_FILE_NAMES[card.suit], RANK_FILE_NAMES[card.rank]]
 
 static func get_front_texture(card: CardModel) -> Texture2D:
-	return load(get_front_texture_path(card)) as Texture2D
+	var path: String = get_front_texture_path(card)
+	if _texture_cache.has(path):
+		return _texture_cache[path] as Texture2D
+	var texture: Texture2D = load(path) as Texture2D
+	_texture_cache[path] = texture
+	return texture

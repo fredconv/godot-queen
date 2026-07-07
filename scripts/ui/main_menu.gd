@@ -4,24 +4,27 @@ extends Control
 ## lance une partie de démonstration sur `table.tscn`, quitte le jeu, ou
 ## affiche les écrans Scores / Configuration / Crédits.
 
-@onready var _title_label: Label = $CenterContainer/MenuPanel/Margin/Menu/TitleLabel
-@onready var _btn_new_game: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnNewGame
-@onready var _btn_scores: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnScores
-@onready var _btn_settings: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnSettings
-@onready var _btn_credits: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnCredits
-@onready var _btn_quit: Button = $CenterContainer/MenuPanel/Margin/Menu/BtnQuit
-@onready var _menu_root: Control = $CenterContainer/MenuPanel
+@onready var _title_label: Label = $CenterContainer/MenuColumn/TitleLabel
+@onready var _btn_new_game: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnNewGame
+@onready var _btn_scores: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnScores
+@onready var _btn_settings: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnSettings
+@onready var _btn_credits: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnCredits
+@onready var _btn_quit: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnQuit
+@onready var _menu_root: Control = $CenterContainer/MenuColumn
 @onready var _player_label: Label = $PlayerLabel
 @onready var _settings_screen: Control = $SettingsScreen
 @onready var _scores_screen: Control = $ScoresScreen
 @onready var _credits_screen: Control = $CreditsScreen
 @onready var _profile_setup_screen: Control = $ProfileSetupScreen
 
-var _menu_buttons: Array[Button] = []
+var _menu_buttons: Array[BaseButton] = []
 
 
 func _ready() -> void:
 	_menu_buttons = [_btn_new_game, _btn_scores, _btn_settings, _btn_credits, _btn_quit]
+	for button: BaseButton in _menu_buttons:
+		UiOffsetAnim.prepare_hidden(button)
+	UiFocusNav.chain_vertical(_menu_buttons)
 	_settings_screen.closed.connect(_on_overlay_closed)
 	_scores_screen.closed.connect(_on_overlay_closed)
 	_credits_screen.closed.connect(_on_overlay_closed)
@@ -35,11 +38,11 @@ func _ready() -> void:
 
 func _refresh_locale() -> void:
 	_title_label.text = tr(MenuKeys.TITLE)
-	_btn_new_game.text = tr(MenuKeys.NEW_GAME)
-	_btn_scores.text = tr(MenuKeys.SCORES)
-	_btn_settings.text = tr(MenuKeys.SETTINGS)
-	_btn_credits.text = tr(MenuKeys.CREDITS)
-	_btn_quit.text = tr(MenuKeys.QUIT)
+	_btn_new_game.set_button_text(tr(MenuKeys.NEW_GAME))
+	_btn_scores.set_button_text(tr(MenuKeys.SCORES))
+	_btn_settings.set_button_text(tr(MenuKeys.SETTINGS))
+	_btn_credits.set_button_text(tr(MenuKeys.CREDITS))
+	_btn_quit.set_button_text(tr(MenuKeys.QUIT))
 	_refresh_player_label()
 
 
@@ -55,11 +58,17 @@ func _after_ready() -> void:
 		_profile_setup_screen.open()
 	else:
 		PlayerProfileService.touch_last_used()
+		_play_menu_entrance()
 		_focus_default_button()
+
+
+func _play_menu_entrance() -> void:
+	UiOffsetAnim.stagger_scale_in(_menu_buttons)
 
 
 func _on_profile_setup_completed() -> void:
 	_set_menu_interactive(true)
+	_play_menu_entrance()
 	_focus_default_button()
 
 

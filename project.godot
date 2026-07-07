@@ -56,6 +56,8 @@ timings/tooltip_delay_sec=0.2
 
 [rendering]
 
+rendering/2d/snap/snap_2d_transforms_to_pixel=true
+rendering/2d/snap/snap_2d_vertices_to_pixel=true
 textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"

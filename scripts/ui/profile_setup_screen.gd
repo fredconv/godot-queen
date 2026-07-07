@@ -13,6 +13,7 @@ signal completed
 func _ready() -> void:
 	visible = false
 	_error_label.visible = false
+	UiFocusNav.chain_vertical([_name_edit, _btn_confirm])
 	LocaleAware.bind(self, _refresh_locale)
 
 
