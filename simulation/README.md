@@ -21,8 +21,15 @@ Depuis la racine du projet, avec Godot 4.7 :
 & "C:\chemin\vers\Godot_v4.7-stable_win64.exe" `
   --headless --path . `
   res://simulation/simulation_main.tscn `
-  -- --count 1000 --seed 1 --csv simulation/results/last_run.csv
+  -- --count 1000 --seed 1
 ```
+
+Par défaut, deux fichiers sont écrits dans `simulation/results/` :
+
+| Fichier | Contenu |
+|---------|---------|
+| `last_run.csv` | 1 ligne par partie (seed, vainqueur, scores, nb manches) |
+| `last_summary.json` | Agrégats (taux de victoire, scores moyens, etc.) |
 
 Arguments après `--` :
 
@@ -30,7 +37,8 @@ Arguments après `--` :
 |----------|--------|-------------|
 | `--count` | 1000 | Nombre de parties |
 | `--seed` | 1 | Première seed (chaque partie utilise `seed + index`) |
-| `--csv` | (aucun) | Chemin CSV optionnel |
+| `--csv` | `simulation/results/last_run.csv` | Chemin CSV |
+| `--json` | `simulation/results/last_summary.json` | Chemin récap JSON |
 
 ## Interpréter les résultats
 

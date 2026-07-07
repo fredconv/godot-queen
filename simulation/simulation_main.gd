@@ -4,13 +4,16 @@ extends Node
 
 const DEFAULT_COUNT: int = 1000
 const DEFAULT_START_SEED: int = 1
+const DEFAULT_CSV_PATH: String = "simulation/results/last_run.csv"
+const DEFAULT_JSON_PATH: String = "simulation/results/last_summary.json"
 
 
 func _ready() -> void:
 	var args := _parse_args(OS.get_cmdline_user_args())
 	var count: int = int(args.get("count", DEFAULT_COUNT))
 	var start_seed: int = int(args.get("seed", DEFAULT_START_SEED))
-	var csv_path: String = str(args.get("csv", ""))
+	var csv_path: String = str(args.get("csv", DEFAULT_CSV_PATH))
+	var json_path: String = str(args.get("json", DEFAULT_JSON_PATH))
 
 	var simulator := MatchSimulator.new()
 	var results: Array[Dictionary] = []
@@ -23,9 +26,10 @@ func _ready() -> void:
 	var summary: Dictionary = stats.summarize(results)
 	print(stats.format_report(summary))
 
-	if not csv_path.is_empty():
-		_write_csv(csv_path, results)
-		print("\nCSV écrit : %s" % csv_path)
+	_write_csv(csv_path, results)
+	_write_summary_json(json_path, summary)
+	print("\nCSV  : %s" % csv_path)
+	print("JSON : %s" % json_path)
 
 	get_tree().quit()
 
@@ -47,8 +51,22 @@ static func _parse_args(user_args: PackedStringArray) -> Dictionary:
 			parsed["csv"] = user_args[index + 1]
 			index += 2
 			continue
+		if token == "--json" and index + 1 < user_args.size():
+			parsed["json"] = user_args[index + 1]
+			index += 2
+			continue
 		index += 1
 	return parsed
+
+
+static func _write_summary_json(path: String, summary: Dictionary) -> void:
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_error("Impossible d'écrire %s" % path)
+		return
+	file.store_string(JSON.stringify(summary, "\t"))
+	file.close()
 
 
 static func _write_csv(path: String, results: Array[Dictionary]) -> void:

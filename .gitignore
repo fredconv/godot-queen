@@ -21,6 +21,7 @@ reports/
 
 # Sorties du simulateur batch (hors livrable, voir simulation/README.md)
 simulation/results/*.csv
+simulation/results/*.json
 
 # Config MCP locale (clé API Context7) — copier depuis .cursor/mcp.example.json
 .cursor/mcp.json
