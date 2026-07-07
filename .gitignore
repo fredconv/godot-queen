@@ -24,6 +24,8 @@ simulation/results/runs/
 simulation/results/last_*
 simulation/results/index.csv
 simulation/results/index.json
+simulation/results/index.csv.import
+simulation/results/index.*.translation
 !simulation/results/.gitkeep
 !simulation/results/README.md
 
