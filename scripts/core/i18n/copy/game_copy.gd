@@ -61,3 +61,21 @@ static func seat_hearts_count(count: int) -> String:
 
 static func seat_score_tooltip() -> String:
 	return _t(GameKeys.SEAT_SCORE_TOOLTIP)
+
+
+static func ai_strategy_message(
+	player_name: String,
+	reason_key: String,
+	target_player_name: String = ""
+) -> String:
+	match reason_key:
+		"more_aggressive":
+			return _t(TableKeys.AI_STRATEGY_MORE_AGGRESSIVE) % player_name
+		"suspect_moon":
+			return _t(TableKeys.AI_STRATEGY_SUSPECT_MOON) % [player_name, target_player_name]
+		_:
+			return _t(TableKeys.AI_STRATEGY_MORE_AGGRESSIVE) % player_name
+
+
+static func ai_thinking_label(_mode: AiPlayMode.Kind) -> String:
+	return "..."

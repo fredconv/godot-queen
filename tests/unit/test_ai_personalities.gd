@@ -19,13 +19,13 @@ func test_moon_shooter_strategy_never_plays_illegal_card() -> void:
 func test_mixed_mode_assigns_three_distinct_opponent_types() -> void:
 	if not AiPersonalityCatalog.USE_MIXED_PERSONALITIES:
 		return
-	assert_that(AiPersonalityCatalog.create_for_opponent_seat(1)).is_instanceof(MoonShooterStrategy)
-	assert_that(AiPersonalityCatalog.create_for_opponent_seat(2)).is_instanceof(PassiveStrategy)
-	assert_that(AiPersonalityCatalog.create_for_opponent_seat(3)).is_instanceof(HeuristicStrategy)
+	assert_that(AiPersonalityCatalog.create_for_opponent_seat(1)).is_instanceof(AdaptiveAiStrategy)
+	assert_that(AiPersonalityCatalog.create_for_opponent_seat(2)).is_instanceof(AdaptiveAiStrategy)
+	assert_that(AiPersonalityCatalog.create_for_opponent_seat(3)).is_instanceof(AdaptiveAiStrategy)
 
 
 func test_catalog_creates_heuristic_when_balanced_personality() -> void:
-	assert_that(AiPersonalityCatalog.create_strategy(AiPersonalityCatalog.Personality.BALANCED)) \
+	assert_that(AiPersonalityCatalog.create_strategy(AiPersonalityKind.Kind.BALANCED)) \
 		.is_instanceof(HeuristicStrategy)
 #endregion
 

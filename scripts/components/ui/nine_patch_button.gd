@@ -4,6 +4,7 @@ extends BaseButton
 
 @export var patch_texture: Texture2D = preload("res://assets/sprites/9_grid_rounded_patch.png")
 @export var button_size: Vector2i = Vector2i(192, 48)
+@export var label_font_size: int = LocaleFonts.NINE_PATCH_BUTTON_FONT_SIZE
 
 @onready var _nine_patch: NinePatchRect = $NinePatchBackground
 @onready var _label: Label = $MarginContainer/Label
@@ -14,6 +15,7 @@ var _pointer_down: bool = false
 func _ready() -> void:
 	focus_mode = Control.FOCUS_ALL
 	_configure_nine_patch()
+	_apply_label_font_size()
 	custom_minimum_size = Vector2(button_size)
 	_clear_theme_backgrounds()
 	_update_visual_state()
@@ -23,6 +25,11 @@ func _ready() -> void:
 	mouse_exited.connect(func() -> void: _update_visual_state())
 	focus_entered.connect(func() -> void: _update_visual_state())
 	focus_exited.connect(func() -> void: _update_visual_state())
+
+
+func _apply_label_font_size() -> void:
+	if _label:
+		_label.add_theme_font_size_override("font_size", label_font_size)
 
 
 func set_button_text(value: String) -> void:

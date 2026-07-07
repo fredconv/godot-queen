@@ -313,3 +313,28 @@ Registre des décisions d'architecture importantes, au format court : contexte, 
 - `NetworkService` reste un stub ; ENet reporté à la phase 7.
 
 **Conséquences** : `table_play_flow.gd` passe par `match_controller.submit_action()` ; tests unitaires sur actions, snapshots, sauvegarde et lobby. Voir `docs/MULTIPLAYER_DESIGN.md` et `docs/MULTIPLAYER_AUDIT.md`.
+
+---
+
+## ADR-023 — Architecture IA gameplay : faisabilité, décision, exécution, messages implicites
+
+**Contexte** : l'IA doit gérer la chasse à la Lune, la contre-Lune, les personnalités (chasseur, passif, équilibré), un score de confiance et des messages table rares — sans dévoiler la tactique ni annoncer l'intention à chaque pli.
+
+**Décision** :
+- **Quatre modules distincts** dans `scripts/ai/` :
+  - `MoonFeasibility` — règles + maths : qui *peut* encore viser la Lune ;
+  - `MoonSuspicion` — heuristique : quel adversaire semble dangereux ;
+  - `AdaptiveAiStrategy` — hiérarchie de modes (`MINIMIZE` / `CHASE_MOON` / `BREAK_MOON`) et file d'annonces ;
+  - stratégies d'exécution (`MoonShooterStrategy`, `MoonBreakerStrategy`, `PassiveStrategy`, `HeuristicStrategy`).
+- **Règles Lune** :
+  - si un autre joueur a ≥ 1 point, les trois autres ne peuvent pas chasser ;
+  - si ≥ 2 joueurs ont des points, la Lune est morte pour tous ;
+  - seul le détenteur unique des points peut encore l'envisager (sans obligation — perte accidentelle d'un pli) ;
+  - récupération après points pris : contrôle de main + confiance (`_recovery_path_viable`).
+- **Messages table** (via `TableAiAnnouncement`) : uniquement `more_aggressive` et `suspect_moon` ; formulation observationnelle (« pense que … vise la Lune ») ; max 1 bandeau par manche, espacement ≥ 5 plis ; pas d'annonce de contre-Lune ni de chasse explicite.
+- **Contexte unique** : `MatchManager.build_ai_context()` alimente toutes les IA (`moon_feasible`, `moon_busted`, confiance, scores, historique plis).
+- **Documentation agent** : skill `.cursor/skills/dame-de-pique-ai-gameplay/`, règle `.cursor/rules/ai-gameplay.mdc`, hook post-édition `.cursor/hooks/after-ai-gameplay-edit.ps1`.
+
+**Conséquences** : toute évolution IA/Lune/messages doit mettre à jour les tests `test_moon_feasibility`, `test_adaptive_ai_strategy`, `test_moon_suspicion` et, si seuils modifiés, la simulation batch (`simulation/`). Skill personnel réutilisable : `card-game-ai-design` (~/.cursor/skills/).
+
+**Télémétrie décisions (2026-07)** : `AiTelemetryCollector` branché sur `MatchManager.telemetry` enregistre tentatives/détections/cassages Lune, regret stratégique, rentabilité, sacrifices, Dame de Pique. Sorties simulation : `telemetry.json`, `telemetry_by_seat.csv`, `telemetry_report.txt`. Catalogue : `.cursor/skills/dame-de-pique-ai-gameplay/telemetry-metrics.md`.

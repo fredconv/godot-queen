@@ -1,9 +1,16 @@
 class_name MoonShooterStrategy
 extends AiStrategy
-## IA « chasseur de lune » : tente de capturer les cartes à points (♥, Q♠).
+## IA « chasseur de lune » : tente de capturer tous les points si
+## `MoonFeasibility` estime que le contrôle de la manche le permet.
+
+
+var _fallback: HeuristicStrategy = HeuristicStrategy.new()
 
 
 func choose_card(legal_plays: Array[CardModel], context: Dictionary, rng: RandomNumberGenerator) -> CardModel:
+	if not context.get("moon_feasible", true):
+		return _fallback.choose_card(legal_plays, context, rng)
+
 	if legal_plays.size() == 1:
 		return legal_plays[0]
 
@@ -12,7 +19,7 @@ func choose_card(legal_plays: Array[CardModel], context: Dictionary, rng: Random
 
 	var lead_suit: int = context.get("lead_suit", -1)
 	if not _all_match_suit(legal_plays, lead_suit):
-		return _choose_void_dump(legal_plays, rng)
+		return _choose_void_dump(legal_plays, context, rng)
 	return _choose_follow(legal_plays, context, rng)
 
 
@@ -35,17 +42,28 @@ func _choose_follow(legal_plays: Array[CardModel], context: Dictionary, rng: Ran
 	if winning.is_empty():
 		return _lowest_rank(legal_plays, rng)
 
-	var penalty_winners := _select(winning, func(card: CardModel) -> bool: return HeartsRules.is_penalty_card(card))
-	if not penalty_winners.is_empty():
-		return _lowest_rank(penalty_winners, rng)
-
-	if _trick_has_penalty(context):
-		return _lowest_rank(winning, rng)
+	if _trick_has_penalty(context) or lead_suit == Suit.HEARTS:
+		var penalty_winners := _select(
+			winning,
+			func(card: CardModel) -> bool: return HeartsRules.is_penalty_card(card)
+		)
+		if not penalty_winners.is_empty():
+			return _highest_rank(penalty_winners, rng)
+		return _highest_rank(winning, rng)
 
 	return _lowest_rank(legal_plays, rng)
 
 
-func _choose_void_dump(legal_plays: Array[CardModel], rng: RandomNumberGenerator) -> CardModel:
+func _choose_void_dump(legal_plays: Array[CardModel], context: Dictionary, rng: RandomNumberGenerator) -> CardModel:
+	var lead_suit: int = context.get("lead_suit", -1)
+	if lead_suit == Suit.HEARTS or _trick_has_penalty(context):
+		var hearts := _select(legal_plays, func(card: CardModel) -> bool: return card.is_heart())
+		if not hearts.is_empty():
+			return _highest_rank(hearts, rng)
+		for card in legal_plays:
+			if card.is_queen_of_spades():
+				return card
+
 	var safe_dumps := _reject_penalty(legal_plays)
 	if not safe_dumps.is_empty():
 		return _highest_rank(safe_dumps, rng)

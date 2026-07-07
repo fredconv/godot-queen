@@ -20,6 +20,7 @@ var _last_result: Dictionary = {}
 func _ready() -> void:
 	LocaleAware.bind(self, _refresh_locale)
 	UiFocusNav.chain_vertical([_btn_continue])
+	_refresh_locale()
 
 
 func show_result(

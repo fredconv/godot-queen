@@ -82,6 +82,8 @@ Ne pas ajouter de nouvel autoload sans justification : un autoload doit être un
 - Règles à respecter : pas de Cœur tant qu'aucun n'a été défoncé ; Dame de pique interdite au premier pli si possible ; « shooting the moon » = 0 pt pour le joueur, 26 pts pour les autres
 - Séparer clairement : mélange/distribution (`scripts/gameplay/cards/`), validation des coups (`scripts/rules/`), orchestration de manche (`scripts/match/`), calcul des scores (`scripts/rules/`), IA adversaires (`scripts/ai/`)
 - Détail complet des règles : `docs/GDD.md`
+- IA, Lune, messages table : skill `.cursor/skills/dame-de-pique-ai-gameplay/SKILL.md` et règle `ai-gameplay.mdc` (ADR-023)
+- Index agent (skills, règles, hooks) : **`AGENTS.md`** à la racine — consulter via `@AGENTS.md` dans le chat
 
 ## Tests
 

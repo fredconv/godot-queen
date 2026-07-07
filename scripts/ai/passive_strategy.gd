@@ -1,6 +1,10 @@
 class_name PassiveStrategy
 extends AiStrategy
-## IA passive : joue bas, évite de remporter les plis quand c'est possible.
+## IA passive : évite de remporter les plis quand c'est possible, mais se
+## débarrasse des cartes dangereuses à la défausse (comme HeuristicStrategy).
+
+
+var _fallback: HeuristicStrategy = HeuristicStrategy.new()
 
 
 func choose_card(legal_plays: Array[CardModel], context: Dictionary, rng: RandomNumberGenerator) -> CardModel:
@@ -14,7 +18,7 @@ func choose_card(legal_plays: Array[CardModel], context: Dictionary, rng: Random
 
 	var lead_suit: int = context.get("lead_suit", -1)
 	if not _all_match_suit(legal_plays, lead_suit):
-		return _lowest_rank(legal_plays, rng)
+		return _fallback.choose_card(legal_plays, context, rng)
 
 	return _duck_if_possible(legal_plays, context, rng)
 
@@ -24,7 +28,7 @@ func _duck_if_possible(legal_plays: Array[CardModel], context: Dictionary, rng: 
 	var current_best := _current_best_rank(context.get("trick_cards", []), lead_suit)
 	var losing := _select(legal_plays, func(card: CardModel) -> bool: return card.rank < current_best)
 	if not losing.is_empty():
-		return _lowest_rank(losing, rng)
+		return _highest_rank(losing, rng)
 	return _lowest_rank(legal_plays, rng)
 
 
@@ -61,10 +65,19 @@ static func _current_best_rank(trick_cards: Array, lead_suit: int) -> int:
 
 
 static func _lowest_rank(cards: Array[CardModel], rng: RandomNumberGenerator) -> CardModel:
+	return _extreme_rank(cards, rng, true)
+
+
+static func _highest_rank(cards: Array[CardModel], rng: RandomNumberGenerator) -> CardModel:
+	return _extreme_rank(cards, rng, false)
+
+
+static func _extreme_rank(cards: Array[CardModel], rng: RandomNumberGenerator, want_lowest: bool) -> CardModel:
 	var best: Array[CardModel] = [cards[0]]
 	for index in range(1, cards.size()):
 		var card: CardModel = cards[index]
-		if card.rank < best[0].rank:
+		var is_strictly_better := card.rank < best[0].rank if want_lowest else card.rank > best[0].rank
+		if is_strictly_better:
 			best = [card]
 		elif card.rank == best[0].rank:
 			best.append(card)

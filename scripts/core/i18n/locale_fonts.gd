@@ -11,6 +11,7 @@ const SEAT_FONT_SIZE: int = 8
 const MENU_TURN_FONT_SIZE: int = 10
 const MENU_SCORE_FONT_SIZE: int = 8
 const MENU_BUTTON_FONT_SIZE: int = 8
+const NINE_PATCH_BUTTON_FONT_SIZE: int = 12
 const TOP_BAR_BUTTON_FONT_SIZE: int = 7
 const TOP_BAR_BUTTON_HEIGHT: int = 32
 const TOP_BAR_ICON_BUTTON_SIZE: int = 36

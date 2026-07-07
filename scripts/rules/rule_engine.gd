@@ -186,15 +186,9 @@ static func score_trick(cards: Array[CardModel]) -> int:
 ## chacun des autres joueurs marque `HeartsRules.TOTAL_POINTS_PER_HAND`
 ## points. Retourne un dictionnaire `{player_index: int -> points: int}`.
 static func score_hand(tricks_taken_per_player: Array) -> Dictionary:
-	var raw_scores: Dictionary = {}
-	for player_index in range(tricks_taken_per_player.size()):
-		var captured_cards: Array = tricks_taken_per_player[player_index]
-		var points := 0
-		for card in captured_cards:
-			points += HeartsRules.card_points(card)
-		raw_scores[player_index] = points
+	var raw_scores := compute_raw_hand_scores(tricks_taken_per_player)
 
-	var moon_shooter := _find_moon_shooter(raw_scores)
+	var moon_shooter := find_moon_shooter(raw_scores)
 	if moon_shooter == -1:
 		return raw_scores
 
@@ -202,6 +196,22 @@ static func score_hand(tricks_taken_per_player: Array) -> Dictionary:
 	for player_index in raw_scores.keys():
 		final_scores[player_index] = 0 if player_index == moon_shooter else HeartsRules.TOTAL_POINTS_PER_HAND
 	return final_scores
+
+
+static func compute_raw_hand_scores(tricks_taken_per_player: Array) -> Dictionary:
+	var raw_scores: Dictionary = {}
+	for player_index in range(tricks_taken_per_player.size()):
+		var captured_cards: Array = tricks_taken_per_player[player_index]
+		var points := 0
+		for card in captured_cards:
+			points += HeartsRules.card_points(card)
+		raw_scores[player_index] = points
+	return raw_scores
+
+
+static func find_moon_shooter(raw_scores: Dictionary) -> int:
+	return _find_moon_shooter(raw_scores)
+
 
 static func _find_moon_shooter(raw_scores: Dictionary) -> int:
 	for player_index in raw_scores.keys():

@@ -12,6 +12,7 @@ TB_THEME_CLASSIC,Feutre vert,Green felt,Grüner Filz,Fieltro verde,Feltro verde,
 TB_THEME_TAPIS,Tapis,Tablecloth,Tischtuch,Mantel,Mantel,桌布
 TB_TOP_HELP,AIDE,HELP,HILFE,AYUDA,AJUDA,帮助
 TB_TOP_SCORES,SCORES,SCORES,PUNKTE,PUNTOS,PONTOS,统计
+TB_TOP_TRICKS,PLIS,TRICKS,STICHE,MANOS,MÃOS,最近墩
 TB_TOP_NEW,NOUVEAU,NEW,NEU,NUEVO,NOVO,新建
 TB_TOP_MENU,MENU,MENU,MENÜ,MENÚ,MENU,菜单
 TB_TOP_MUSIC_ON,MUSIQUE : ON,MUSIC: ON,MUSIK: AN,MÚSICA: SÍ,MÚSICA: SIM,音乐：开
@@ -151,3 +152,8 @@ TB_HELP_RULES_BODY,"[b]But :[/b] avoir le moins de points possible.
 • 当有人达到 100 分（或约定目标）时，得分最少者获胜。"
 TB_MATCH_START_BANNER,La partie commence !!,The match begins!!,Das Spiel beginnt!!,¡La partida comienza!!,A partida começa!!,对局开始！！
 TB_HAND_START_BANNER,La manche commence !!,The hand begins!!,Der Stich beginnt!!,¡La mano comienza!!,A mão começa!!,本轮开始！！
+TB_AI_STRATEGY_MORE_AGGRESSIVE,%s devient plus agressif.,%s gets more aggressive.,%s wird aggressiver.,%s se vuelve más agresivo.,%s fica mais agressivo.,%s 变得更激进。
+TB_AI_STRATEGY_SUSPECT_MOON,%s pense que %s vise la Lune.,%s thinks %s is aiming for the moon.,%s denkt, %s zielt auf die Dame.,%s cree que %s busca la Luna.,%s acha que %s está a tentar a Lua.,%s 认为 %s 在冲月。
+TB_TRICK_HISTORY_TITLE,Derniers plis,Recent tricks,Letzte Stiche,Últimas manos,Últimos truques,最近墩
+TB_TRICK_HISTORY_EMPTY,Aucun pli terminé dans cette manche.,No completed tricks in this hand yet.,Noch kein abgeschlossener Stich in dieser Hand.,Ninguna mano completada en esta ronda.,Nenhum truque concluído nesta mão.,本轮尚无已完成的墩。
+TB_TRICK_HISTORY_LINE,Pli %d — gagnant : %s (%d pt),Trick %d — winner: %s (%d pts),Stich %d — Gewinner: %s (%d Pkt),Mano %d — ganador: %s (%d pts),Truque %d — vencedor: %s (%d pts),第 %d 墩 — 赢家：%s（%d 分）

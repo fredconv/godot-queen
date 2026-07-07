@@ -57,6 +57,13 @@ static func run_ai_turns(ctx: TableContext) -> void:
 		var context: Dictionary = ctx.match_manager.build_ai_context(player_index)
 		var card: CardModel = ai_player.choose_card(legal, context)
 
+		if ai_player.has_pending_announcement():
+			var announcement: Dictionary = ai_player.consume_announcement()
+			await TableAiAnnouncement.play(ctx, announcement)
+			if not ctx.is_active():
+				ctx.unlock_turn()
+				return
+
 		var action_result: ActionResult = ctx.match_controller.submit_action(
 			PlayCardAction.new(player_index, card)
 		)

@@ -9,11 +9,12 @@ var strategy_factory: Callable = _default_strategy_factory
 
 
 func _default_strategy_factory(player_index: int, _seed_value: int) -> AiStrategy:
-	return AiPersonalityCatalog.create_for_seat(player_index)
+	return AiPersonalityCatalog.create_for_simulation_seat(player_index)
 
 
-func play_match(seed_value: int) -> Dictionary:
+func play_match(seed_value: int, telemetry: AiTelemetryCollector = null) -> Dictionary:
 	var match_manager := _new_match_manager(seed_value)
+	match_manager.telemetry = telemetry
 	match_manager.start_new_match(seed_value)
 	_play_current_hand(match_manager)
 
@@ -26,10 +27,15 @@ func play_match(seed_value: int) -> Dictionary:
 	if not match_manager.is_match_over():
 		push_warning("MatchSimulator: partie non terminée après %d manches (seed %d)" % [MAX_HANDS, seed_value])
 
+	var winner_index := match_manager.get_match_winner()
+	var final_scores := match_manager.score_manager.get_scores()
+	if telemetry != null:
+		telemetry.end_match(winner_index, final_scores, match_manager.hand_number)
+
 	return {
 		"seed": seed_value,
-		"winner_index": match_manager.get_match_winner(),
-		"final_scores": match_manager.score_manager.get_scores(),
+		"winner_index": winner_index,
+		"final_scores": final_scores,
 		"hand_count": match_manager.hand_number,
 		"match_completed": match_manager.is_match_over(),
 	}

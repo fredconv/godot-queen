@@ -44,6 +44,7 @@ func _ready() -> void:
 	TableFx.setup(_ctx)
 	_top_menu_bar.menu_pressed.connect(_on_top_menu_bar_menu_pressed)
 	_top_menu_bar.scores_pressed.connect(_on_top_menu_bar_scores_pressed)
+	_top_menu_bar.tricks_pressed.connect(_on_top_menu_bar_tricks_pressed)
 	_top_menu_bar.new_game_pressed.connect(_on_top_menu_bar_new_game_pressed)
 	_top_menu_bar.hamburger_pressed.connect(_on_top_menu_bar_hamburger_pressed)
 	_top_menu_bar.help_pressed.connect(_on_top_menu_bar_help_pressed)
@@ -92,6 +93,10 @@ func _dispatch_human_card_selected(card_view: Control, card: CardModel) -> void:
 
 func _on_top_menu_bar_scores_pressed() -> void:
 	_scores_screen.open()
+
+
+func _on_top_menu_bar_tricks_pressed() -> void:
+	TableTrickHistory.open(_ctx)
 
 
 func _on_top_menu_bar_new_game_pressed() -> void:

@@ -10,6 +10,8 @@ const INDEX_CSV_PATH: String = "simulation/results/index.csv"
 const LAST_CSV_PATH: String = "simulation/results/last_run.csv"
 const LAST_JSON_PATH: String = "simulation/results/last_summary.json"
 const LAST_REPORT_PATH: String = "simulation/results/last_report.txt"
+const LAST_TELEMETRY_JSON_PATH: String = "simulation/results/last_telemetry.json"
+const LAST_TELEMETRY_REPORT_PATH: String = "simulation/results/last_telemetry_report.txt"
 
 const INDEX_CSV_HEADER: String = (
 	"run_id,timestamp,personality_mode,count,start_seed,completed,"
@@ -26,13 +28,18 @@ func save_run(
 	results: Array[Dictionary],
 	summary: Dictionary,
 	report_text: String,
-	strategy_label: String = "HeuristicStrategy"
+	strategy_label: String = "HeuristicStrategy",
+	telemetry_summary: Dictionary = {},
+	telemetry_report: String = ""
 ) -> Dictionary:
 	var run_id := _make_run_id(count, start_seed)
 	var run_dir := "%s/%s" % [RUNS_DIR, run_id]
 	var matches_path := "%s/matches.csv" % run_dir
 	var summary_path := "%s/summary.json" % run_dir
 	var report_path := "%s/report.txt" % run_dir
+	var telemetry_json_path := "%s/telemetry.json" % run_dir
+	var telemetry_csv_path := "%s/telemetry_by_seat.csv" % run_dir
+	var telemetry_report_path := "%s/telemetry_report.txt" % run_dir
 
 	var enriched_summary := summary.duplicate(true)
 	enriched_summary["run_id"] = run_id
@@ -44,15 +51,25 @@ func save_run(
 		"matches_csv": matches_path,
 		"summary_json": summary_path,
 		"report_txt": report_path,
+		"telemetry_json": telemetry_json_path,
+		"telemetry_csv": telemetry_csv_path,
+		"telemetry_report_txt": telemetry_report_path,
 	}
 
 	_write_csv(matches_path, results)
 	_write_text(summary_path, JSON.stringify(enriched_summary, "\t"))
 	_write_text(report_path, report_text)
+	if not telemetry_summary.is_empty():
+		_write_text(telemetry_json_path, JSON.stringify(telemetry_summary, "\t"))
+		_write_text(telemetry_csv_path, AiTelemetryReport.format_seats_csv(telemetry_summary))
+		_write_text(telemetry_report_path, telemetry_report)
 
 	_copy_file(matches_path, LAST_CSV_PATH)
 	_copy_file(summary_path, LAST_JSON_PATH)
 	_write_text(LAST_REPORT_PATH, report_text)
+	if not telemetry_summary.is_empty():
+		_copy_file(telemetry_json_path, LAST_TELEMETRY_JSON_PATH)
+		_write_text(LAST_TELEMETRY_REPORT_PATH, telemetry_report)
 
 	_append_to_index(enriched_summary, report_path)
 

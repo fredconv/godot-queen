@@ -8,6 +8,7 @@ extends Control
 signal hamburger_pressed
 signal help_pressed
 signal scores_pressed
+signal tricks_pressed
 signal new_game_pressed
 signal menu_pressed
 signal settings_pressed
@@ -20,6 +21,7 @@ const LEGACY_ICON_SETTINGS: Rect2i = Rect2i(603, 592, 144, 128)
 @onready var _btn_hamburger: Button = $Margin/Bar/LeftButtons/BtnHamburger
 @onready var _btn_help: Button = $Margin/Bar/LeftButtons/BtnHelp
 @onready var _btn_scores: Button = $Margin/Bar/LeftButtons/BtnScores
+@onready var _btn_tricks: Button = $Margin/Bar/LeftButtons/BtnTricks
 @onready var _turn_label: Label = $Margin/Bar/CenterInfo/TurnLabel
 @onready var _score_label: Label = $Margin/Bar/CenterInfo/ScoreLabel
 @onready var _btn_new: Button = $Margin/Bar/RightButtons/BtnNew
@@ -37,11 +39,12 @@ var _all_buttons: Array[Button] = []
 
 func _ready() -> void:
 	theme = PIXEL_THEME
-	_text_buttons = [_btn_help, _btn_scores, _btn_new, _btn_toggle_music, _btn_next_music, _btn_menu]
+	_text_buttons = [_btn_help, _btn_scores, _btn_tricks, _btn_new, _btn_toggle_music, _btn_next_music, _btn_menu]
 	_all_buttons = [
 		_btn_hamburger,
 		_btn_help,
 		_btn_scores,
+		_btn_tricks,
 		_btn_new,
 		_btn_toggle_music,
 		_btn_next_music,
@@ -70,6 +73,7 @@ func set_music_enabled_display(enabled: bool) -> void:
 func refresh_locale() -> void:
 	_btn_help.text = tr(TableKeys.TOP_HELP)
 	_btn_scores.text = tr(TableKeys.TOP_SCORES)
+	_btn_tricks.text = tr(TableKeys.TOP_TRICKS)
 	_btn_new.text = tr(TableKeys.TOP_NEW)
 	_btn_menu.text = tr(TableKeys.TOP_MENU)
 	_btn_next_music.text = tr(TableKeys.TOP_MUSIC_NEXT)
@@ -115,6 +119,10 @@ func _on_btn_help_pressed() -> void:
 
 func _on_btn_scores_pressed() -> void:
 	scores_pressed.emit()
+
+
+func _on_btn_tricks_pressed() -> void:
+	tricks_pressed.emit()
 
 
 func _on_btn_new_pressed() -> void:

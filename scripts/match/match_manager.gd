@@ -74,6 +74,12 @@ var last_hand_scores: Array[int] = [0, 0, 0, 0]
 ## confondus), indexé par `player_index`. Remis à zéro à chaque nouvelle
 ## manche, consommé par `RuleEngine.score_hand()` en fin de manche.
 var _tricks_taken: Array = []
+var _completed_tricks: Array[Dictionary] = []
+var _trick_winner_history: Array[int] = []
+var _consecutive_trick_wins: Array[int] = [0, 0, 0, 0]
+
+## Collecte optionnelle des décisions IA (simulation, analyse d'équilibre).
+var telemetry: AiTelemetryCollector = null
 
 func _init() -> void:
 	rule_engine = RuleEngine.new()
@@ -86,7 +92,13 @@ func _init() -> void:
 func start_new_match(seed_value: int = -1) -> void:
 	score_manager.reset()
 	hand_number = 0
+	for player_index in range(ai_players.size()):
+		var ai_player: AiPlayer = ai_players[player_index]
+		if ai_player != null:
+			ai_player.reset_for_new_match()
 	GameEvents.match_started.emit()
+	if telemetry != null:
+		telemetry.begin_match()
 	start_new_hand(seed_value)
 
 ## Distribue une nouvelle manche : mélange le paquet, distribue 13 cartes par
@@ -99,6 +111,9 @@ func start_new_hand(seed_value: int = -1) -> void:
 	rule_engine.reset_for_new_hand()
 	trick_manager.reset()
 	_tricks_taken = []
+	_completed_tricks = []
+	_trick_winner_history = []
+	_consecutive_trick_wins = [0, 0, 0, 0]
 	for _i in range(HeartsRules.PLAYER_COUNT):
 		_tricks_taken.append([] as Array[CardModel])
 
@@ -114,6 +129,8 @@ func start_new_hand(seed_value: int = -1) -> void:
 	trick_leader = _find_two_of_clubs_holder()
 	current_player = trick_leader
 	phase = Phase.PLAYING
+	if telemetry != null:
+		telemetry.begin_hand(hand_number)
 
 ## Liste des cartes légales que `player_index` peut jouer dans le contexte du
 ## pli en cours (voir `RuleEngine.get_legal_plays`).
@@ -135,14 +152,50 @@ func is_ai_controlled(player_index: int) -> bool:
 ## Construit le contexte transmis à `AiPlayer.choose_card()` pour
 ## `player_index`, à partir de l'état courant de la manche.
 func build_ai_context(player_index: int) -> Dictionary:
+	var hand_cards := hands[player_index].cards()
+	var confidence := AiConfidence.DEFAULT
+	var ai_player: AiPlayer = ai_players[player_index]
+	if ai_player != null:
+		confidence = ai_player.confidence
 	return {
+		"player_index": player_index,
+		"hand_number": hand_number,
 		"trick_number": rule_engine.trick_number,
 		"hearts_broken": rule_engine.hearts_broken,
 		"is_leading": trick_manager.played_count() == 0,
 		"lead_suit": trick_manager.lead_suit,
 		"trick_cards": trick_manager.get_plays(),
 		"hand_size": hands[player_index].count(),
+		"hand_cards": hand_cards,
+		"hand_raw_scores": get_current_hand_raw_scores(),
+		"match_scores": score_manager.get_scores(),
+		"confidence": confidence,
+		"tricks_won_counts": get_tricks_won_counts(),
+		"consecutive_trick_wins": _consecutive_trick_wins.duplicate(),
+		"moon_busted": MoonFeasibility.is_moon_busted_globally(_tricks_taken),
+		"moon_feasible": MoonFeasibility.is_viable_for_player(
+			player_index,
+			hand_cards,
+			_tricks_taken,
+			confidence,
+			rule_engine.trick_number
+		),
+		"tricks_taken": _tricks_taken,
 	}
+
+## Historique des derniers plis terminés de la manche en cours (copie).
+func get_recent_tricks(limit: int = 10) -> Array[Dictionary]:
+	if limit <= 0 or _completed_tricks.is_empty():
+		return []
+	var start_index := maxi(0, _completed_tricks.size() - limit)
+	return _completed_tricks.slice(start_index)
+
+
+func get_tricks_won_counts() -> Array[int]:
+	var counts: Array[int] = [0, 0, 0, 0]
+	for winner_index in _trick_winner_history:
+		counts[winner_index] += 1
+	return counts
 
 ## Joue le tour du joueur courant via l'`AiPlayer` qui lui est assigné.
 ## Retourne un `PlayResult` en échec si la manche n'est pas en cours
@@ -157,7 +210,12 @@ func play_ai_turn() -> PlayResult:
 
 	var legal := get_legal_plays(player_index)
 	var context := build_ai_context(player_index)
-	var card: CardModel = ai_players[player_index].choose_card(legal, context)
+	var ai_player: AiPlayer = ai_players[player_index]
+	var play_mode := ai_player.peek_play_mode(context)
+	var card: CardModel = ai_player.choose_card(legal, context)
+	var announcement := ai_player.consume_announcement()
+	if telemetry != null:
+		telemetry.record_decision(player_index, context, play_mode, announcement)
 	return play_card(player_index, card)
 
 
@@ -275,10 +333,31 @@ func _resolve_trick(result: PlayResult) -> void:
 	var points := RuleEngine.score_trick(trick_cards)
 	_tricks_taken[winner].append_array(trick_cards)
 
+	_completed_tricks.append({
+		"trick_number": rule_engine.trick_number,
+		"winner_index": winner,
+		"plays": trick_manager.get_plays().duplicate(true),
+		"points": points,
+	})
+	_trick_winner_history.append(winner)
+	for player_index in range(HeartsRules.PLAYER_COUNT):
+		if player_index == winner:
+			_consecutive_trick_wins[player_index] += 1
+		else:
+			_consecutive_trick_wins[player_index] = 0
+
 	result.trick_completed = true
 	result.trick_winner = winner
 	result.trick_points = points
 	GameEvents.trick_resolved.emit(winner, points)
+
+	if telemetry != null:
+		telemetry.record_trick_resolved(
+			rule_engine.trick_number,
+			winner,
+			points,
+			trick_cards
+		)
 
 	trick_manager.reset()
 	trick_leader = winner
@@ -297,6 +376,9 @@ func _end_hand(result: PlayResult) -> void:
 	last_hand_scores = [0, 0, 0, 0]
 	for player_index in hand_scores.keys():
 		last_hand_scores[player_index] = hand_scores[player_index]
+	if telemetry != null:
+		telemetry.end_hand(_tricks_taken, hand_scores, score_manager.get_scores())
+	_update_ai_confidence_after_hand(hand_scores)
 	score_manager.add_hand_scores(hand_scores)
 	for player_index in hand_scores.keys():
 		GameEvents.score_updated.emit(player_index, score_manager.get_score(player_index))
@@ -311,6 +393,22 @@ func _has_reached_match_threshold() -> bool:
 		if score >= MATCH_SCORE_THRESHOLD:
 			return true
 	return false
+
+
+func _update_ai_confidence_after_hand(_hand_scores: Dictionary) -> void:
+	var hand_winner_index := _get_lowest_score_player_index(last_hand_scores)
+	var match_scores := score_manager.get_scores()
+	for player_index in range(ai_players.size()):
+		var ai_player: AiPlayer = ai_players[player_index]
+		if ai_player == null:
+			continue
+		ai_player.confidence = AiConfidence.apply_hand_result(
+			ai_player.confidence,
+			player_index,
+			last_hand_scores,
+			hand_winner_index,
+			match_scores
+		)
 
 func _find_two_of_clubs_holder() -> int:
 	var two_of_clubs := CardModel.new(Suit.CLUBS, Rank.TWO)

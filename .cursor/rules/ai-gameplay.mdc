@@ -1,0 +1,34 @@
+---
+description: IA Hearts — Lune, personnalités, messages table, contexte MatchManager
+globs: scripts/ai/**,scripts/match/match_manager.gd,scripts/ui/table/table_ai*.gd,scripts/ui/table/table_play_flow.gd,scripts/core/i18n/copy/game_copy.gd,tests/unit/test_*moon*.gd,tests/unit/test_adaptive*.gd,tests/unit/test_ai*.gd,simulation/**
+alwaysApply: false
+---
+
+# IA gameplay — Dame de pique
+
+Lire le skill `.cursor/skills/dame-de-pique-ai-gameplay/SKILL.md` pour le détail.
+
+## Séparation des responsabilités
+
+- `MoonFeasibility` : **peut-on** encore chasser la Lune (règles + maths + confiance pour récupération).
+- `MoonSuspicion` : **qui** semble viser la Lune (heuristique observateur).
+- `AdaptiveAiStrategy` : **mode** (minimize / chase / break) + annonces rares.
+- Stratégies concrètes : choix de carte uniquement.
+- UI : affiche les annonces ; ne décide jamais la tactique.
+
+## Règles Lune (non négociables)
+
+1. Si un **autre** joueur a ≥ 1 point → les 3 autres **ne peuvent pas** chasser la Lune.
+2. Si **2+** joueurs ont des points → Lune morte pour **tous**.
+3. Seul le détenteur unique des points peut encore l'envisager (pas obligatoire — perte de pli accidentelle).
+4. Casser la Lune = jeu silencieux ; message = observation seulement (`suspect_moon`).
+
+## Messages table
+
+- Max **1** bandeau / manche, ≥ **5** plis entre annonces.
+- Clés : `TB_AI_STRATEGY_MORE_AGGRESSIVE`, `TB_AI_STRATEGY_SUSPECT_MOON`.
+- `GameCopy.ai_strategy_message(player_name, reason_key, target_player_name)`.
+
+## Après toute modification
+
+Exécuter les tests unitaires IA/Lune. Si seuils ou personnalités : simulation `simulation/` 1000 parties.
