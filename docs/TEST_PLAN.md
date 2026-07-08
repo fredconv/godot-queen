@@ -39,6 +39,8 @@ Un rapport HTML/XML est généré dans `reports/` (ignoré par Git, voir `.gitig
 
 ## Tests unitaires (GdUnit4) — `tests/unit/`
 
+> **Total projet (juillet 2026) :** 181 cas, 32 suites, 0 échec — voir `docs/PROJECT_STATUS.md` §8.
+
 Cible en priorité les fonctions **pures**, sans dépendance à une scène instanciée :
 
 - **Deck & cartes** (`scripts/gameplay/cards/`) : génération des 52 cartes, absence de doublon, mélange, distribution équitable (13 cartes x 4 joueurs).
@@ -49,7 +51,13 @@ Cible en priorité les fonctions **pures**, sans dépendance à une scène insta
   - détermination du vainqueur d'un pli.
   - calcul du score d'une manche (Cœurs = 1 pt, Dame de Pique = 13 pts).
   - détection du « shooting the moon » (0 pt pour le joueur, 26 pts pour les autres).
-- **IA** (`scripts/ai/`, `tests/unit/test_ai_player.gd`) : l'IA ne propose jamais un coup invalide (test croisé avec `RuleEngine`/`MatchManager` sur des manches complètes simulées), déterminisme par seed (même seed → même choix à état identique), comportements ciblés de `HeuristicStrategy` (évite d'entamer avec une carte à points quand une alternative existe, défausse en priorité la Dame de Pique puis les Cœurs hauts quand elle ne peut pas suivre la couleur, "ducke" ou minimise la carte gagnante quand elle le peut).
+- **IA** (`scripts/ai/`) :
+  - `test_ai_player.gd` : aucun coup illégal, déterminisme par seed, comportements `HeuristicStrategy`.
+  - `test_ai_personalities.gd` : catalogue de personnalités par siège.
+  - `test_moon_feasibility.gd` : faisabilité Lune, récupération, assouplissement chasseur.
+  - `test_adaptive_ai_strategy.gd` : modes MINIMIZE / CHASE / BREAK, abandon nuancé, engagement chasseur.
+  - `test_moon_suspicion.gd`, `test_ai_confidence.gd` : heuristiques de suspicion et confiance.
+  - `test_ai_telemetry_collector.gd` : métriques simulation (tentatives Lune, regret, etc.).
 - **Profil & sauvegarde** (`scripts/core/player/`, `scripts/core/save/`, `tests/unit/test_*_profile*.gd`, `test_game_save_store.gd`) : pseudo validé, migration sauvegarde v1, JSON corrompu → backup + défauts.
 - **Préparation multijoueur** (`scripts/game_actions/`, `scripts/game_events/`, `scripts/match/snapshots/`, `scripts/network/`) : `PlayCardAction`, événements sérialisables, snapshots public/privé, lobby local simulé — voir `docs/MULTIPLAYER_DESIGN.md`.
 
@@ -68,7 +76,7 @@ Cible les interactions entre plusieurs modules, avec un `MatchManager` instanci�
 
 - **Exécution manuelle (F5)** : lancer le jeu, "NOUVELLE PARTIE" depuis le menu, vérifier qu'une manche se distribue, que seules les cartes légales de la main sont cliquables/opaques, qu'un clic joue la carte (glissement animé vers `TrickArea`), que les IA enchaînent leurs tours avec une pause visible, que la carte gagnante d'un pli complet est mise en évidence puis que le pli se ramasse vers le siège du vainqueur, que les scores se mettent à jour sur chaque siège, qu'une nouvelle manche démarre automatiquement, et que le popup `MatchEndDialog` (vainqueur, flèche de siège, scores, bouton "Rejouer") s'affiche au seuil de points.
 - **Exécution headless multi-manches** : `Godot_v4.7-stable_win64.exe --path . --headless --quit-after N res://scenes/table/table.tscn` (N élevé, ex. 900 frames ≈ 15s) pour dérouler plusieurs manches jouées automatiquement par les 3 IA jusqu'au premier tour humain, et vérifier l'absence de `SCRIPT ERROR`/erreur runtime dans la sortie.
-- Les 86 tests GdUnit4 (étapes 2-5, `scripts/rules/`, `scripts/match/`, `scripts/ai/`) restent la source de vérité pour la correction des règles/scores/IA : `table.gd` ne fait que les consommer, sans les dupliquer.
+- Les **181** tests GdUnit4 (`scripts/rules/`, `scripts/match/`, `scripts/ai/`, i18n, profil, préparation multijoueur) restent la source de vérité pour la correction des règles/scores/IA : `table.gd` ne fait que les consommer, sans les dupliquer.
 
 ## Tests end-to-end (Playwright)
 

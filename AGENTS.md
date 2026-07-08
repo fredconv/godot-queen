@@ -74,22 +74,41 @@ Priorité : **toujours préférer un skill projet** s'il existe pour Dame de piq
 
 ## Skills personnels utiles (`~/.cursor/skills/`)
 
-Installés sur ta machine — **non versionnés** dans ce repo. L'agent peut les lire si tu les cites ou s'ils sont dans la liste des skills Cursor.
+Installés sur ta machine — **non versionnés** dans ce repo. **Priorité** : skills **projet** (`.cursor/skills/`) puis globaux.
 
-| Skill | Quand (Dame de pique) |
-|-------|------------------------|
-| **card-game-ai-design** | Patterns IA cartes génériques (faisabilité, suspicion, messages implicites) |
-| **godot-testing** | Écrire / lancer tests GdUnit4, TDD |
+### Index global
+
+Voir `~/.cursor/README.md` — point d'entrée **`godot-dev-index`** et **`agent-workflow`**.
+
+| Skill global | Quand (Dame de pique) |
+|--------------|------------------------|
+| **godot-dev-index** | Router skills Godot au début d'une tâche |
+| **godot-pre-release-audit** | Avant export / playtest public (étape 8–10) |
+| **godot-audio-integration** | Polish audio (`AudioService`) |
+| **godot-user-settings-i18n** | i18n / config (`ConfigService`, `LocaleAware`) |
+| **godot-parser-error** | Erreurs `class_name` / parser |
+| **agent-workflow** | DOC OK, mémoire `.cursor/` |
+| **card-game-ai-design** | Patterns IA cartes génériques |
+| **godot-testing** | Écrire / lancer tests GdUnit4 |
 | **gdscript-patterns** | Style GDScript, typage, signaux |
-| **localization** | TranslationServer, CSV, changement de langue |
+| **localization** | TranslationServer, CSV |
 | **godot-ui** | Control, thèmes, layout |
 | **responsive-ui** | Mobile paysage, ancrages (ADR-006) |
 | **godot-code-review** | Revue avant PR |
-| **godot-debugging** | Erreurs runtime Godot |
 | **save-load** | `SaveService`, `user://` |
-| **event-bus** | Patterns signaux (complète `GameEvents`) |
+| **event-bus** | Patterns signaux (`GameEvents`) |
 
-Liste complète : dossier `C:\Users\fredc\.cursor\skills\` (60+ skills Godot, React Native, Supabase, etc.).
+### Rules / hooks / agents globaux (`~/.cursor/`)
+
+| Type | Fichiers | Cumul projet |
+|------|----------|--------------|
+| Rules | `rules/godot-class-names.mdc`, `gdscript-godot.mdc`, `agent-workflow.mdc` | `.cursor/rules/godot.mdc` prime sur le détail projet |
+| Hooks | `hooks.json` → rappels class_name, i18n, object pool | `hooks/after-ai-gameplay-edit.ps1` |
+| Agents | `agents/godot-gdscript-reviewer.md`, `godot-architect.md` | Task tool `generalPurpose` |
+
+Sync Creative OS → global : `CreativeOS\scripts\sync-cursor-skills.ps1`
+
+Liste complète GodotPrompter : `~/.cursor/skills/` (60+ skills).
 
 ---
 
@@ -165,4 +184,4 @@ Quand tu **ajoutes un skill projet** dans `.cursor/skills/` :
 
 ---
 
-*Dernière mise à jour : juillet 2026 — IA gameplay, hooks, 4 skills projet.*
+*Dernière mise à jour : juillet 2026 — IA gameplay, hooks, skills projet + index global `~/.cursor/README.md`.*
