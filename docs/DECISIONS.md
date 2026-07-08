@@ -338,3 +338,24 @@ Registre des décisions d'architecture importantes, au format court : contexte, 
 **Conséquences** : toute évolution IA/Lune/messages doit mettre à jour les tests `test_moon_feasibility`, `test_adaptive_ai_strategy`, `test_moon_suspicion` et, si seuils modifiés, la simulation batch (`simulation/`). Skill personnel réutilisable : `card-game-ai-design` (~/.cursor/skills/).
 
 **Télémétrie décisions (2026-07)** : `AiTelemetryCollector` branché sur `MatchManager.telemetry` enregistre tentatives/détections/cassages Lune, regret stratégique, rentabilité, sacrifices, Dame de Pique. Sorties simulation : `telemetry.json`, `telemetry_by_seat.csv`, `telemetry_report.txt`. Catalogue : `.cursor/skills/dame-de-pique-ai-gameplay/telemetry-metrics.md`.
+
+---
+
+## ADR-024 — Modes multijoueur, déconnexion et transport réseau
+
+**Date** : 2026-07  
+**Statut** : accepté
+
+**Contexte** : le MVP solo + IA est stable. Le multijoueur doit couvrir solo, hot seat (même machine), LAN P2P (Windows puis Android), puis Steam, sans refonte de `MatchManager`.
+
+**Décision** :
+
+1. **Modes** : `SOLO` (1 humain + 3 IA), `HOT_SEAT` (1–4 humains locaux, sièges vides = IA), `ONLINE_HOST` / `ONLINE_CLIENT` (1–4 humains LAN, sièges vides = IA).
+2. **Autorité** : host = serveur ; clients envoient des intentions (`PlayCardAction`), jamais d'application locale non validée.
+3. **Transport MVP** : ENet P2P natif Godot ; pas de MultiplayerSynchronizer. Messages custom + snapshots (voir `docs/MULTIPLAYER_DESIGN.md`).
+4. **Hot seat** : passage d'appareil avec overlay confidentialité (main cachée, Espace/Entrée pour continuer) — pas de réseau.
+5. **Déconnexion en ligne** : pause **30 s par siège** (timers indépendants), message « {display_name} déconnecté », reconnexion par `local_player_id` sur le même siège ; à expiration → remplacement par IA.
+6. **Steam** : phase ultérieure (GodotSteam), même couche messages ; pas bloquant pour LAN.
+7. **Navigateur mobile (QR)** : hors MVP ; documenté comme phase G.
+
+**Conséquences** : `MatchLaunchConfig` sur `GameSession` ; `SeatSetup` unifie solo/hot seat/online ; `NetworkService` reste hors autoload jusqu'à phase C ; tests unitaires sur `SeatSetup` et config de lancement.

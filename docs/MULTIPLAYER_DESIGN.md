@@ -1,10 +1,62 @@
 # Conception multijoueur — Dame de Pique
 
-## Principe
+> **Dernière mise à jour :** juillet 2026 — ADR-024  
+> Références : `docs/MULTIPLAYER_AUDIT.md`, `docs/DECISIONS.md`, notes `docs/godot multiplayer steam.md`
 
-**Serveur autoritaire** : le host valide chaque intention (`PlayerAction`), applique `MatchManager`, diffuse événements et snapshots. Les clients n'appliquent jamais un coup non confirmé.
+## Principe réseau
 
-## Phases livrées (0-6 + 5.5)
+**Serveur autoritaire (host = joueur)** : le host valide chaque intention (`PlayCardAction`), applique `MatchManager`, diffuse événements et snapshots. Les clients n'appliquent jamais un coup non confirmé.
+
+**Pas de réplication haute niveau Godot** (MultiplayerSynchronizer / spawn joueurs 2D) : jeu **tour par tour** — transport ENet + messages custom + snapshots (phases 0–6).
+
+---
+
+## Modes de jeu
+
+| Mode | Humains | Réseau | Sièges vides |
+|------|---------|--------|--------------|
+| **Solo** | 1 | Non | 3 IA |
+| **Hot seat** | 1–4 (même machine) | Non | `(4 − N)` IA |
+| **En ligne** | 1–4 (LAN P2P) | ENet | `(4 − N)` IA |
+
+Règle : **chaque siège sans humain actif = IA** (`SeatSetup` / `LobbyService.assign_ai_to_empty_seats()`).
+
+### Hot seat (même machine)
+
+Passage de manette / écran entre joueurs locaux :
+
+1. Joueur actif voit sa main et joue.
+2. Après son coup (ou fin de tour) → overlay plein écran : « Passez l'appareil au joueur {nom} » + « Appuyez sur Espace / Entrée ».
+3. Aucune main visible pendant le passage.
+4. Pli en cours et scores restent publics.
+
+**Phase B** : overlay confidentialité (`HotSeatPrivacyOverlay`).  
+**Futur (hors MVP)** : mains sur téléphone via navigateur (QR code) — complexité élevée.
+
+### En ligne (LAN P2P)
+
+- Transport : **ENetMultiplayerPeer** (Godot natif), host relaie les messages.
+- **Windows LAN** puis **Android LAN** (téléphone peut être host sur Wi‑Fi local).
+- **Steam** (GodotSteam, lobby + relay) — phase ultérieure, même couche messages.
+- Pas de serveur dédié headless en MVP.
+
+---
+
+## Déconnexion et reconnexion (en ligne)
+
+Par joueur humain déconnecté (timers **indépendants**, cumulables) :
+
+1. Message table : « {display_name} déconnecté ».
+2. Siège en état `DISCONNECTED_PENDING` — pas de coup tant que décompte actif si c'est son tour.
+3. **Décompte 30 s** visible pour tous.
+4. **Reconnexion** : même `local_player_id` + même `seat_index` → snapshot public + privé, reprise.
+5. **Expiration** : siège remplacé par **IA** (main conservée côté host) + « {display_name} remplacé par l'IA ».
+
+Implémentation : phase D (`DisconnectState`, messages `peer_disconnected`, `seat_reconnect_countdown`, `seat_replaced_by_ai`).
+
+---
+
+## Phases d'implémentation
 
 | Phase | Statut | Livrable |
 |-------|--------|----------|
@@ -14,40 +66,82 @@
 | 3 | ✅ | `GameSnapshotBuilder`, snapshots |
 | 4 | ✅ | `LocalMatchController`, branchement table |
 | 5 | ✅ | `PlayerProfile`, `SeatAssignment`, `SoloSeatSetup` |
-| 5.5 | ✅ | `LocalPlayerProfile`, sauvegarde v1, pseudo |
-| 6 | ✅ | `LobbyState`, `LobbyService` (local) |
-| 7+ | ⏳ | Réseau ENet, synchro manche, reconnexion |
+| 5.5 | ✅ | `LocalPlayerProfile`, sauvegarde v1 |
+| 6 | ✅ | `LobbyState`, `LobbyService` (local simulé) |
+| **A** | 🔄 | `MatchMode`, `MatchLaunchConfig`, menu modes, `SeatSetup` |
+| **B** | ⏳ | Hot seat : overlay passage + `active_human_seat` |
+| **C** | ⏳ | ENet : `NetworkService`, host/client controllers, lobby IP:port |
+| **D** | ⏳ | Déconnexion 30 s, reconnexion, remplacement IA |
+| **E** | ⏳ | Android LAN (host/client, IP locale) |
+| **F** | ⏳ | Steam (GodotSteam) |
+| **G** | 📋 | Navigateur mobile (QR) — post-MVP |
 
-## Messages réseau (prévus)
+---
+
+## Messages réseau
 
 Constantes dans `scripts/network/network_messages.gd` :
 
-- `request_play_card` — intention client
-- `server_card_played` — événement public confirmé
-- `server_snapshot` — état public
-- `request_private_snapshot` — main du joueur (siège vérifié)
+| Message | Direction | Rôle |
+|---------|-----------|------|
+| `request_play_card` | client → host | Intention |
+| `server_card_played` | host → all | Événement confirmé |
+| `server_snapshot` | host → all | État public |
+| `request_private_snapshot` | client → host | Main + coups légaux (siège vérifié) |
+| `server_error` | host → client | Coup refusé |
+| `peer_disconnected` | host → all | Déconnexion (phase D) |
+| `peer_reconnected` | host → all | Reconnexion (phase D) |
+| `seat_reconnect_countdown` | host → all | Sync décompte 30 s (phase D) |
+| `seat_replaced_by_ai` | host → all | Remplacement IA (phase D) |
+
+---
 
 ## Données publiques vs privées
 
-**Public** (`PublicGameSnapshot`) : joueur actif, pli en cours (cartes posées), scores, tailles de mains, phase, cœurs défoncés.
+**Public** (`PublicGameSnapshot`) : joueur actif, pli, scores, tailles de mains, phase, cœurs défoncés.
 
-**Privé** (`PrivatePlayerSnapshot`) : cartes en main + coups légaux du joueur demandeur uniquement.
+**Privé** (`PrivatePlayerSnapshot`) : cartes en main + coups légaux du demandeur uniquement.
 
-## Profil joueur local
+---
 
-- `player_id` : identifiant stable (`local_*`), **pas** le pseudo
-- `display_name` : pseudo affiché / proposé au lobby
-- Champs futurs auth/newsletter présents mais désactivés (`auth_provider = "local"`)
+## Architecture cible
 
-Sauvegarde versionnée : `GameSaveStore` v1 dans `user://savegame.json`.
+```
+Menu → GameModeScreen → (Solo | HotSeatLobby | MultiplayerLobby)
+                              ↓
+                    MatchLaunchConfig → GameSession
+                              ↓
+                         table.tscn
+                              ↓
+              HostMatchController / ClientMatchController / LocalMatchController
+                              ↓
+                        MatchManager (host only en ligne)
+```
 
-## Reconnexion (futur)
+Fichiers prévus :
 
-Client reconnecté reçoit snapshot public + privé de son siège si `local_player_id` correspond. Host conserve l'état officiel.
+- `scripts/match/match_mode.gd`, `match_launch_config.gd`, `seat_setup.gd`
+- `scripts/network/network_service.gd`, `host_match_controller.gd`, `client_match_controller.gd`
+- `scripts/network/disconnect_state.gd` (phase D)
+- `scripts/ui/game_mode_screen.gd`, `hot_seat_lobby_screen.gd`, `multiplayer_lobby_screen.gd`
+- `scripts/ui/table/hot_seat_privacy_overlay.gd` (phase B)
+- `scripts/ui/table/table_network_sync.gd` (phase C)
 
-## Limites connues
+---
 
-- Pas de prédiction visuelle client
-- Pas de backend compte / OAuth
-- `NetworkService` = stub
-- Stats multijoueur officielles = côté host uniquement (à implémenter phase 7+)
+## Profil joueur
+
+- `player_id` / `local_player_id` : stable, **≠** pseudo — reconnexion.
+- `display_name` : affichage lobby / messages déconnexion.
+- Stats multijoueur officielles : **host uniquement** (futur).
+
+---
+
+## Limites MVP réseau
+
+- Pas de prédiction visuelle client.
+- Pas de backend compte / OAuth.
+- Pas de matchmaking Internet (LAN / Steam relay plus tard).
+- `NetworkService` stub jusqu'à phase C.
+
+Voir `docs/MULTIPLAYER_AUDIT.md` pour l'audit phase 0.

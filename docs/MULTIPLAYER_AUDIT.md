@@ -52,10 +52,14 @@ Note produite avant l'introduction du réseau. Aucune modification de gameplay r
 - Confusion `player_index` / `peer_id` / `seat_index` → modèle `PlayerConnection`
 - Stats client vs serveur → stats locales séparées, pas de confiance client en multi
 
-## Prochaines étapes (non implémentées)
+## Prochaines étapes
 
-- Phase 7 : `NetworkService` ENet, host autoritaire
-- Phase 8-9 : synchro manche complète, reconnexion
-- Phase 10-11 : UX multi, validation stricte des messages
+| Phase | Contenu |
+|-------|---------|
+| **A** | `MatchMode`, `MatchLaunchConfig`, menu Solo / Hot seat / En ligne, `SeatSetup` |
+| **B** | Hot seat : overlay confidentialité, rotation `active_human_seat` |
+| **C** | ENet P2P, `NetworkService`, host/client controllers |
+| **D** | Déconnexion 30 s, reconnexion, remplacement IA |
+| **E–G** | Android LAN, Steam, navigateur mobile (post-MVP) |
 
-Voir `docs/MULTIPLAYER_DESIGN.md`.
+Voir `docs/MULTIPLAYER_DESIGN.md` et ADR-024 dans `docs/DECISIONS.md`.
