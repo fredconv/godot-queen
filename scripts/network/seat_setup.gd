@@ -1,0 +1,75 @@
+class_name SeatSetup
+extends RefCounted
+## Configuration unifiée des sièges : N humains + (4 − N) IA.
+
+
+static func create_solo(
+	local_display_name: String,
+	local_player_id: String = "",
+	local_avatar_id: String = "default"
+) -> MatchLaunchConfig:
+	return create_local_humans(
+		1,
+		PackedStringArray([local_display_name]),
+		local_player_id,
+		local_avatar_id,
+		MatchMode.Type.SOLO
+	)
+
+
+static func create_hot_seat(human_count: int, display_names: PackedStringArray) -> MatchLaunchConfig:
+	return create_local_humans(
+		human_count,
+		display_names,
+		"",
+		"default",
+		MatchMode.Type.HOT_SEAT
+	)
+
+
+static func create_local_humans(
+	human_count: int,
+	display_names: PackedStringArray,
+	local_player_id: String = "",
+	local_avatar_id: String = "default",
+	mode: MatchMode.Type = MatchMode.Type.SOLO
+) -> MatchLaunchConfig:
+	var config := MatchLaunchConfig.new()
+	config.mode = mode
+	config.active_human_seat_index = 0
+	var clamped_count: int = clampi(human_count, 1, HeartsRules.PLAYER_COUNT)
+	var assignments: Array[SeatAssignment] = []
+	for seat_index in range(HeartsRules.PLAYER_COUNT):
+		var profile := PlayerProfile.new()
+		profile.seat_index = seat_index
+		var is_human: bool = seat_index < clamped_count
+		profile.is_human = is_human
+		profile.is_ai = not is_human
+		profile.is_ready = true
+		profile.is_connected = true
+		if is_human:
+			if seat_index < display_names.size() and not display_names[seat_index].is_empty():
+				profile.display_name = display_names[seat_index]
+			else:
+				profile.display_name = "Player %d" % (seat_index + 1)
+			if seat_index == 0:
+				if local_player_id.is_empty():
+					profile.local_player_id = PlayerProfileService.get_player_id()
+				else:
+					profile.local_player_id = local_player_id
+				profile.avatar_id = local_avatar_id
+		else:
+			profile.display_name = "AI %d" % seat_index
+		assignments.append(SeatAssignment.new(seat_index, profile))
+	config.seat_assignments = assignments
+	return config
+
+
+static func apply_ai_to_match_manager(match_manager: MatchManager, assignments: Array[SeatAssignment]) -> void:
+	for assignment: SeatAssignment in assignments:
+		var seat_index: int = assignment.seat_index
+		if assignment.profile != null and assignment.profile.is_ai:
+			var strategy: AiStrategy = AiPersonalityCatalog.create_for_opponent_seat(seat_index)
+			match_manager.set_ai_player(seat_index, AiPlayer.new(strategy))
+		else:
+			match_manager.set_ai_player(seat_index, null)

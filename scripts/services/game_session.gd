@@ -8,6 +8,26 @@ extends Node
 ## d'émettre ces signaux (déjà prévus dans `GameEvents`).
 
 var match_in_progress: bool = false
+var _pending_launch_config: MatchLaunchConfig = null
+
+
+func set_launch_config(config: MatchLaunchConfig) -> void:
+	_pending_launch_config = config
+
+
+func take_launch_config() -> MatchLaunchConfig:
+	if _pending_launch_config != null:
+		var config: MatchLaunchConfig = _pending_launch_config
+		_pending_launch_config = null
+		return config
+	return SeatSetup.create_solo(
+		PlayerProfileService.get_display_name(),
+		PlayerProfileService.get_player_id()
+	)
+
+
+func has_pending_launch_config() -> bool:
+	return _pending_launch_config != null
 
 func _ready() -> void:
 	GameEvents.match_started.connect(start_match)

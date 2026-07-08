@@ -1,0 +1,117 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hot_seat_lobby_screen.gd" id="1_hot_seat"]
+[ext_resource type="PackedScene" uid="uid://bns58tswniro6" path="res://scenes/menus/button_template.tscn" id="2_button"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backdrop"]
+bg_color = Color(0, 0, 0, 0.62)
+
+[node name="HotSeatLobbyScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+visible = false
+script = ExtResource("1_hot_seat")
+
+[node name="Backdrop" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_backdrop")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -180.0
+offset_right = 260.0
+offset_bottom = 180.0
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/VBox"]
+theme_override_colors/font_color = Color(0.95, 0.82, 0.45, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+text = "Hot seat"
+
+[node name="PlayersLabel" type="Label" parent="Panel/Margin/VBox"]
+text = "Nombre de joueurs"
+
+[node name="PlayersOption" type="OptionButton" parent="Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="NameRows" type="VBoxContainer" parent="Panel/Margin/VBox"]
+theme_override_constants/separation = 6
+
+[node name="NameRow0" type="HBoxContainer" parent="Panel/Margin/VBox/NameRows"]
+theme_override_constants/separation = 8
+
+[node name="NameLabel0" type="Label" parent="Panel/Margin/VBox/NameRows/NameRow0"]
+custom_minimum_size = Vector2(72, 0)
+text = "Joueur 1"
+
+[node name="NameEdit0" type="LineEdit" parent="Panel/Margin/VBox/NameRows/NameRow0"]
+size_flags_horizontal = 3
+placeholder_text = "Pseudo"
+
+[node name="NameRow1" type="HBoxContainer" parent="Panel/Margin/VBox/NameRows"]
+visible = false
+theme_override_constants/separation = 8
+
+[node name="NameLabel1" type="Label" parent="Panel/Margin/VBox/NameRows/NameRow1"]
+custom_minimum_size = Vector2(72, 0)
+text = "Joueur 2"
+
+[node name="NameEdit1" type="LineEdit" parent="Panel/Margin/VBox/NameRows/NameRow1"]
+size_flags_horizontal = 3
+placeholder_text = "Pseudo"
+
+[node name="NameRow2" type="HBoxContainer" parent="Panel/Margin/VBox/NameRows"]
+visible = false
+theme_override_constants/separation = 8
+
+[node name="NameLabel2" type="Label" parent="Panel/Margin/VBox/NameRows/NameRow2"]
+custom_minimum_size = Vector2(72, 0)
+text = "Joueur 3"
+
+[node name="NameEdit2" type="LineEdit" parent="Panel/Margin/VBox/NameRows/NameRow2"]
+size_flags_horizontal = 3
+placeholder_text = "Pseudo"
+
+[node name="NameRow3" type="HBoxContainer" parent="Panel/Margin/VBox/NameRows"]
+visible = false
+theme_override_constants/separation = 8
+
+[node name="NameLabel3" type="Label" parent="Panel/Margin/VBox/NameRows/NameRow3"]
+custom_minimum_size = Vector2(72, 0)
+text = "Joueur 4"
+
+[node name="NameEdit3" type="LineEdit" parent="Panel/Margin/VBox/NameRows/NameRow3"]
+size_flags_horizontal = 3
+placeholder_text = "Pseudo"
+
+[node name="BtnStart" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="BtnBack" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[connection signal="pressed" from="Panel/Margin/VBox/BtnStart" to="." method="_on_btn_start_pressed"]
+[connection signal="pressed" from="Panel/Margin/VBox/BtnBack" to="." method="_on_btn_back_pressed"]

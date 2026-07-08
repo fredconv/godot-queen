@@ -68,7 +68,7 @@ Implémentation : phase D (`DisconnectState`, messages `peer_disconnected`, `sea
 | 5 | ✅ | `PlayerProfile`, `SeatAssignment`, `SoloSeatSetup` |
 | 5.5 | ✅ | `LocalPlayerProfile`, sauvegarde v1 |
 | 6 | ✅ | `LobbyState`, `LobbyService` (local simulé) |
-| **A** | 🔄 | `MatchMode`, `MatchLaunchConfig`, menu modes, `SeatSetup` |
+| **A** | ✅ | `MatchMode`, `MatchLaunchConfig`, menu modes, `SeatSetup` |
 | **B** | ⏳ | Hot seat : overlay passage + `active_human_seat` |
 | **C** | ⏳ | ENet : `NetworkService`, host/client controllers, lobby IP:port |
 | **D** | ⏳ | Déconnexion 30 s, reconnexion, remplacement IA |

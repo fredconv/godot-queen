@@ -71,7 +71,7 @@ Suivi des étapes de développement. Chaque étape doit être validée avant de 
 - Identités siège, lobby local simulé, audit et design : voir `docs/MULTIPLAYER_DESIGN.md`.
 - Réseau réel (ENet, phases C+) : **non implémenté**.
 
-## Étape 7.6 — Modes de jeu multijoueur (phase A) 🔄
+## Étape 7.6 — Modes de jeu multijoueur (phase A) ✅
 
 - ADR-024 : solo, hot seat, en ligne (spec complète dans `docs/MULTIPLAYER_DESIGN.md`).
 - `MatchMode`, `MatchLaunchConfig`, `SeatSetup`, menu choix de mode.

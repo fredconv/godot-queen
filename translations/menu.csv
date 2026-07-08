@@ -31,3 +31,15 @@ MN_PROFILE_SETUP_PLACEHOLDER,Pseudo,Display name,Spielername,Nombre de usuario,N
 MN_PROFILE_SETUP_CONFIRM,CONFIRMER,CONFIRM,BESTÄTIGEN,CONFIRMAR,CONFIRMAR,确认
 MN_PROFILE_SETUP_INVALID,"Pseudo invalide (2-16 caractères, caractères interdits filtrés).","Invalid name (2-16 characters, forbidden characters filtered).","Ungültiger Name (2-16 Zeichen, verbotene Zeichen gefiltert).","Nombre inválido (2-16 caracteres, caracteres prohibidos filtrados).","Nome inválido (2-16 caracteres, caracteres proibidos filtrados).",无效昵称（2-16 个字符，禁止特殊字符）。
 MN_SETTINGS_DISPLAY_NAME,Pseudo,Display name,Spielername,Nombre de usuario,Nome de usuário,昵称
+MN_GAME_MODE_TITLE,Mode de jeu,Game mode,Spielmodus,Modo de juego,Modo de jogo,游戏模式
+MN_GAME_MODE_SOLO,Solo,Solo,Solo,Solo,Solo,单人
+MN_GAME_MODE_HOT_SEAT,Hot seat,Hot seat,Hot seat,Hot seat,Hot seat,同机多人
+MN_GAME_MODE_ONLINE,En ligne,Online,Online,En línea,Online,在线
+MN_HOT_SEAT_TITLE,Hot seat,Hot seat,Hot seat,Hot seat,Hot seat,同机多人
+MN_HOT_SEAT_PLAYERS,Nombre de joueurs,Number of players,Spieleranzahl,Número de jugadores,Número de jogadores,玩家数量
+MN_HOT_SEAT_PLAYER,Joueur %d,Player %d,Spieler %d,Jugador %d,Jogador %d,玩家 %d
+MN_HOT_SEAT_START,LANCER,START,STARTEN,INICIAR,INICIAR,开始
+MN_MP_TITLE,Multijoueur,Multiplayer,Mehrspieler,Multijugador,Multijogador,多人游戏
+MN_MP_HOST,Héberger une partie,Host game,Spiel hosten,Crear partida,Hospedar partida,创建房间
+MN_MP_JOIN,Rejoindre,Join,Beitreten,Unirse,Entrar,加入
+MN_MP_COMING_SOON,"Réseau ENet (LAN) — disponible à la phase C.\nHéberger / Rejoindre seront activés ensuite.","ENet networking (LAN) — coming in phase C.\nHost / Join will be enabled later.","ENet-Netzwerk (LAN) — kommt in Phase C.\nHosten / Beitreten folgen später.","Red ENet (LAN) — disponible en fase C.\nCrear / Unirse se activarán después.","Rede ENet (LAN) — disponível na fase C.\nHospedar / Entrar serão ativados depois.",ENet 网络（局域网）— 阶段 C 推出。\n创建/加入功能稍后启用。

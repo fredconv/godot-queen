@@ -6,6 +6,7 @@ extends RefCounted
 var host: Control
 var match_manager: MatchManager
 var match_controller: LocalMatchController
+var launch_config: MatchLaunchConfig = null
 
 var turn_locked: bool = false
 var scene_exiting: bool = false

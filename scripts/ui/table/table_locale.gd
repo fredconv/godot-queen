@@ -14,6 +14,12 @@ static func apply(ctx: TableContext) -> void:
 
 
 static func refresh_seat_names(ctx: TableContext) -> void:
+	if ctx.launch_config != null:
+		for assignment: SeatAssignment in ctx.launch_config.seat_assignments:
+			var seat_index: int = assignment.seat_index
+			if seat_index >= 0 and seat_index < ctx.seats.size() and assignment.profile != null:
+				ctx.seats[seat_index].player_name = assignment.profile.display_name
+		return
 	for player_index in range(ctx.seats.size()):
 		if player_index == 0:
 			ctx.seats[player_index].player_name = PlayerProfileService.get_display_name()

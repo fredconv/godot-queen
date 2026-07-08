@@ -16,6 +16,9 @@ extends Control
 @onready var _scores_screen: Control = $ScoresScreen
 @onready var _credits_screen: Control = $CreditsScreen
 @onready var _profile_setup_screen: Control = $ProfileSetupScreen
+@onready var _game_mode_screen: Control = $GameModeScreen
+@onready var _hot_seat_lobby_screen: Control = $HotSeatLobbyScreen
+@onready var _multiplayer_lobby_screen: Control = $MultiplayerLobbyScreen
 
 var _menu_buttons: Array[BaseButton] = []
 
@@ -29,6 +32,13 @@ func _ready() -> void:
 	_scores_screen.closed.connect(_on_overlay_closed)
 	_credits_screen.closed.connect(_on_overlay_closed)
 	_profile_setup_screen.completed.connect(_on_profile_setup_completed)
+	_game_mode_screen.solo_selected.connect(_on_game_mode_solo_selected)
+	_game_mode_screen.hot_seat_selected.connect(_on_game_mode_hot_seat_selected)
+	_game_mode_screen.online_selected.connect(_on_game_mode_online_selected)
+	_game_mode_screen.closed.connect(_on_overlay_closed)
+	_hot_seat_lobby_screen.start_requested.connect(_on_hot_seat_start_requested)
+	_hot_seat_lobby_screen.closed.connect(_on_overlay_closed)
+	_multiplayer_lobby_screen.closed.connect(_on_overlay_closed)
 	LocaleAware.bind(self, _refresh_locale)
 	PlayerProfileService.profile_changed.connect(_refresh_player_label)
 	_refresh_locale()
@@ -87,12 +97,45 @@ func _set_menu_interactive(enabled: bool) -> void:
 
 
 func _is_overlay_open() -> bool:
-	return _settings_screen.visible or _scores_screen.visible or _credits_screen.visible or _profile_setup_screen.visible
+	return (
+		_settings_screen.visible
+		or _scores_screen.visible
+		or _credits_screen.visible
+		or _profile_setup_screen.visible
+		or _game_mode_screen.visible
+		or _hot_seat_lobby_screen.visible
+		or _multiplayer_lobby_screen.visible
+	)
 
 
 func _on_btn_new_game_pressed() -> void:
 	if _is_overlay_open():
 		return
+	_open_overlay(_game_mode_screen)
+
+
+func _on_game_mode_solo_selected() -> void:
+	GameSession.set_launch_config(
+		SeatSetup.create_solo(
+			PlayerProfileService.get_display_name(),
+			PlayerProfileService.get_player_id()
+		)
+	)
+	get_tree().change_scene_to_file("res://scenes/table/table.tscn")
+
+
+func _on_game_mode_hot_seat_selected() -> void:
+	_set_menu_interactive(false)
+	_hot_seat_lobby_screen.open()
+
+
+func _on_game_mode_online_selected() -> void:
+	_set_menu_interactive(false)
+	_multiplayer_lobby_screen.open()
+
+
+func _on_hot_seat_start_requested(config: MatchLaunchConfig) -> void:
+	GameSession.set_launch_config(config)
 	get_tree().change_scene_to_file("res://scenes/table/table.tscn")
 
 

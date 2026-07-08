@@ -9,11 +9,10 @@ static func start_new_match(ctx: TableContext, seed_value: int = -1) -> void:
 	ctx.hand_end_dialog.close()
 	clear_trick_cards(ctx)
 
+	ctx.launch_config = GameSession.take_launch_config()
 	ctx.match_controller = LocalMatchController.new()
 	ctx.match_manager = ctx.match_controller.match_manager
-	for player_index in range(1, HeartsRules.PLAYER_COUNT):
-		var strategy: AiStrategy = AiPersonalityCatalog.create_for_opponent_seat(player_index)
-		ctx.match_manager.set_ai_player(player_index, AiPlayer.new(strategy))
+	SeatSetup.apply_ai_to_match_manager(ctx.match_manager, ctx.launch_config.seat_assignments)
 	ctx.match_controller.start_new_match(seed_value)
 
 	await TableDealing.play_sequence(ctx)
@@ -36,6 +35,8 @@ static func clear_trick_cards(ctx: TableContext) -> void:
 static func on_replay_requested(ctx: TableContext) -> void:
 	clear_trick_cards(ctx)
 	ctx.match_end_dialog.close()
+	if ctx.launch_config != null:
+		GameSession.set_launch_config(ctx.launch_config)
 	await start_new_match(ctx)
 
 
