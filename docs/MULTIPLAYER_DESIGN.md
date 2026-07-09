@@ -1,7 +1,7 @@
 # Conception multijoueur — Dame de Pique
 
 > **Dernière mise à jour :** juillet 2026 — ADR-024  
-> Références : `docs/MULTIPLAYER_AUDIT.md`, `docs/DECISIONS.md`, notes `docs/godot multiplayer steam.md`
+> Références : `docs/MULTIPLAYER_AUDIT.md`, `docs/DECISIONS.md`, `docs/godot multiplayer steam.md`, `docs/Multiplayer basics in godot.md`
 
 ## Principe réseau
 
@@ -30,7 +30,7 @@ Passage de manette / écran entre joueurs locaux :
 3. Aucune main visible pendant le passage.
 4. Pli en cours et scores restent publics.
 
-**Phase B** : overlay confidentialité (`HotSeatPrivacyOverlay`).  
+**Phase B** : overlay confidentialité (`HotSeatPrivacyOverlay`) — livré.  
 **Futur (hors MVP)** : mains sur téléphone via navigateur (QR code) — complexité élevée.
 
 ### En ligne (LAN P2P)
@@ -69,7 +69,7 @@ Implémentation : phase D (`DisconnectState`, messages `peer_disconnected`, `sea
 | 5.5 | ✅ | `LocalPlayerProfile`, sauvegarde v1 |
 | 6 | ✅ | `LobbyState`, `LobbyService` (local simulé) |
 | **A** | ✅ | `MatchMode`, `MatchLaunchConfig`, menu modes, `SeatSetup` |
-| **B** | ⏳ | Hot seat : overlay passage + `active_human_seat` |
+| **B** | ✅ | Hot seat : overlay passage + `active_human_seat` |
 | **C** | ⏳ | ENet : `NetworkService`, host/client controllers, lobby IP:port |
 | **D** | ⏳ | Déconnexion 30 s, reconnexion, remplacement IA |
 | **E** | ⏳ | Android LAN (host/client, IP locale) |
@@ -145,3 +145,30 @@ Fichiers prévus :
 - `NetworkService` stub jusqu'à phase C.
 
 Voir `docs/MULTIPLAYER_AUDIT.md` pour l'audit phase 0.
+
+---
+
+## Références externes
+
+### `docs/Multiplayer basics in godot.md` (workshop Godot Days)
+
+Transcription du tutoriel **ENet P2P, host autoritaire, RPC, MultiplayerSpawner/Synchronizer**.
+
+| Sujet tutoriel | Notre choix (ADR-024) | Phase |
+|----------------|----------------------|-------|
+| ENet host + client (`ENetMultiplayerPeer`) | ✅ `NetworkService` | C |
+| Host = vérité du jeu | ✅ `MatchManager` côté host uniquement | C |
+| Clients envoient inputs / messages | ✅ `request_play_card` → validation host | C |
+| `peer_connected` / déconnexion | ✅ spec phase D (30 s, reconnexion) | D |
+| Debug 2 instances Godot (localhost) | ✅ tests LAN locaux | C |
+| `MultiplayerSpawner` (spawn joueurs) | ❌ 4 sièges fixes, pas de spawn scène | — |
+| `MultiplayerSynchronizer` (sync continue) | ❌ snapshots + événements discrets | — |
+| `@rpc any_peer call_local` sur gameplay | ❌ host valide ; pas de double application | C |
+| `is_multiplayer_authority` sur input | ≈ `submit_action` + siège actif hot seat | B/C |
+| Serveur headless dédié | ❌ P2P host-joueur en MVP | — |
+
+**Usage agent :** skill projet `dame-de-pique-multiplayer` + skill global `godot-multiplayer-turn-based`.
+
+### `docs/godot multiplayer steam.md`
+
+Notes Steam / GodotSteam — phase F, même couche messages que ENet.

@@ -48,6 +48,7 @@ Priorité : **toujours préférer un skill projet** s'il existe pour Dame de piq
 | Skill | Fichier | Quand l'utiliser |
 |-------|---------|------------------|
 | **dame-de-pique-ai-gameplay** | [SKILL.md](.cursor/skills/dame-de-pique-ai-gameplay/SKILL.md) | IA adverses, Lune, suspicion, personnalités, confiance, messages table, `AdaptiveAiStrategy`, simulation équilibre |
+| **dame-de-pique-multiplayer** | [SKILL.md](.cursor/skills/dame-de-pique-multiplayer/SKILL.md) | Modes solo/hot seat/LAN, host autoritaire, snapshots, `SeatSetup`, phases A–G |
 | **godot-pixel-ui-button** | [SKILL.md](.cursor/skills/godot-pixel-ui-button/SKILL.md) | Boutons NinePatch, menus, HUD pixel art, `button_template.tscn` |
 | **godot-performance-dame-de-pique** | [SKILL.md](.cursor/skills/godot-performance-dame-de-pique/SKILL.md) | Perf 2D cartes/UI, preload, profilage (pas physique 3D) |
 | **context7-mcp** | [SKILL.md](.cursor/skills/context7-mcp/SKILL.md) | API Godot 4.7 / GDScript — doc à jour via MCP Context7 |
@@ -67,7 +68,8 @@ Priorité : **toujours préférer un skill projet** s'il existe pour Dame de piq
 | i18n / traductions | `localization` (perso) — `translations/*.csv`, `LocaleAware` |
 | Nouveau écran menu | `godot-pixel-ui-button` + `gdscript-patterns` (perso) |
 | Simulation 1000 parties | `dame-de-pique-ai-gameplay` → `simulation/README.md` + télémétrie `telemetry-metrics.md` |
-| Multijoueur futur | `docs/MULTIPLAYER_DESIGN.md` + `multiplayer-basics` (perso) |
+| Multijoueur (modes, hot seat, LAN, réseau) | `dame-de-pique-multiplayer` + `docs/MULTIPLAYER_DESIGN.md` + ADR-024 |
+| Multijoueur futur | `dame-de-pique-multiplayer` + `godot-multiplayer-turn-based` (global) + `docs/Multiplayer basics in godot.md` |
 | Jeu de cartes (autre titre) | `card-game-ai-design` (perso) |
 
 ---
@@ -119,6 +121,7 @@ Liste complète GodotPrompter : `~/.cursor/skills/` (60+ skills).
 | [godot.mdc](.cursor/rules/godot.mdc) | **Toujours** — architecture, stack, conventions repo |
 | [context7.mdc](.cursor/rules/context7.mdc) | Doc Godot via MCP |
 | [ai-gameplay.mdc](.cursor/rules/ai-gameplay.mdc) | Fichiers `scripts/ai/**`, tests Lune/IA, simulation |
+| [multiplayer.mdc](.cursor/rules/multiplayer.mdc) | Fichiers `scripts/network/**`, hot seat, lobby, docs MULTIPLAYER |
 
 ---
 
@@ -126,7 +129,8 @@ Liste complète GodotPrompter : `~/.cursor/skills/` (60+ skills).
 
 | Hook | Déclencheur | Effet |
 |------|-------------|--------|
-| `after-ai-gameplay-edit.ps1` | Après édition fichier IA / Lune / tests IA | Rappel à l'agent : lancer tests `test_moon_*`, `test_adaptive_*`, `test_ai_*` |
+| `after-ai-gameplay-edit.ps1` | Après édition fichier IA / Lune / tests IA | Rappel : tests `test_moon_*`, `test_adaptive_*`, `test_ai_*` |
+| `after-multiplayer-edit.ps1` | Après édition réseau / hot seat / lobby | Rappel : skill `dame-de-pique-multiplayer`, tests seat/setup/hot seat |
 
 ---
 
@@ -150,7 +154,9 @@ Liste complète GodotPrompter : `~/.cursor/skills/` (60+ skills).
 | [docs/DECISIONS.md](docs/DECISIONS.md) | ADR — dont **ADR-023** (IA gameplay) |
 | [docs/TECHNICAL_DESIGN.md](docs/TECHNICAL_DESIGN.md) | UI table, scènes |
 | [docs/TEST_PLAN.md](docs/TEST_PLAN.md) | Stratégie tests |
+| [docs/MULTIPLAYER_DESIGN.md](docs/MULTIPLAYER_DESIGN.md) | Spec multijoueur, phases A–G, références tutoriel Godot |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Étapes projet |
+| [docs/Multiplayer basics in godot.md](docs/Multiplayer%20basics%20in%20godot.md) | Workshop ENet (référence externe) |
 | [simulation/README.md](simulation/README.md) | Batch 1000 parties |
 
 ---

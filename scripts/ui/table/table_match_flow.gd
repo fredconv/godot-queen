@@ -22,6 +22,7 @@ static func start_new_match(ctx: TableContext, seed_value: int = -1) -> void:
 	TableDisplay.refresh_scores(ctx)
 	TableDisplay.refresh_turn_ui(ctx)
 	await TablePlayFlow.run_ai_turns(ctx)
+	await TableHotSeat.ensure_local_human_ready(ctx)
 
 
 static func clear_trick_cards(ctx: TableContext) -> void:
@@ -100,7 +101,7 @@ static func show_match_end_popup(ctx: TableContext) -> void:
 		ctx.match_manager.last_hand_scores,
 		character_ids
 	)
-	if winner_index == TableConstants.HUMAN_INDEX:
+	if winner_index == ctx.get_local_human_seat():
 		ctx.victory_petals.play()
 
 

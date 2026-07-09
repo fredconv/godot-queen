@@ -30,18 +30,19 @@ static func refresh_cumulative_scoreboard(ctx: TableContext) -> void:
 
 static func refresh_turn_ui(ctx: TableContext) -> void:
 	var playing: bool = ctx.match_manager.phase == MatchManager.Phase.PLAYING
+	var local_seat: int = ctx.get_local_human_seat()
 	for player_index in range(HeartsRules.PLAYER_COUNT):
 		ctx.seats[player_index].set_active_turn(playing and player_index == ctx.match_manager.current_player)
 
 	if playing:
-		if ctx.match_manager.current_player == TableConstants.HUMAN_INDEX:
-			ctx.top_menu_bar.set_turn_text(_human_turn_hint_text(ctx))
+		if ctx.is_local_human_turn():
+			ctx.top_menu_bar.set_turn_text(_human_turn_hint_text(ctx, local_seat))
 		else:
 			ctx.top_menu_bar.set_turn_text(
 				TableCopy.opponent_turn_line(ctx.seats[ctx.match_manager.current_player].player_name)
 			)
-		var hand_score: int = ctx.match_manager.get_current_hand_raw_scores()[TableConstants.HUMAN_INDEX]
-		var match_score: int = ctx.match_manager.score_manager.get_score(TableConstants.HUMAN_INDEX)
+		var hand_score: int = ctx.match_manager.get_current_hand_raw_scores()[local_seat]
+		var match_score: int = ctx.match_manager.score_manager.get_score(local_seat)
 		ctx.top_menu_bar.set_score_text(TableCopy.hand_match_score_line(hand_score, match_score))
 
 	refresh_human_hand_legality(ctx)
@@ -60,19 +61,19 @@ static func refresh_human_hand_legality(ctx: TableContext) -> void:
 		card_view.mouse_filter = Control.MOUSE_FILTER_STOP if is_legal else Control.MOUSE_FILTER_IGNORE
 
 
-static func _human_turn_hint_text(ctx: TableContext) -> String:
+static func _human_turn_hint_text(ctx: TableContext, local_seat: int) -> String:
 	var is_leading := ctx.match_manager.trick_manager.played_count() == 0
 	var rule_engine: RuleEngine = ctx.match_manager.rule_engine
 	var must_play_two_of_clubs := false
 	var hearts_not_broken_lead := false
 
 	if is_leading and rule_engine.is_first_trick:
-		var legal := ctx.match_manager.get_legal_plays(TableConstants.HUMAN_INDEX)
+		var legal := ctx.match_manager.get_legal_plays(local_seat)
 		must_play_two_of_clubs = legal.size() == 1 and HeartsRules.is_two_of_clubs(legal[0])
 		return TableCopy.human_turn_hint(true, must_play_two_of_clubs, false)
 
 	if is_leading and not rule_engine.hearts_broken:
-		for card in ctx.match_manager.get_legal_plays(TableConstants.HUMAN_INDEX):
+		for card in ctx.match_manager.get_legal_plays(local_seat):
 			if not card.is_heart():
 				hearts_not_broken_lead = true
 				break
@@ -82,10 +83,11 @@ static func _human_turn_hint_text(ctx: TableContext) -> String:
 
 
 static func current_human_legal_plays(ctx: TableContext) -> Array[CardModel]:
+	var local_seat: int = ctx.get_local_human_seat()
 	if ctx.match_manager.phase != MatchManager.Phase.PLAYING \
-			or ctx.match_manager.current_player != TableConstants.HUMAN_INDEX:
+			or ctx.match_manager.current_player != local_seat:
 		return []
-	return ctx.match_manager.get_legal_plays(TableConstants.HUMAN_INDEX)
+	return ctx.match_manager.get_legal_plays(local_seat)
 
 
 static func card_in_list(card: CardModel, cards: Array[CardModel]) -> bool:

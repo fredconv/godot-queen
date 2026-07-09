@@ -6,15 +6,16 @@ extends RefCounted
 static func on_human_card_selected(ctx: TableContext, card_view: Control, card: CardModel) -> void:
 	if not is_instance_valid(card_view):
 		return
-	if ctx.turn_locked or ctx.match_manager.current_player != TableConstants.HUMAN_INDEX:
+	if ctx.turn_locked or not ctx.is_local_human_turn():
 		return
 	if ctx.match_manager.is_match_over():
 		return
 	if not TableDisplay.card_in_list(card, TableDisplay.current_human_legal_plays(ctx)):
 		return
 
+	var local_seat: int = ctx.get_local_human_seat()
 	var action_result: ActionResult = ctx.match_controller.submit_action(
-		PlayCardAction.new(TableConstants.HUMAN_INDEX, card)
+		PlayCardAction.new(local_seat, card)
 	)
 	var result: MatchManager.PlayResult = action_result.play_result
 	if result == null or not result.success:
@@ -23,7 +24,7 @@ static func on_human_card_selected(ctx: TableContext, card_view: Control, card: 
 	ctx.turn_locked = true
 	var start_center: Vector2 = card_view.get_global_transform_with_canvas() * (card_view.size / 2.0)
 	TableHumanHand.rebuild(ctx)
-	await animate_card_play(ctx, TableConstants.HUMAN_INDEX, card, start_center)
+	await animate_card_play(ctx, local_seat, card, start_center)
 	if not ctx.is_active():
 		return
 	await handle_post_play(ctx, result)
@@ -34,9 +35,16 @@ static func on_human_card_selected(ctx: TableContext, card_view: Control, card: 
 	if ctx.match_manager.is_match_over():
 		return
 
+	await TableHotSeat.ensure_local_human_ready(ctx)
+	if not ctx.is_active():
+		return
+
 	if ctx.match_manager.phase == MatchManager.Phase.PLAYING \
 			and ctx.match_manager.is_ai_controlled(ctx.match_manager.current_player):
 		await run_ai_turns(ctx)
+		if not ctx.is_active():
+			return
+		await TableHotSeat.ensure_local_human_ready(ctx)
 
 
 static func run_ai_turns(ctx: TableContext) -> void:
@@ -93,6 +101,7 @@ static func run_ai_turns(ctx: TableContext) -> void:
 
 	ctx.unlock_turn()
 	TableDisplay.refresh_turn_ui(ctx)
+	await TableHotSeat.ensure_local_human_ready(ctx)
 
 
 static func animate_card_play(
@@ -152,6 +161,7 @@ static func handle_post_play(ctx: TableContext, result: MatchManager.PlayResult)
 		await TablePlayFlow.run_ai_turns(ctx)
 		if not ctx.is_active():
 			return
+		await TableHotSeat.ensure_local_human_ready(ctx)
 
 	TableDisplay.refresh_turn_ui(ctx)
 

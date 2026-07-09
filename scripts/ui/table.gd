@@ -21,6 +21,8 @@ var _confirm_action: ConfirmAction = ConfirmAction.NONE
 @onready var _scores_screen: Control = $UILayer/ScoresScreen
 @onready var _settings_screen: Control = $UILayer/SettingsScreen
 @onready var _help_screen: Control = $UILayer/HelpScreen
+@onready var _human_hand_area: Control = $HumanHandArea
+@onready var _hot_seat_overlay: HotSeatPrivacyOverlay = $HotSeatLayer/HotSeatPrivacyOverlay
 @onready var _trick_area: Control = $TrickArea
 @onready var _background_color: ColorRect = $Background/ColorFill
 @onready var _background_texture: TextureRect = $Background/TextureFill
@@ -80,6 +82,8 @@ func _build_context() -> TableContext:
 	ctx.background_texture = _background_texture
 	ctx.seats = _seats
 	ctx.trick_slots = _trick_slots
+	ctx.human_hand_area = _human_hand_area
+	ctx.hot_seat_overlay = _hot_seat_overlay
 	return ctx
 
 

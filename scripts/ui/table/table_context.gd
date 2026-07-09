@@ -34,10 +34,28 @@ var queen_avatar_burst: QueenOfSpadesAvatarBurst
 
 var seats: Array[PlayerSeat] = []
 var trick_slots: Array[Control] = []
+var human_hand_area: Control
+var hot_seat_overlay: HotSeatPrivacyOverlay
 
 
 func is_active() -> bool:
 	return host != null and host.is_inside_tree() and not scene_exiting
+
+
+func get_local_human_seat() -> int:
+	if launch_config != null:
+		return launch_config.get_local_player_seat()
+	return TableConstants.HUMAN_INDEX
+
+
+func is_hot_seat_multi_human() -> bool:
+	return launch_config != null and launch_config.is_hot_seat_multi_human()
+
+
+func is_local_human_turn() -> bool:
+	if match_manager == null:
+		return false
+	return match_manager.current_player == get_local_human_seat()
 
 
 func unlock_turn() -> void:

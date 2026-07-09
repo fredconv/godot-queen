@@ -71,6 +71,11 @@ Suivi des étapes de développement. Chaque étape doit être validée avant de 
 - Identités siège, lobby local simulé, audit et design : voir `docs/MULTIPLAYER_DESIGN.md`.
 - Réseau réel (ENet, phases C+) : **non implémenté**.
 
+## Étape 7.7 — Hot seat confidentialité (phase B) ✅
+
+- Overlay passage d'appareil (`HotSeatPrivacyOverlay`), rotation `active_human_seat_index`.
+- Main visible uniquement pour le joueur actif ; Espace/Entrée pour reprendre.
+
 ## Étape 7.6 — Modes de jeu multijoueur (phase A) ✅
 
 - ADR-024 : solo, hot seat, en ligne (spec complète dans `docs/MULTIPLAYER_DESIGN.md`).

@@ -32,3 +32,22 @@ func get_local_player_seat() -> int:
 			return 0
 		_:
 			return 0
+
+
+func is_hot_seat_multi_human() -> bool:
+	return mode == MatchMode.Type.HOT_SEAT and get_human_seat_indices().size() > 1
+
+
+func get_display_name_for_seat(seat_index: int) -> String:
+	for assignment: SeatAssignment in seat_assignments:
+		if assignment.seat_index == seat_index and assignment.profile != null:
+			return assignment.profile.display_name
+	return "Player %d" % (seat_index + 1)
+
+
+func needs_handoff_for_current_player(current_player: int) -> bool:
+	if not is_hot_seat_multi_human():
+		return false
+	if current_player not in get_human_seat_indices():
+		return false
+	return current_player != active_human_seat_index

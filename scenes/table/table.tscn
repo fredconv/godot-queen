@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/table.gd" id="1_table"]
 [ext_resource type="PackedScene" path="res://scenes/components/top_menu_bar.tscn" id="2_topbar"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://scenes/menus/scores_screen.tscn" id="9_scores"]
 [ext_resource type="PackedScene" path="res://scenes/menus/settings_screen.tscn" id="10_settings"]
 [ext_resource type="PackedScene" path="res://scenes/menus/help_screen.tscn" id="11_help"]
+[ext_resource type="PackedScene" path="res://scenes/table/hot_seat_privacy_overlay.tscn" id="12_hot_seat"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
 bg_color = Color(1, 1, 1, 0.08)
@@ -219,3 +220,13 @@ anchor_bottom = 1.0
 [node name="HelpScreen" parent="UILayer" instance=ExtResource("11_help")]
 anchor_right = 1.0
 anchor_bottom = 1.0
+
+[node name="HotSeatLayer" type="CanvasLayer" parent="."]
+layer = 11
+
+[node name="HotSeatPrivacyOverlay" parent="HotSeatLayer" instance=ExtResource("12_hot_seat")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

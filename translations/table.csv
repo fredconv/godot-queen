@@ -157,3 +157,5 @@ TB_AI_STRATEGY_SUSPECT_MOON,%s pense que %s vise la Lune.,%s thinks %s is aiming
 TB_TRICK_HISTORY_TITLE,Derniers plis,Recent tricks,Letzte Stiche,Últimas manos,Últimos truques,最近墩
 TB_TRICK_HISTORY_EMPTY,Aucun pli terminé dans cette manche.,No completed tricks in this hand yet.,Noch kein abgeschlossener Stich in dieser Hand.,Ninguna mano completada en esta ronda.,Nenhum truque concluído nesta mão.,本轮尚无已完成的墩。
 TB_TRICK_HISTORY_LINE,Pli %d — gagnant : %s (%d pt),Trick %d — winner: %s (%d pts),Stich %d — Gewinner: %s (%d Pkt),Mano %d — ganador: %s (%d pts),Truque %d — vencedor: %s (%d pts),第 %d 墩 — 赢家：%s（%d 分）
+TB_HOT_SEAT_PASS_TITLE,Passez l'appareil à %s,Pass the device to %s,Gerät an %s übergeben,Pasa el dispositivo a %s,Passe o aparelho para %s,请将设备交给 %s
+TB_HOT_SEAT_PASS_HINT,Appuyez sur Espace ou Entrée pour continuer,Press Space or Enter to continue,Leertaste oder Eingabetaste drücken,Pulsa Espacio o Intro para continuar,Pressione Espaço ou Enter para continuar,按空格或回车继续

@@ -8,7 +8,7 @@ static func rebuild(ctx: TableContext) -> void:
 		ctx.player_bottom_hand.remove_child(child)
 		child.queue_free()
 	ctx.hand_card_views.clear()
-	ctx.hand_cards = ctx.match_manager.hands[TableConstants.HUMAN_INDEX].cards()
+	ctx.hand_cards = ctx.match_manager.hands[ctx.get_local_human_seat()].cards()
 
 	var count: int = ctx.hand_cards.size()
 	var step: float = TableConstants.HAND_FAN_SPREAD_DEG / maxf(count - 1, 1.0)
