@@ -65,6 +65,18 @@ static func create_local_humans(
 	return config
 
 
+static func create_online_from_lobby(
+	lobby: LobbyState,
+	is_host: bool,
+	local_seat_index: int
+) -> MatchLaunchConfig:
+	var config := MatchLaunchConfig.new()
+	config.mode = MatchMode.Type.ONLINE_HOST if is_host else MatchMode.Type.ONLINE_CLIENT
+	config.seat_assignments = lobby.seats.duplicate()
+	config.active_human_seat_index = local_seat_index if local_seat_index >= 0 else 0
+	return config
+
+
 static func apply_ai_to_match_manager(match_manager: MatchManager, assignments: Array[SeatAssignment]) -> void:
 	for assignment: SeatAssignment in assignments:
 		var seat_index: int = assignment.seat_index

@@ -24,6 +24,8 @@ func get_local_player_seat() -> int:
 	match mode:
 		MatchMode.Type.HOT_SEAT:
 			return active_human_seat_index
+		MatchMode.Type.ONLINE_HOST:
+			return 0
 		MatchMode.Type.ONLINE_CLIENT:
 			var local_id: String = PlayerProfileService.get_player_id()
 			for assignment: SeatAssignment in seat_assignments:

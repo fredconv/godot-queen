@@ -70,7 +70,7 @@ Implémentation : phase D (`DisconnectState`, messages `peer_disconnected`, `sea
 | 6 | ✅ | `LobbyState`, `LobbyService` (local simulé) |
 | **A** | ✅ | `MatchMode`, `MatchLaunchConfig`, menu modes, `SeatSetup` |
 | **B** | ✅ | Hot seat : overlay passage + `active_human_seat` |
-| **C** | ⏳ | ENet : `NetworkService`, host/client controllers, lobby IP:port |
+| **C** | ✅ | ENet : `NetworkService`, host/client controllers, lobby IP:port |
 | **D** | ⏳ | Déconnexion 30 s, reconnexion, remplacement IA |
 | **E** | ⏳ | Android LAN (host/client, IP locale) |
 | **F** | ⏳ | Steam (GodotSteam) |
@@ -142,7 +142,7 @@ Fichiers prévus :
 - Pas de prédiction visuelle client.
 - Pas de backend compte / OAuth.
 - Pas de matchmaking Internet (LAN / Steam relay plus tard).
-- `NetworkService` stub jusqu'à phase C.
+- `NetworkService` stub jusqu'à phase C — **phase C livrée** (ENet LAN).
 
 Voir `docs/MULTIPLAYER_AUDIT.md` pour l'audit phase 0.
 

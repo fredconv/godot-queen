@@ -7,6 +7,7 @@ const ERROR_WRONG_PHASE: StringName = &"wrong_phase"
 const ERROR_NOT_YOUR_TURN: StringName = &"not_your_turn"
 const ERROR_RULE_VIOLATION: StringName = &"rule_violation"
 const ERROR_INVALID_ACTION: StringName = &"invalid_action"
+const ERROR_PENDING: StringName = &"pending"
 
 var success: bool = false
 var error_code: StringName = ERROR_NONE

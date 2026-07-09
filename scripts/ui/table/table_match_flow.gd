@@ -10,10 +10,13 @@ static func start_new_match(ctx: TableContext, seed_value: int = -1) -> void:
 	clear_trick_cards(ctx)
 
 	ctx.launch_config = GameSession.take_launch_config()
-	ctx.match_controller = LocalMatchController.new()
-	ctx.match_manager = ctx.match_controller.match_manager
+	var match_seed: int = seed_value
+	if match_seed < 0 and GameSession.online_match_seed >= 0:
+		match_seed = GameSession.online_match_seed
+		GameSession.online_match_seed = -1
+	_setup_match_controller(ctx)
 	SeatSetup.apply_ai_to_match_manager(ctx.match_manager, ctx.launch_config.seat_assignments)
-	ctx.match_controller.start_new_match(seed_value)
+	ctx.match_controller.start_new_match(match_seed)
 
 	await TableDealing.play_sequence(ctx)
 	if not ctx.is_active():
@@ -21,8 +24,25 @@ static func start_new_match(ctx: TableContext, seed_value: int = -1) -> void:
 	TableLocale.apply(ctx)
 	TableDisplay.refresh_scores(ctx)
 	TableDisplay.refresh_turn_ui(ctx)
-	await TablePlayFlow.run_ai_turns(ctx)
+	if not ctx.is_online_client():
+		await TablePlayFlow.run_ai_turns(ctx)
 	await TableHotSeat.ensure_local_human_ready(ctx)
+
+
+static func _setup_match_controller(ctx: TableContext) -> void:
+	if ctx.launch_config.mode == MatchMode.Type.ONLINE_HOST:
+		var host_controller := HostMatchController.new()
+		ctx.match_controller = host_controller
+		ctx.match_manager = host_controller.match_controller.match_manager
+		NetworkMatchRelay.register_table(ctx, host_controller)
+	elif ctx.launch_config.mode == MatchMode.Type.ONLINE_CLIENT:
+		var client_controller := ClientMatchController.new()
+		ctx.match_controller = client_controller
+		ctx.match_manager = client_controller.match_controller.match_manager
+		NetworkMatchRelay.register_table(ctx)
+	else:
+		ctx.match_controller = LocalMatchController.new()
+		ctx.match_manager = (ctx.match_controller as LocalMatchController).match_manager
 
 
 static func clear_trick_cards(ctx: TableContext) -> void:
@@ -49,6 +69,9 @@ static func on_quit_requested(ctx: TableContext) -> void:
 
 static func return_to_main_menu(ctx: TableContext) -> void:
 	ctx.scene_exiting = true
+	NetworkMatchRelay.unregister_table()
+	if NetworkService.is_online():
+		NetworkService.disconnect_from_host()
 	ctx.host.get_tree().call_deferred("change_scene_to_file", TableConstants.MAIN_MENU_SCENE_PATH)
 
 

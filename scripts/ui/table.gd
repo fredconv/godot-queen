@@ -54,6 +54,7 @@ func _ready() -> void:
 	_confirm_dialog.confirmed.connect(_on_confirm_dialog_confirmed)
 	_match_end_dialog.replay_requested.connect(_on_match_end_replay_requested)
 	_match_end_dialog.quit_requested.connect(_on_match_end_quit_requested)
+	NetworkMatchRelay.play_rejected.connect(_on_network_play_rejected)
 	TableChrome.setup_music_controls(_ctx)
 	LocaleAware.bind(self, _on_locale_changed)
 	TableLocale.refresh_seat_names(_ctx)
@@ -64,7 +65,15 @@ func _exit_tree() -> void:
 	if _ctx == null:
 		return
 	_ctx.scene_exiting = true
+	NetworkMatchRelay.unregister_table()
 	TableFx.on_exit(_ctx)
+
+
+func _on_network_play_rejected(_error_code: StringName) -> void:
+	if _ctx == null:
+		return
+	_ctx.unlock_turn()
+	TableDisplay.refresh_turn_ui(_ctx)
 
 
 func _build_context() -> TableContext:

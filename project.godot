@@ -25,6 +25,8 @@ StatsService="*res://scripts/services/stats_service.gd"
 AudioService="*res://scripts/services/audio_service.gd"
 DebugService="*res://scripts/services/debug_service.gd"
 GameSession="*res://scripts/services/game_session.gd"
+NetworkService="*res://scripts/network/network_service.gd"
+NetworkMatchRelay="*res://scripts/network/network_match_relay.gd"
 
 [display]
 

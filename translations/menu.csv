@@ -42,4 +42,15 @@ MN_HOT_SEAT_START,LANCER,START,STARTEN,INICIAR,INICIAR,开始
 MN_MP_TITLE,Multijoueur,Multiplayer,Mehrspieler,Multijugador,Multijogador,多人游戏
 MN_MP_HOST,Héberger une partie,Host game,Spiel hosten,Crear partida,Hospedar partida,创建房间
 MN_MP_JOIN,Rejoindre,Join,Beitreten,Unirse,Entrar,加入
+MN_MP_START,LANCER LA PARTIE,START MATCH,SPIEL STARTEN,INICIAR PARTIDA,INICIAR PARTIDA,开始游戏
+MN_MP_ADDRESS,Adresse,Address,Adresse,Dirección,Endereço,地址
+MN_MP_PORT,Port,Port,Port,Puerto,Porta,端口
+MN_MP_LOBBY_HINT,"LAN ENet : hébergez ou rejoignez une partie (1 à 4 joueurs).","ENet LAN: host or join a game (1 to 4 players).","ENet-LAN: Spiel hosten oder beitreten (1–4 Spieler).","LAN ENet: crea o únete a una partida (1–4 jugadores).","LAN ENet: hospede ou entre numa partida (1–4 jogadores).",ENet 局域网：创建或加入游戏（1–4 名玩家）。
+MN_MP_HOSTING_STATUS,"Hébergement port %s — %d joueur(s) connecté(s).","Hosting port %s — %d player(s) connected.","Hosting Port %s — %d Spieler verbunden.","Alojando puerto %s — %d jugador(es) conectado(s).","Hospedando porta %s — %d jogador(es) conectado(s).",托管端口 %s — 已连接 %d 名玩家。
+MN_MP_CONNECTING_STATUS,Connexion en cours…,Connecting…,Verbindung…,Conectando…,A conectar…,连接中…
+MN_MP_CONNECTED_STATUS,Connecté — en attente du lancement par l'hôte.,Connected — waiting for host to start.,Verbunden — warte auf Host-Start.,Conectado — esperando al anfitrión.,Conectado — à espera do anfitrião.,已连接 — 等待主机开始。
+MN_MP_ERROR_HOST,Échec hébergement : %s,Host failed: %s,Hosting fehlgeschlagen: %s,Error al crear partida: %s,Falha ao hospedar: %s,创建房间失败：%s
+MN_MP_ERROR_JOIN,Échec connexion : %s,Join failed: %s,Beitritt fehlgeschlagen: %s,Error al unirse: %s,Falha ao entrar: %s,加入失败：%s
+MN_MP_ERROR_START,Impossible de lancer : %s,Cannot start: %s,Start fehlgeschlagen: %s,No se puede iniciar: %s,Não foi possível iniciar: %s,无法开始：%s
+MN_MP_ERROR_CONNECTION,Connexion impossible.,Connection failed.,Verbindung fehlgeschlagen.,Conexión fallida.,Falha na ligação.,连接失败。
 MN_MP_COMING_SOON,"Réseau ENet (LAN) — disponible à la phase C.\nHéberger / Rejoindre seront activés ensuite.","ENet networking (LAN) — coming in phase C.\nHost / Join will be enabled later.","ENet-Netzwerk (LAN) — kommt in Phase C.\nHosten / Beitreten folgen später.","Red ENet (LAN) — disponible en fase C.\nCrear / Unirse se activarán después.","Rede ENet (LAN) — disponível na fase C.\nHospedar / Entrar serão ativados depois.",ENet 网络（局域网）— 阶段 C 推出。\n创建/加入功能稍后启用。

@@ -9,6 +9,7 @@ extends Node
 
 var match_in_progress: bool = false
 var _pending_launch_config: MatchLaunchConfig = null
+var online_match_seed: int = -1
 
 
 func set_launch_config(config: MatchLaunchConfig) -> void:

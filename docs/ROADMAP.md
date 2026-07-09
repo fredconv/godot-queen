@@ -71,6 +71,12 @@ Suivi des étapes de développement. Chaque étape doit être validée avant de 
 - Identités siège, lobby local simulé, audit et design : voir `docs/MULTIPLAYER_DESIGN.md`.
 - Réseau réel (ENet, phases C+) : **non implémenté**.
 
+## Étape 7.8 — Multijoueur en ligne LAN (phase C) ✅
+
+- `NetworkService` + `NetworkMatchRelay` (autoloads ENet P2P).
+- `HostMatchController` / `ClientMatchController`, lobby IP:port, 1–4 humains.
+- Déconnexion avancée (30 s) = phase D.
+
 ## Étape 7.7 — Hot seat confidentialité (phase B) ✅
 
 - Overlay passage d'appareil (`HotSeatPrivacyOverlay`), rotation `active_human_seat_index`.

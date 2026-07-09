@@ -358,4 +358,4 @@ Registre des décisions d'architecture importantes, au format court : contexte, 
 6. **Steam** : phase ultérieure (GodotSteam), même couche messages ; pas bloquant pour LAN.
 7. **Navigateur mobile (QR)** : hors MVP ; documenté comme phase G.
 
-**Conséquences** : `MatchLaunchConfig` sur `GameSession` ; `SeatSetup` unifie solo/hot seat/online ; `NetworkService` reste hors autoload jusqu'à phase C ; tests unitaires sur `SeatSetup` et config de lancement.
+**Conséquences** : `MatchLaunchConfig` sur `GameSession` ; `SeatSetup` unifie solo/hot seat/online ; `NetworkService` et `NetworkMatchRelay` en autoload (phase C) ; tests unitaires sur `SeatSetup` et config de lancement.

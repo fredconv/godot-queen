@@ -4,6 +4,7 @@ extends RefCounted
 
 const CardViewScene: PackedScene = preload("res://scenes/components/card_view.tscn")
 const MAIN_MENU_SCENE_PATH: String = "res://scenes/menus/main_menu.tscn"
+const TABLE_SCENE_PATH: String = "res://scenes/table/table.tscn"
 
 const HUMAN_INDEX: int = 0
 

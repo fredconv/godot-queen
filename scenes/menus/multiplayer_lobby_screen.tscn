@@ -29,10 +29,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -160.0
-offset_right = 240.0
-offset_bottom = 160.0
+offset_left = -280.0
+offset_top = -200.0
+offset_right = 280.0
+offset_bottom = 200.0
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
 theme_override_constants/margin_left = 8
@@ -41,7 +41,7 @@ theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
 [node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="TitleLabel" type="Label" parent="Panel/Margin/VBox"]
 theme_override_colors/font_color = Color(0.95, 0.82, 0.45, 1)
@@ -49,23 +49,51 @@ theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 text = "Multijoueur"
 
-[node name="InfoLabel" type="Label" parent="Panel/Margin/VBox"]
+[node name="StatusLabel" type="Label" parent="Panel/Margin/VBox"]
 autowrap_mode = 2
 horizontal_alignment = 1
-text = "Réseau ENet — phase C à venir."
+text = "LAN ENet"
 
-[node name="BtnHost" type="NinePatchButton" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
+[node name="AddressRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+theme_override_constants/separation = 8
+
+[node name="AddressLabel" type="Label" parent="Panel/Margin/VBox/AddressRow"]
+custom_minimum_size = Vector2(64, 0)
+text = "Adresse"
+
+[node name="AddressEdit" type="LineEdit" parent="Panel/Margin/VBox/AddressRow"]
+size_flags_horizontal = 3
+text = "127.0.0.1"
+
+[node name="PortRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+theme_override_constants/separation = 8
+
+[node name="PortLabel" type="Label" parent="Panel/Margin/VBox/PortRow"]
+custom_minimum_size = Vector2(64, 0)
+text = "Port"
+
+[node name="PortEdit" type="LineEdit" parent="Panel/Margin/VBox/PortRow"]
+size_flags_horizontal = 3
+text = "7777"
+
+[node name="BtnHost" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
 layout_mode = 2
 size_flags_horizontal = 4
-disabled = true
 
-[node name="BtnJoin" type="NinePatchButton" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
+[node name="BtnJoin" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
 layout_mode = 2
 size_flags_horizontal = 4
-disabled = true
+
+[node name="BtnStart" type="NinePatchButton" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="BtnBack" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
 layout_mode = 2
 size_flags_horizontal = 4
 
+[connection signal="pressed" from="Panel/Margin/VBox/BtnHost" to="." method="_on_btn_host_pressed"]
+[connection signal="pressed" from="Panel/Margin/VBox/BtnJoin" to="." method="_on_btn_join_pressed"]
+[connection signal="pressed" from="Panel/Margin/VBox/BtnStart" to="." method="_on_btn_start_pressed"]
 [connection signal="pressed" from="Panel/Margin/VBox/BtnBack" to="." method="_on_btn_back_pressed"]

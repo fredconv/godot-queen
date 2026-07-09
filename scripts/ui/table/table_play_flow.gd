@@ -17,6 +17,9 @@ static func on_human_card_selected(ctx: TableContext, card_view: Control, card: 
 	var action_result: ActionResult = ctx.match_controller.submit_action(
 		PlayCardAction.new(local_seat, card)
 	)
+	if action_result.error_code == ActionResult.ERROR_PENDING:
+		ctx.turn_locked = true
+		return
 	var result: MatchManager.PlayResult = action_result.play_result
 	if result == null or not result.success:
 		return
@@ -40,7 +43,8 @@ static func on_human_card_selected(ctx: TableContext, card_view: Control, card: 
 		return
 
 	if ctx.match_manager.phase == MatchManager.Phase.PLAYING \
-			and ctx.match_manager.is_ai_controlled(ctx.match_manager.current_player):
+			and ctx.match_manager.is_ai_controlled(ctx.match_manager.current_player) \
+			and not ctx.is_online_client():
 		await run_ai_turns(ctx)
 		if not ctx.is_active():
 			return
@@ -101,7 +105,55 @@ static func run_ai_turns(ctx: TableContext) -> void:
 
 	ctx.unlock_turn()
 	TableDisplay.refresh_turn_ui(ctx)
-	await TableHotSeat.ensure_local_human_ready(ctx)
+	if not ctx.is_online_client():
+		await TableHotSeat.ensure_local_human_ready(ctx)
+
+
+static func apply_network_play(
+	ctx: TableContext,
+	action: PlayCardAction,
+	action_result: ActionResult
+) -> void:
+	if action == null or action.card == null:
+		ctx.unlock_turn()
+		return
+	var play_result: MatchManager.PlayResult = action_result.play_result
+	if play_result == null or not play_result.success:
+		ctx.unlock_turn()
+		return
+	var player_index: int = action.player_index
+	var start_center: Vector2
+	if player_index == ctx.get_local_human_seat():
+		for card_index in ctx.hand_cards.size():
+			if ctx.hand_cards[card_index].equals(action.card):
+				var card_view: Control = ctx.hand_card_views[card_index]
+				start_center = card_view.get_global_transform_with_canvas() * (card_view.size / 2.0)
+				break
+	var applied: MatchManager.PlayResult = ctx.match_manager.play_card(player_index, action.card)
+	if not applied.success:
+		TableServiceAccess.debug(ctx.host).log_error(
+			"Table: désync client sur coup réseau siège %d" % player_index
+		)
+		ctx.unlock_turn()
+		return
+	ctx.turn_locked = true
+	if player_index == ctx.get_local_human_seat():
+		TableHumanHand.rebuild(ctx)
+	elif start_center == Vector2.ZERO:
+		var seat: PlayerSeat = ctx.seats[player_index]
+		start_center = seat.get_global_transform_with_canvas() * (seat.size / 2.0)
+		seat.hand_card_count = maxi(seat.hand_card_count - 1, 0)
+	if start_center == Vector2.ZERO:
+		var fallback_seat: PlayerSeat = ctx.seats[player_index]
+		start_center = fallback_seat.get_global_transform_with_canvas() * (fallback_seat.size / 2.0)
+	await animate_card_play(ctx, player_index, action.card, start_center)
+	if not ctx.is_active():
+		return
+	await handle_post_play(ctx, applied)
+	if not ctx.is_active():
+		return
+	ctx.unlock_turn()
+	TableDisplay.refresh_turn_ui(ctx)
 
 
 static func animate_card_play(
@@ -158,7 +210,8 @@ static func handle_post_play(ctx: TableContext, result: MatchManager.PlayResult)
 		if not ctx.is_active():
 			return
 		TableDisplay.refresh_scores(ctx)
-		await TablePlayFlow.run_ai_turns(ctx)
+		if not ctx.is_online_client():
+			await TablePlayFlow.run_ai_turns(ctx)
 		if not ctx.is_active():
 			return
 		await TableHotSeat.ensure_local_human_ready(ctx)

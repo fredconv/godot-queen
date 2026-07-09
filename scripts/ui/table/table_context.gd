@@ -5,7 +5,7 @@ extends RefCounted
 
 var host: Control
 var match_manager: MatchManager
-var match_controller: LocalMatchController
+var match_controller: MatchControllerBase
 var launch_config: MatchLaunchConfig = null
 
 var turn_locked: bool = false
@@ -56,6 +56,18 @@ func is_local_human_turn() -> bool:
 	if match_manager == null:
 		return false
 	return match_manager.current_player == get_local_human_seat()
+
+
+func is_online_host() -> bool:
+	return launch_config != null and launch_config.mode == MatchMode.Type.ONLINE_HOST
+
+
+func is_online_client() -> bool:
+	return launch_config != null and launch_config.mode == MatchMode.Type.ONLINE_CLIENT
+
+
+func is_online() -> bool:
+	return is_online_host() or is_online_client()
 
 
 func unlock_turn() -> void:
