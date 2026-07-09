@@ -8,6 +8,7 @@ const ERROR_NOT_YOUR_TURN: StringName = &"not_your_turn"
 const ERROR_RULE_VIOLATION: StringName = &"rule_violation"
 const ERROR_INVALID_ACTION: StringName = &"invalid_action"
 const ERROR_PENDING: StringName = &"pending"
+const ERROR_PLAYER_DISCONNECTED: StringName = &"player_disconnected"
 
 var success: bool = false
 var error_code: StringName = ERROR_NONE

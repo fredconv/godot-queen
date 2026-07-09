@@ -18,6 +18,8 @@ static func start_new_match(ctx: TableContext, seed_value: int = -1) -> void:
 		GameSession.online_match_seed = -1
 	_setup_match_controller(ctx)
 	MoonSuspicionManager.reset_for_match(ctx)
+	if ctx.is_online():
+		TableDisconnectFlow.bind_relay(ctx)
 	SeatSetup.apply_ai_to_match_manager(ctx.match_manager, ctx.launch_config.seat_assignments)
 	ctx.match_controller.start_new_match(match_seed)
 	MoonSuspicionManager.on_new_hand(ctx, ctx.match_manager.hand_number)

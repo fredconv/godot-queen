@@ -64,7 +64,7 @@ En ligne : host valide → `broadcast_moon_suspicion_from_host` → tous les cli
   -a res://tests/unit/test_table_hot_seat.gd `
   -a res://tests/unit/test_table_seat_display_map.gd `
   -a res://tests/unit/test_moon_suspicion_manager.gd `
-  -a res://tests/unit/test_lobby_service.gd
+  -a res://tests/unit/test_disconnect_state.gd `
 ```
 
 Cache `class_name` : `--headless --editor --quit` une fois après nouveau `class_name`.

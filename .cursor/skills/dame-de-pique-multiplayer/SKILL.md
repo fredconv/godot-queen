@@ -47,7 +47,7 @@ Détail hot seat UI + Lune soupçonnée : [reference.md](reference.md)
 | B ✅ | Hot seat : rotation UI, shuffle, overlay 3 s, mains cachées |
 | C ✅ | ENet, host/client, lobby IP:port |
 | — ✅ | Lune soupçonnée (social, hot seat + online) |
-| D ⏳ | Déconnexion 30 s, reconnexion, IA de remplacement |
+| D ✅ | Déconnexion 30 s, reconnexion, IA de remplacement |
 | E–G | Android LAN, Steam, navigateur mobile |
 
 ## Fichiers clés
@@ -56,7 +56,9 @@ Détail hot seat UI + Lune soupçonnée : [reference.md](reference.md)
 scripts/match/match_launch_config.gd
 scripts/match/moon_suspicion_event.gd
 scripts/network/seat_setup.gd
+scripts/network/disconnect_state.gd
 scripts/network/network_match_relay.gd
+scripts/ui/table/table_disconnect_flow.gd
 scripts/ui/table/table_seat_display_map.gd
 scripts/ui/table/table_hot_seat.gd
 scripts/ui/table/hot_seat_privacy_overlay.gd

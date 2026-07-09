@@ -9,9 +9,11 @@ signal peer_connected_to_lobby(peer_id: int)
 signal peer_disconnected_from_lobby(peer_id: int)
 signal lobby_state_changed
 signal match_start_received(seed_value: int, launch_config: MatchLaunchConfig)
+signal seat_pending_disconnect(seat_index: int, display_name: String)
 
 const DEFAULT_PORT: int = 7777
 const MAX_CLIENTS: int = 3
+const COUNTDOWN_BROADCAST_INTERVAL_SEC: float = 1.0
 
 var lobby: LobbyState = LobbyState.new()
 var peer_to_seat: Dictionary = {}
@@ -19,6 +21,8 @@ var local_seat_index: int = -1
 var _is_host: bool = false
 var _is_connected: bool = false
 var _peer: ENetMultiplayerPeer
+var _disconnect_state: DisconnectState = DisconnectState.new()
+var _countdown_broadcast_accum: float = 0.0
 
 
 func _ready() -> void:
@@ -27,6 +31,13 @@ func _ready() -> void:
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
+	set_process(false)
+
+
+func _process(delta: float) -> void:
+	if not _is_host:
+		return
+	_tick_disconnect_state(delta)
 
 
 func host_game(port: int = DEFAULT_PORT) -> Error:
@@ -67,6 +78,8 @@ func disconnect_from_host() -> void:
 	_peer = null
 	_is_host = false
 	_is_connected = false
+	_disconnect_state = DisconnectState.new()
+	set_process(false)
 	_reset_lobby()
 
 
@@ -105,6 +118,19 @@ func get_connected_human_count() -> int:
 	return count
 
 
+func is_seat_pending_reconnect(seat_index: int) -> bool:
+	return _disconnect_state.is_pending(seat_index)
+
+
+func is_player_disconnected(seat_index: int) -> bool:
+	if seat_index < 0 or seat_index >= lobby.seats.size():
+		return false
+	var assignment: SeatAssignment = lobby.seats[seat_index]
+	if assignment.profile == null:
+		return false
+	return assignment.profile.is_human and not assignment.profile.is_connected
+
+
 func build_launch_config_for_local() -> MatchLaunchConfig:
 	var config := MatchLaunchConfig.new()
 	config.seat_assignments = lobby.seats.duplicate()
@@ -134,6 +160,7 @@ func host_start_match() -> Error:
 	NetworkMatchRelay.rpc_start_match.rpc(seed_value, seat_dicts)
 	GameSession.set_launch_config(launch_config)
 	GameSession.online_match_seed = seed_value
+	set_process(true)
 	match_start_received.emit(seed_value, launch_config)
 	return OK
 
@@ -190,8 +217,15 @@ func _on_peer_disconnected(peer_id: int) -> void:
 		return
 	var seat_index: int = int(peer_to_seat.get(peer_id, -1))
 	peer_to_seat.erase(peer_id)
-	if seat_index >= 0 and seat_index < lobby.seats.size():
-		lobby.seats[seat_index] = SeatAssignment.new(seat_index, null)
+	if seat_index < 0 or seat_index >= lobby.seats.size():
+		return
+	var assignment: SeatAssignment = lobby.seats[seat_index]
+	if assignment.profile == null:
+		return
+	if GameSession.match_in_progress and assignment.profile.is_human:
+		_handle_match_disconnect(seat_index, assignment.profile)
+		return
+	lobby.seats[seat_index] = SeatAssignment.new(seat_index, null)
 	lobby_state_changed.emit()
 	peer_disconnected_from_lobby.emit(peer_id)
 	NetworkMatchRelay.rpc_lobby_sync.rpc(lobby.to_dict())
@@ -241,6 +275,10 @@ func apply_lobby_from_network(state_dict: Dictionary) -> void:
 func apply_remote_player_profile(peer_id: int, display_name: String, local_player_id: String) -> void:
 	if not _is_host:
 		return
+	var reconnect_seat: int = _disconnect_state.find_pending_seat_by_player_id(local_player_id)
+	if reconnect_seat >= 0:
+		_complete_reconnection(peer_id, reconnect_seat, display_name, local_player_id)
+		return
 	var seat_index: int = int(peer_to_seat.get(peer_id, -1))
 	if seat_index < 0:
 		return
@@ -266,4 +304,69 @@ func receive_match_start(seed_value: int, seat_dicts: Array) -> void:
 	var launch_config: MatchLaunchConfig = SeatSetup.create_online_from_lobby(lobby, false, local_seat_index)
 	GameSession.set_launch_config(launch_config)
 	GameSession.online_match_seed = seed_value
+	set_process(true)
 	match_start_received.emit(seed_value, launch_config)
+
+
+func _handle_match_disconnect(seat_index: int, profile: PlayerProfile) -> void:
+	profile.is_connected = false
+	_disconnect_state.begin_disconnect(seat_index, profile.display_name, profile.local_player_id)
+	seat_pending_disconnect.emit(seat_index, profile.display_name)
+	NetworkMatchRelay.broadcast_disconnect_event(seat_index, profile.display_name)
+	_countdown_broadcast_accum = 0.0
+
+
+func _complete_reconnection(
+	peer_id: int,
+	seat_index: int,
+	display_name: String,
+	local_player_id: String
+) -> void:
+	if seat_index < 0 or seat_index >= lobby.seats.size():
+		return
+	var assignment: SeatAssignment = lobby.seats[seat_index]
+	if assignment.profile == null:
+		return
+	_disconnect_state.cancel_reconnect(seat_index)
+	assignment.profile.display_name = display_name
+	assignment.profile.local_player_id = local_player_id
+	assignment.profile.peer_id = peer_id
+	assignment.profile.is_connected = true
+	assignment.profile.is_ready = true
+	peer_to_seat[peer_id] = seat_index
+	lobby_state_changed.emit()
+	NetworkMatchRelay.broadcast_peer_reconnected(seat_index, display_name)
+
+
+func _tick_disconnect_state(delta: float) -> void:
+	if not GameSession.match_in_progress:
+		return
+	var expired: Array[int] = _disconnect_state.tick(delta)
+	for seat_index in expired:
+		_replace_seat_with_ai(seat_index)
+	_countdown_broadcast_accum += delta
+	if _countdown_broadcast_accum < COUNTDOWN_BROADCAST_INTERVAL_SEC:
+		return
+	_countdown_broadcast_accum = 0.0
+	for seat_index in _disconnect_state.get_pending_seat_indices():
+		var display_name: String = _disconnect_state.get_display_name(seat_index)
+		var remaining: int = int(ceil(_disconnect_state.get_remaining_sec(seat_index)))
+		NetworkMatchRelay.broadcast_countdown(seat_index, display_name, remaining)
+
+
+func _replace_seat_with_ai(seat_index: int) -> void:
+	if seat_index < 0 or seat_index >= lobby.seats.size():
+		return
+	var assignment: SeatAssignment = lobby.seats[seat_index]
+	if assignment.profile == null:
+		return
+	var display_name: String = assignment.profile.display_name
+	_disconnect_state.mark_replaced_by_ai(seat_index)
+	assignment.profile.is_human = false
+	assignment.profile.is_ai = true
+	assignment.profile.is_connected = false
+	assignment.profile.peer_id = -1
+	var host_controller: HostMatchController = NetworkMatchRelay.get_host_controller()
+	if host_controller != null:
+		SeatSetup.apply_ai_to_match_manager(host_controller.get_match_manager(), lobby.seats)
+	NetworkMatchRelay.broadcast_seat_replaced_by_ai(seat_index, display_name)

@@ -5,6 +5,10 @@ extends Node
 
 signal play_confirmed(action_result: ActionResult)
 signal play_rejected(error_code: StringName)
+signal seat_disconnect_announced(seat_index: int, display_name: String)
+signal seat_reconnect_countdown(seat_index: int, display_name: String, remaining_sec: int)
+signal seat_replaced_by_ai(seat_index: int, display_name: String)
+signal seat_reconnected(seat_index: int, display_name: String)
 
 var _table_ctx: TableContext = null
 var _host_controller: HostMatchController = null
@@ -18,6 +22,10 @@ func register_table(ctx: TableContext, host_controller: HostMatchController = nu
 func unregister_table() -> void:
 	_table_ctx = null
 	_host_controller = null
+
+
+func get_host_controller() -> HostMatchController:
+	return _host_controller
 
 
 @rpc("authority", "call_remote", "reliable")
@@ -50,6 +58,9 @@ func rpc_request_play_card(action_dict: Dictionary) -> void:
 	var peer_id: int = multiplayer.get_remote_sender_id()
 	var seat_index: int = NetworkService.get_seat_for_peer(peer_id)
 	if seat_index < 0:
+		return
+	if NetworkService.is_player_disconnected(seat_index) or NetworkService.is_seat_pending_reconnect(seat_index):
+		rpc_play_rejected.rpc_id(peer_id, ActionResult.ERROR_PLAYER_DISCONNECTED)
 		return
 	var action: PlayCardAction = PlayCardAction.from_dict(action_dict)
 	if action == null or action.player_index != seat_index:
@@ -124,8 +135,71 @@ func rpc_apply_moon_suspicion(event_dict: Dictionary) -> void:
 	await MoonSuspicionManager.apply_network_event(_table_ctx, event)
 
 
+	await MoonSuspicionManager.apply_network_event(_table_ctx, event)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_peer_disconnected(seat_index: int, display_name: String) -> void:
+	if NetworkService.is_host():
+		return
+	seat_disconnect_announced.emit(seat_index, display_name)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_seat_reconnect_countdown(seat_index: int, display_name: String, remaining_sec: int) -> void:
+	if NetworkService.is_host():
+		return
+	seat_reconnect_countdown.emit(seat_index, display_name, remaining_sec)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_seat_replaced_by_ai(seat_index: int, display_name: String) -> void:
+	if NetworkService.is_host():
+		return
+	seat_replaced_by_ai.emit(seat_index, display_name)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_peer_reconnected(seat_index: int, display_name: String) -> void:
+	if NetworkService.is_host():
+		return
+	seat_reconnected.emit(seat_index, display_name)
+
+
+func broadcast_disconnect_event(seat_index: int, display_name: String) -> void:
+	seat_disconnect_announced.emit(seat_index, display_name)
+	for peer_id: int in multiplayer.get_peers():
+		rpc_peer_disconnected.rpc_id(peer_id, seat_index, display_name)
+
+
+func broadcast_countdown(seat_index: int, display_name: String, remaining_sec: int) -> void:
+	seat_reconnect_countdown.emit(seat_index, display_name, remaining_sec)
+	for peer_id: int in multiplayer.get_peers():
+		rpc_seat_reconnect_countdown.rpc_id(peer_id, seat_index, display_name, remaining_sec)
+
+
+func broadcast_seat_replaced_by_ai(seat_index: int, display_name: String) -> void:
+	_sync_table_launch_config_from_lobby()
+	seat_replaced_by_ai.emit(seat_index, display_name)
+	for peer_id: int in multiplayer.get_peers():
+		rpc_seat_replaced_by_ai.rpc_id(peer_id, seat_index, display_name)
+
+
+func broadcast_peer_reconnected(seat_index: int, display_name: String) -> void:
+	_sync_table_launch_config_from_lobby()
+	seat_reconnected.emit(seat_index, display_name)
+	for peer_id: int in multiplayer.get_peers():
+		rpc_peer_reconnected.rpc_id(peer_id, seat_index, display_name)
+
+
 func _broadcast_play(action: PlayCardAction, result: ActionResult) -> void:
 	var action_dict: Dictionary = NetworkPlayPayload.action_to_dict(action)
 	var result_dict: Dictionary = NetworkPlayPayload.play_result_to_dict(result.play_result)
 	for peer_id: int in multiplayer.get_peers():
 		rpc_apply_play.rpc_id(peer_id, action_dict, result_dict)
+
+
+func _sync_table_launch_config_from_lobby() -> void:
+	if _table_ctx == null or _table_ctx.launch_config == null or not NetworkService.is_host():
+		return
+	_table_ctx.launch_config.seat_assignments = NetworkService.lobby.seats.duplicate()

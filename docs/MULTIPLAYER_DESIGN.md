@@ -73,7 +73,7 @@ Implémentation : phase D (`DisconnectState`, messages `peer_disconnected`, `sea
 | **B** | ✅ | Hot seat : rotation UI, shuffle, overlay 3 s, `TableSeatDisplayMap` |
 | **C** | ✅ | ENet : `NetworkService`, host/client controllers, lobby IP:port |
 | **B+** | ✅ | Lune soupçonnée (social, hot seat + online, sans effet gameplay) |
-| **D** | ⏳ | Déconnexion 30 s, reconnexion, remplacement IA |
+| **D** | ✅ | Déconnexion 30 s, reconnexion `local_player_id`, remplacement IA |
 | **E** | ⏳ | Android LAN (host/client, IP locale) |
 | **F** | ⏳ | Steam (GodotSteam) |
 | **G** | 📋 | Navigateur mobile (QR) — post-MVP |
