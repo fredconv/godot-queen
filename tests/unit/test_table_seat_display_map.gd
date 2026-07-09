@@ -18,4 +18,12 @@ func test_logical_seat_round_trip() -> void:
 		for visual_slot in range(HeartsRules.PLAYER_COUNT):
 			var logical: int = TableSeatDisplayMap.logical_seat_for_visual_slot(visual_slot, pivot)
 			assert_int(TableSeatDisplayMap.visual_slot_for_logical_seat(logical, pivot)).is_equal(visual_slot)
+
+
+func test_pivot_fallback_uses_first_human_when_unassigned() -> void:
+	var config: MatchLaunchConfig = SeatSetup.create_hot_seat(2, PackedStringArray(["Alice", "Bob"]))
+	var ctx := TableContext.new()
+	ctx.launch_config = config
+	var pivot: int = TableSeatDisplayMap.get_pivot_seat(ctx)
+	assert_bool(pivot in config.get_human_seat_indices()).is_true()
 #endregion

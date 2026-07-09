@@ -77,6 +77,6 @@ static func _create_banner(ctx: TableContext, is_first_hand_of_match: bool) -> C
 	return root
 
 
-static func _discard_banner(banner: Control) -> void:
-	if is_instance_valid(banner):
-		banner.queue_free()
+static func _discard_banner(banner: Variant) -> void:
+	if banner is Control and is_instance_valid(banner):
+		(banner as Control).queue_free()

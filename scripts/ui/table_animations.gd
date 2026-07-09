@@ -17,6 +17,8 @@ extends RefCounted
 const CARD_PLAY_DURATION_SEC: float = 0.15
 ## Durée minimale d'affichage du pli complet avant ramassage.
 const TRICK_VISIBLE_DURATION_SEC: float = 1.0
+## Hot seat : délai après handoff pour voir le pli précédent avant ramassage.
+const HANDOFF_TRICK_VISIBLE_DURATION_SEC: float = 2.0
 ## Dernier pli d'une partie : laisser les cartes visibles avant la popup de fin.
 const MATCH_END_TRICK_VISIBLE_DURATION_SEC: float = 3.5
 ## Durée du glissement des 4 cartes du pli vers le siège du vainqueur.

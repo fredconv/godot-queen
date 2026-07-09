@@ -243,6 +243,20 @@ static func resolve_trick_sequence(
 	if is_final_match_trick:
 		return
 
+	if TableHotSeat.should_defer_trick_collection(ctx):
+		ctx.pending_trick_collection_winner = winner_index
+		TableTrickDisplay.sync_card_positions(ctx)
+		return
+
+	await _collect_trick_cards(ctx, winner_index)
+
+
+static func collect_pending_trick(ctx: TableContext, winner_index: int) -> void:
+	ctx.pending_trick_collection_winner = -1
+	await _collect_trick_cards(ctx, winner_index)
+
+
+static func _collect_trick_cards(ctx: TableContext, winner_index: int) -> void:
 	var winner_seat: PlayerSeat = TableSeatDisplayMap.get_seat_node(ctx, winner_index)
 	var target_center: Vector2 = winner_seat.get_global_transform_with_canvas() * (winner_seat.size / 2.0)
 	var card_views: Array[Control] = []

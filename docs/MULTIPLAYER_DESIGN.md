@@ -116,6 +116,19 @@ Fichiers : `MoonSuspicionEvent`, `MoonSuspicionManager`, `moon_suspicion_banner.
 
 ---
 
+## Hot seat — illusion de table (ADR-026)
+
+| Élément | Comportement |
+|---------|--------------|
+| Pivot | Toujours un **humain** en bas (`get_pivot_seat`, fallback premier humain) |
+| Main | Révélée ou cachée via `HumanHandArea` (`TableHumanHand`), pas le petit `SeatBottom` |
+| Pli en cours | `TableTrickDisplay.sync_card_positions` après rotation |
+| Après handoff | Pli précédent visible 2 s si changement de joueur humain (`pending_trick_collection_winner`) |
+
+Dépannage erreurs connues : `.cursor/architecture/dame-de-pique/lessons-learned.md`
+
+---
+
 ## Données publiques vs privées
 
 **Public** (`PublicGameSnapshot`) : joueur actif, pli, scores, tailles de mains, phase, cœurs défoncés.

@@ -13,3 +13,9 @@
 | context7-mcp | [SKILL.md](context7-mcp/SKILL.md) |
 
 Phrase chat : `Consulte AGENTS.md et godot-dev-index (~/.cursor/skills/) avant de coder.`
+
+## Mémo erreurs (projet)
+
+| Fichier | Usage |
+|---------|--------|
+| [.cursor/architecture/dame-de-pique/lessons-learned.md](../architecture/dame-de-pique/lessons-learned.md) | Symptômes + fixes validés (réseau, hot seat, UI async) |

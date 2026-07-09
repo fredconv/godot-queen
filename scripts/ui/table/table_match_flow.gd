@@ -7,6 +7,7 @@ static func start_new_match(ctx: TableContext, seed_value: int = -1) -> void:
 	ctx.turn_locked = false
 	ctx.match_end_dialog.close()
 	ctx.hand_end_dialog.close()
+	ctx.pending_trick_collection_winner = -1
 	clear_trick_cards(ctx)
 
 	ctx.launch_config = GameSession.take_launch_config()

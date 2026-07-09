@@ -14,8 +14,6 @@ static func play_sequence(ctx: TableContext) -> void:
 
 	var hide_human_hand: bool = _should_hide_human_hand(ctx)
 	if hide_human_hand:
-		if ctx.human_hand_area != null:
-			ctx.human_hand_area.visible = false
 		TableSeatDisplayMap.apply(ctx)
 	else:
 		TableHumanHand.rebuild(ctx)
@@ -138,15 +136,8 @@ static func _prepare_hidden_bottom_deal(
 	ctx: TableContext,
 	out_final_positions: Array[Vector2]
 ) -> Array[Control]:
-	var pivot: int = TableSeatDisplayMap.get_pivot_seat(ctx)
-	var bottom_seat: PlayerSeat = ctx.seats[TableSeatDisplayMap.VisualSlot.BOTTOM]
-	bottom_seat.show_hand_back = true
-	bottom_seat.hand_card_count = ctx.match_manager.hands[pivot].count()
-	if bottom_seat.get_hand_back_card_views().is_empty():
-		bottom_seat.force_refresh_hand_back()
-	var cards: Array[Control] = bottom_seat.get_hand_back_card_views()
-	var offset: Vector2 = bottom_seat.get_deal_start_offset()
-	for card_view in cards:
+	TableHumanHand.build_hidden_face_down(ctx)
+	for card_view in ctx.hand_card_views:
 		out_final_positions.append(card_view.position)
-		card_view.position = out_final_positions[-1] + offset
-	return cards
+		card_view.position = out_final_positions[-1] + TableConstants.HUMAN_HAND_DEAL_OFFSET
+	return ctx.hand_card_views

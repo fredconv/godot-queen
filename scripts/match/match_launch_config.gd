@@ -27,6 +27,9 @@ func get_local_player_seat() -> int:
 		MatchMode.Type.HOT_SEAT:
 			if active_human_seat_index >= 0:
 				return active_human_seat_index
+			var humans: Array[int] = get_human_seat_indices()
+			if not humans.is_empty():
+				return humans[0]
 			return 0
 		MatchMode.Type.ONLINE_HOST:
 			return 0

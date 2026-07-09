@@ -25,7 +25,30 @@ logical  = (visual + pivot) % 4
 
 **Ne jamais** utiliser `ctx.seats[player_index]` quand `player_index` est un siège logique en hot seat multi-humain — utiliser `TableSeatDisplayMap.get_seat_node(ctx, logical_seat)`.
 
-Handoff : `TableHotSeat.perform_handoff()` → après validation overlay → `TableSeatDisplayMap.apply()` → `TableHumanHand.rebuild()` → `MoonSuspicionManager.flush_pending_alerts()`.
+Handoff : `TableHotSeat.perform_handoff()` → overlay → `active_human_seat_index` → `TableSeatDisplayMap.apply()` → `TableTrickDisplay.sync_card_positions()` → main (`TableHumanHand.rebuild` ou pli différé) → `MoonSuspicionManager.flush_pending_alerts()`.
+
+### Illusion complète (ADR-026)
+
+| Règle | Détail |
+|-------|--------|
+| Bas = humain | `get_pivot_seat()` jamais IA ; `show_hand_back = false` sur slot bas en hot seat |
+| Main cachée | `TableHumanHand.build_hidden_face_down()` dans `HumanHandArea`, **pas** `SeatBottom` |
+| Pli en cours | `TableTrickDisplay.sync_card_positions()` après handoff / pivot |
+| Pli après handoff | `pending_trick_collection_winner` + `HANDOFF_TRICK_VISIBLE_DURATION_SEC` avant ramassage |
+
+---
+
+## Dépannage (ne pas repartir de zéro)
+
+Journal complet : `.cursor/architecture/dame-de-pique/lessons-learned.md`
+
+| Symptôme | Fix rapide |
+|----------|------------|
+| `NetworkService` introuvable dans `network_match_relay.gd` | Autoload circulaire → `_network()` + `get_node("/root/NetworkService")` |
+| Assertion `create_for_opponent_seat` siège 0 | `SeatSetup` → `create_for_seat(seat_index)` |
+| `_discard_banner` previously freed | Paramètre `Variant` + `is_instance_valid` |
+| Main bas décalée / IA en bas | Pivot humain + main dans `HumanHandArea` (ADR-026) |
+| Pli ne tourne pas / vide après handoff | `TableTrickDisplay` + différer collecte si `should_defer_trick_collection` |
 
 ---
 

@@ -91,6 +91,6 @@ static func _create_banner(message: String) -> Control:
 	return root
 
 
-static func _discard_banner(banner: Control) -> void:
-	if is_instance_valid(banner):
-		banner.queue_free()
+static func _discard_banner(banner: Variant) -> void:
+	if banner is Control and is_instance_valid(banner):
+		(banner as Control).queue_free()

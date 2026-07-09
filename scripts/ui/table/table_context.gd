@@ -14,6 +14,8 @@ var scene_exiting: bool = false
 var hand_card_views: Array[Control] = []
 var hand_cards: Array[CardModel] = []
 var trick_card_views: Dictionary = {}
+## Hot seat : pli terminé conservé jusqu'après le handoff (-1 = aucun).
+var pending_trick_collection_winner: int = -1
 
 var player_bottom_hand: Control
 var animation_layer: Control

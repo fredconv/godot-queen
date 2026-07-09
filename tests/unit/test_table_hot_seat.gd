@@ -36,4 +36,11 @@ func test_local_player_seat_follows_active_index_in_hot_seat() -> void:
 	var config: MatchLaunchConfig = SeatSetup.create_hot_seat(3, PackedStringArray(["A", "B", "C"]))
 	config.active_human_seat_index = 2
 	assert_int(config.get_local_player_seat()).is_equal(2)
+
+
+func test_local_player_seat_falls_back_to_first_human_when_unassigned() -> void:
+	var config: MatchLaunchConfig = SeatSetup.create_hot_seat(2, PackedStringArray(["Alice", "Bob"]))
+	assert_int(config.active_human_seat_index).is_equal(-1)
+	var first_human: int = config.get_human_seat_indices()[0]
+	assert_int(config.get_local_player_seat()).is_equal(first_human)
 #endregion

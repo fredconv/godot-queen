@@ -14,6 +14,11 @@ var _table_ctx: TableContext = null
 var _host_controller: HostMatchController = null
 
 
+func _network() -> Node:
+	# Évite la dépendance circulaire autoload NetworkService ↔ NetworkMatchRelay.
+	return get_node("/root/NetworkService")
+
+
 func register_table(ctx: TableContext, host_controller: HostMatchController = null) -> void:
 	_table_ctx = ctx
 	_host_controller = host_controller
@@ -30,36 +35,36 @@ func get_host_controller() -> HostMatchController:
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_register_player(display_name: String, local_player_id: String) -> void:
-	if not NetworkService.is_host():
+	if not _network().is_host():
 		return
 	var peer_id: int = multiplayer.get_remote_sender_id()
-	NetworkService.apply_remote_player_profile(peer_id, display_name, local_player_id)
+	_network().apply_remote_player_profile(peer_id, display_name, local_player_id)
 
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_lobby_sync(state_dict: Dictionary) -> void:
-	if NetworkService.is_host():
+	if _network().is_host():
 		return
-	NetworkService.apply_lobby_from_network(state_dict)
+	_network().apply_lobby_from_network(state_dict)
 
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_start_match(seed_value: int, seat_dicts: Array) -> void:
-	if NetworkService.is_host():
+	if _network().is_host():
 		return
-	NetworkService.receive_match_start(seed_value, seat_dicts)
+	_network().receive_match_start(seed_value, seat_dicts)
 	get_tree().call_deferred("change_scene_to_file", TableConstants.TABLE_SCENE_PATH)
 
 
 @rpc("any_peer", "call_remote", "reliable")
 func rpc_request_play_card(action_dict: Dictionary) -> void:
-	if not NetworkService.is_host():
+	if not _network().is_host():
 		return
 	var peer_id: int = multiplayer.get_remote_sender_id()
-	var seat_index: int = NetworkService.get_seat_for_peer(peer_id)
+	var seat_index: int = _network().get_seat_for_peer(peer_id)
 	if seat_index < 0:
 		return
-	if NetworkService.is_player_disconnected(seat_index) or NetworkService.is_seat_pending_reconnect(seat_index):
+	if _network().is_player_disconnected(seat_index) or _network().is_seat_pending_reconnect(seat_index):
 		rpc_play_rejected.rpc_id(peer_id, ActionResult.ERROR_PLAYER_DISCONNECTED)
 		return
 	var action: PlayCardAction = PlayCardAction.from_dict(action_dict)
@@ -78,7 +83,7 @@ func rpc_request_play_card(action_dict: Dictionary) -> void:
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_apply_play(action_dict: Dictionary, result_dict: Dictionary) -> void:
-	if NetworkService.is_host():
+	if _network().is_host():
 		return
 	if _table_ctx == null or not _table_ctx.is_active():
 		return
@@ -99,7 +104,7 @@ func broadcast_play_from_host(action: PlayCardAction, result: ActionResult) -> v
 
 
 func broadcast_moon_suspicion_from_host(ctx: TableContext, event: MoonSuspicionEvent) -> void:
-	if not NetworkService.is_host():
+	if not _network().is_host():
 		return
 	await MoonSuspicionManager.apply_network_event(ctx, event)
 	var event_dict: Dictionary = event.to_dict()
@@ -109,10 +114,10 @@ func broadcast_moon_suspicion_from_host(ctx: TableContext, event: MoonSuspicionE
 
 @rpc("any_peer", "call_remote", "reliable")
 func rpc_request_moon_suspicion(suspected_seat: int) -> void:
-	if not NetworkService.is_host():
+	if not _network().is_host():
 		return
 	var peer_id: int = multiplayer.get_remote_sender_id()
-	var suspector_seat: int = NetworkService.get_seat_for_peer(peer_id)
+	var suspector_seat: int = _network().get_seat_for_peer(peer_id)
 	if suspector_seat < 0 or _table_ctx == null:
 		return
 	if not MoonSuspicionManager.validate_server(_table_ctx, suspector_seat, suspected_seat):
@@ -127,7 +132,7 @@ func rpc_request_moon_suspicion(suspected_seat: int) -> void:
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_apply_moon_suspicion(event_dict: Dictionary) -> void:
-	if NetworkService.is_host():
+	if _network().is_host():
 		return
 	if _table_ctx == null or not _table_ctx.is_active():
 		return
@@ -135,33 +140,30 @@ func rpc_apply_moon_suspicion(event_dict: Dictionary) -> void:
 	await MoonSuspicionManager.apply_network_event(_table_ctx, event)
 
 
-	await MoonSuspicionManager.apply_network_event(_table_ctx, event)
-
-
 @rpc("authority", "call_remote", "reliable")
 func rpc_peer_disconnected(seat_index: int, display_name: String) -> void:
-	if NetworkService.is_host():
+	if _network().is_host():
 		return
 	seat_disconnect_announced.emit(seat_index, display_name)
 
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_seat_reconnect_countdown(seat_index: int, display_name: String, remaining_sec: int) -> void:
-	if NetworkService.is_host():
+	if _network().is_host():
 		return
 	seat_reconnect_countdown.emit(seat_index, display_name, remaining_sec)
 
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_seat_replaced_by_ai(seat_index: int, display_name: String) -> void:
-	if NetworkService.is_host():
+	if _network().is_host():
 		return
 	seat_replaced_by_ai.emit(seat_index, display_name)
 
 
 @rpc("authority", "call_remote", "reliable")
 func rpc_peer_reconnected(seat_index: int, display_name: String) -> void:
-	if NetworkService.is_host():
+	if _network().is_host():
 		return
 	seat_reconnected.emit(seat_index, display_name)
 
@@ -200,6 +202,6 @@ func _broadcast_play(action: PlayCardAction, result: ActionResult) -> void:
 
 
 func _sync_table_launch_config_from_lobby() -> void:
-	if _table_ctx == null or _table_ctx.launch_config == null or not NetworkService.is_host():
+	if _table_ctx == null or _table_ctx.launch_config == null or not _network().is_host():
 		return
-	_table_ctx.launch_config.seat_assignments = NetworkService.lobby.seats.duplicate()
+	_table_ctx.launch_config.seat_assignments = _network().lobby.seats.duplicate()

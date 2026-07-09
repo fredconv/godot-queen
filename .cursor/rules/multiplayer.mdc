@@ -8,6 +8,13 @@ globs:
   - scripts/ui/table/table_hot_seat.gd
   - scripts/ui/table/hot_seat_privacy_overlay.gd
   - scripts/ui/table/table_seat_display_map.gd
+  - scripts/ui/table/table_trick_display.gd
+  - scripts/ui/table/table_human_hand.gd
+  - scripts/ui/table/table_dealing.gd
+  - scripts/ui/table/table_play_flow.gd
+  - scripts/ui/table/table_hand_start.gd
+  - scripts/ui/table/table_disconnect_flow.gd
+  - scripts/network/disconnect_state.gd
   - scripts/ui/table/moon_suspicion_manager.gd
   - scripts/ui/table/moon_suspicion_banner.gd
   - scripts/ui/game_mode_screen.gd
@@ -18,14 +25,16 @@ globs:
   - tests/unit/test_match_launch_config.gd
   - tests/unit/test_table_hot_seat.gd
   - tests/unit/test_table_seat_display_map.gd
-  - tests/unit/test_moon_suspicion_manager.gd
-  - docs/MULTIPLAYER*.md
+  - tests/unit/test_disconnect_state.gd
+  - .cursor/architecture/dame-de-pique/lessons-learned.md
 alwaysApply: false
 ---
 
 # Multijoueur — Dame de pique
 
-Lire `docs/MULTIPLAYER_DESIGN.md`, ADR-024 et ADR-025 avant toute modification.
+Lire `docs/MULTIPLAYER_DESIGN.md`, ADR-024 à ADR-027 avant toute modification.
+
+En cas d'erreur connue (autoload circulaire, banner freed, pivot hot seat) : `.cursor/architecture/dame-de-pique/lessons-learned.md`.
 
 ## Modèle
 

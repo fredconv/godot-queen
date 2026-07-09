@@ -11,7 +11,7 @@ description: >-
 ## Docs obligatoires
 
 1. `docs/MULTIPLAYER_DESIGN.md` — spec phases, messages, modes
-2. `docs/DECISIONS.md` — **ADR-024**, **ADR-025**
+2. `docs/DECISIONS.md` — **ADR-024**, **ADR-025**, **ADR-026**, **ADR-027**
 3. `docs/MULTIPLAYER_AUDIT.md` — couplage solo / risques
 4. `docs/Multiplayer basics in godot.md` — tutoriel Godot (ENet) ; **ne pas** copier Spawner/Synchronizer
 
@@ -24,6 +24,8 @@ Détail hot seat UI + Lune soupçonnée : [reference.md](reference.md)
 | `MatchLaunchConfig` / `GameSession` | Config lancement ; `is_multiplayer_social()` |
 | `SeatSetup` | N humains + (4−N) IA ; `shuffle_human_seats()` |
 | `TableSeatDisplayMap` | Rotation UI hot seat (siège logique → visuel) |
+| `TableTrickDisplay` | Resync positions cartes du pli après rotation |
+| `TableHumanHand` | Main révélée + `build_hidden_face_down()` hot seat |
 | `TableHotSeat` / `HotSeatPrivacyOverlay` | Handoff + maintien ESPACE 3 s |
 | `MoonSuspicionManager` | Soupçon Lune social (bouton, file, RPC) |
 | `LocalMatchController` | Solo / hot seat local |
@@ -50,6 +52,18 @@ Détail hot seat UI + Lune soupçonnée : [reference.md](reference.md)
 | D ✅ | Déconnexion 30 s, reconnexion, IA de remplacement |
 | E–G | Android LAN, Steam, navigateur mobile |
 
+## Phase D — déconnexion / reconnexion
+
+| Fichier | Rôle |
+|---------|------|
+| `disconnect_state.gd` | Timer 30 s par siège |
+| `table_disconnect_flow.gd` | Messages HUD |
+| `network_service.gd` | Orchestration lobby vs in-match |
+
+**Autoload circulaire** : `NetworkMatchRelay` utilise `_network()` → voir Dépannage dans `reference.md`.
+
+---
+
 ## Fichiers clés
 
 ```
@@ -60,6 +74,8 @@ scripts/network/disconnect_state.gd
 scripts/network/network_match_relay.gd
 scripts/ui/table/table_disconnect_flow.gd
 scripts/ui/table/table_seat_display_map.gd
+scripts/ui/table/table_trick_display.gd
+scripts/ui/table/table_human_hand.gd
 scripts/ui/table/table_hot_seat.gd
 scripts/ui/table/hot_seat_privacy_overlay.gd
 scripts/ui/table/moon_suspicion_manager.gd
@@ -70,7 +86,11 @@ assets/sprites/suspicious-moon.png
 
 ## Tests (voir reference.md pour commande complète)
 
-`test_seat_setup`, `test_match_launch_config`, `test_table_hot_seat`, `test_table_seat_display_map`, `test_moon_suspicion_manager`, `test_lobby_service`
+`test_seat_setup`, `test_match_launch_config`, `test_table_hot_seat`, `test_table_seat_display_map`, `test_moon_suspicion_manager`, `test_disconnect_state`, `test_lobby_service`
+
+## Dépannage
+
+`.cursor/architecture/dame-de-pique/lessons-learned.md` + section Dépannage dans `reference.md`.
 
 ## i18n
 

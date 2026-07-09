@@ -120,7 +120,7 @@ static func apply_ai_to_match_manager(match_manager: MatchManager, assignments: 
 	for assignment: SeatAssignment in assignments:
 		var seat_index: int = assignment.seat_index
 		if assignment.profile != null and assignment.profile.is_ai:
-			var strategy: AiStrategy = AiPersonalityCatalog.create_for_opponent_seat(seat_index)
+			var strategy: AiStrategy = AiPersonalityCatalog.create_for_seat(seat_index)
 			match_manager.set_ai_player(seat_index, AiPlayer.new(strategy))
 		else:
 			match_manager.set_ai_player(seat_index, null)

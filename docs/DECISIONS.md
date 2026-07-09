@@ -379,3 +379,38 @@ Registre des décisions d'architecture importantes, au format court : contexte, 
 6. **En ligne** : host valide, diffuse via `NetworkMatchRelay` ; anti-spam 1 / joueur / manche.
 
 **Conséquences** : tout code table qui affiche nom, avatar, main ou pli d'un siège logique doit passer par `TableSeatDisplayMap` en hot seat multi-humain. Skill projet `dame-de-pique-multiplayer/reference.md`. Tests : `test_table_seat_display_map`, `test_moon_suspicion_manager`.
+
+---
+
+## ADR-026 — Hot seat : illusion complète de table (pli, main, pivot humain)
+
+**Date** : 2026-07  
+**Statut** : accepté
+
+**Contexte** : après ADR-025, des incohérences visuelles subsistaient : siège bas parfois IA, main cachée décalée, cartes de pli non resynchronisées après rotation, pli précédent invisible après handoff.
+
+**Décision** :
+
+1. **Pivot toujours humain** : `get_pivot_seat()` retombe sur le premier siège humain si `active_human_seat_index < 0` ; le slot visuel bas n'affiche jamais une pile IA (`HumanHandArea` pour la main du pivot).
+2. **Main cachée centrée** : `TableHumanHand.build_hidden_face_down()` dans `HumanHandArea` (pleine largeur), pas `SeatBottom` (~124 px).
+3. **Pli synchronisé** : `TableTrickDisplay.sync_card_positions()` après chaque changement de pivot ; `get_trick_slot()` pour toute nouvelle pose.
+4. **Contexte post-pli** : si handoff requis après un pli gagné par un autre humain, reporter le ramassage (`pending_trick_collection_winner`) jusqu'après l'overlay ; afficher le pli 2 s puis collecter.
+
+**Conséquences** : `.cursor/architecture/dame-de-pique/lessons-learned.md` ; tests `test_table_seat_display_map`, `test_table_hot_seat` ; `TableAnimations.HANDOFF_TRICK_VISIBLE_DURATION_SEC`.
+
+---
+
+## ADR-027 — Dépannage autoload circulaire et UI async (mémo agent)
+
+**Date** : 2026-07  
+**Statut** : accepté (pattern transversal)
+
+**Contexte** : erreurs récurrentes en multijoueur et table : `NetworkService` introuvable au compile, assertion IA siège 0, bannière « previously freed ».
+
+**Décision** :
+
+1. **Autoloads mutuels** : un seul sens utilise `get_node("/root/…")` (voir `NetworkMatchRelay._network()`).
+2. **IA par siège** : `create_for_seat(0–3)`, pas `create_for_opponent_seat` hors contexte adversaire strict 1–3.
+3. **UI après `await`** : helpers `_discard_banner(banner: Variant)` + `is_instance_valid`.
+
+**Conséquences** : entrées détaillées dans `lessons-learned.md` ; enrichissement skill global `godot-parser-error` (patterns Godot 4.7).

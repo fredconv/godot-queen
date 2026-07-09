@@ -11,8 +11,20 @@ static func get_pivot_seat(ctx: TableContext) -> int:
 	if ctx.launch_config != null and ctx.launch_config.is_hot_seat_multi_human():
 		var active: int = ctx.launch_config.active_human_seat_index
 		if active >= 0:
-			return active
+			return _ensure_human_pivot(ctx, active)
+		var humans: Array[int] = ctx.launch_config.get_human_seat_indices()
+		if not humans.is_empty():
+			return humans[0]
 	return TableConstants.HUMAN_INDEX
+
+
+static func _ensure_human_pivot(ctx: TableContext, seat_index: int) -> int:
+	var humans: Array[int] = ctx.launch_config.get_human_seat_indices()
+	if seat_index in humans:
+		return seat_index
+	if humans.is_empty():
+		return seat_index
+	return humans[0]
 
 
 static func visual_slot_for_logical_seat(logical_seat: int, pivot_seat: int) -> int:
@@ -70,7 +82,13 @@ static func apply(ctx: TableContext) -> void:
 		seat.hand_card_count = ctx.match_manager.hands[logical_seat].count()
 		seat.set_active_turn(playing and logical_seat == current_player)
 		var is_pivot_at_bottom: bool = visual_slot == VisualSlot.BOTTOM
-		seat.show_hand_back = not is_pivot_at_bottom or not hands_revealed
+		if ctx.is_hot_seat_multi_human() and is_pivot_at_bottom:
+			seat.show_hand_back = false
+		else:
+			seat.show_hand_back = not is_pivot_at_bottom or not hands_revealed
 
 	if ctx.human_hand_area != null:
-		ctx.human_hand_area.visible = hands_revealed and pivot >= 0
+		if ctx.is_hot_seat_multi_human():
+			ctx.human_hand_area.visible = pivot >= 0
+		else:
+			ctx.human_hand_area.visible = hands_revealed
