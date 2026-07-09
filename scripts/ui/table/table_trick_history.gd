@@ -92,7 +92,7 @@ static func _format_tricks(ctx: TableContext) -> String:
 	for trick: Dictionary in tricks:
 		var trick_number: int = trick.get("trick_number", 0)
 		var winner_index: int = trick.get("winner_index", -1)
-		var winner_name: String = ctx.seats[winner_index].player_name if winner_index >= 0 else "?"
+		var winner_name: String = TableSeatDisplayMap.get_logical_display_name(ctx, winner_index) if winner_index >= 0 else "?"
 		var points: int = trick.get("points", 0)
 		lines.append(
 			_t(TableKeys.TRICK_HISTORY_LINE) % [trick_number, winner_name, points]
@@ -103,7 +103,7 @@ static func _format_tricks(ctx: TableContext) -> String:
 			if card == null:
 				continue
 			var player_index: int = play.get("player_index", -1)
-			var player_name: String = ctx.seats[player_index].player_name if player_index >= 0 else "?"
+			var player_name: String = TableSeatDisplayMap.get_logical_display_name(ctx, player_index) if player_index >= 0 else "?"
 			lines.append("  • %s : %s" % [player_name, card._to_string()])
 		lines.append("")
 	return "\n".join(lines)

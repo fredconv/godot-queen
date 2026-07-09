@@ -10,13 +10,17 @@ static func start_new_match(ctx: TableContext, seed_value: int = -1) -> void:
 	clear_trick_cards(ctx)
 
 	ctx.launch_config = GameSession.take_launch_config()
+	if ctx.launch_config.is_hot_seat_multi_human():
+		SeatSetup.shuffle_human_seats(ctx.launch_config)
 	var match_seed: int = seed_value
 	if match_seed < 0 and GameSession.online_match_seed >= 0:
 		match_seed = GameSession.online_match_seed
 		GameSession.online_match_seed = -1
 	_setup_match_controller(ctx)
+	MoonSuspicionManager.reset_for_match(ctx)
 	SeatSetup.apply_ai_to_match_manager(ctx.match_manager, ctx.launch_config.seat_assignments)
 	ctx.match_controller.start_new_match(match_seed)
+	MoonSuspicionManager.on_new_hand(ctx, ctx.match_manager.hand_number)
 
 	await TableDealing.play_sequence(ctx)
 	if not ctx.is_active():
@@ -93,8 +97,8 @@ static func show_hand_end_popup(ctx: TableContext) -> void:
 	var names: Array = []
 	var character_ids: Array = []
 	for player_index in range(HeartsRules.PLAYER_COUNT):
-		names.append(ctx.seats[player_index].player_name)
-		character_ids.append(ctx.seats[player_index].character_id)
+		names.append(TableSeatDisplayMap.get_logical_display_name(ctx, player_index))
+		character_ids.append(player_index)
 	ctx.hand_end_dialog.show_result(
 		winner_index,
 		names,
@@ -115,8 +119,8 @@ static func show_match_end_popup(ctx: TableContext) -> void:
 	var names: Array = []
 	var character_ids: Array = []
 	for player_index in range(HeartsRules.PLAYER_COUNT):
-		names.append(ctx.seats[player_index].player_name)
-		character_ids.append(ctx.seats[player_index].character_id)
+		names.append(TableSeatDisplayMap.get_logical_display_name(ctx, player_index))
+		character_ids.append(player_index)
 	ctx.match_end_dialog.show_result(
 		winner_index,
 		names,
@@ -131,6 +135,6 @@ static func show_match_end_popup(ctx: TableContext) -> void:
 static func _play_hand_end_seat_reactions(ctx: TableContext, hand_winner_index: int) -> void:
 	for player_index in range(HeartsRules.PLAYER_COUNT):
 		if player_index == hand_winner_index:
-			ctx.seats[player_index].play_hand_win_reaction()
+			TableSeatDisplayMap.get_seat_node(ctx, player_index).play_hand_win_reaction()
 		else:
-			ctx.seats[player_index].play_hand_loss_reaction()
+			TableSeatDisplayMap.get_seat_node(ctx, player_index).play_hand_loss_reaction()

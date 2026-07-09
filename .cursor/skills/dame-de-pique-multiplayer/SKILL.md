@@ -1,9 +1,9 @@
 ---
 name: dame-de-pique-multiplayer
 description: >-
-  Multijoueur Dame de Pique : modes solo/hot seat/LAN, host autoritaire,
-  snapshots, SeatSetup, phases A–G. Utiliser pour toute tâche réseau, hot seat,
-  lobby, NetworkService ou messages custom.
+  Multijoueur Dame de Pique : solo/hot seat/LAN, rotation UI hot seat,
+  soupçon Lune social, host autoritaire, snapshots, phases A–G. Utiliser pour
+  réseau, hot seat, lobby, NetworkService, RPC ou messages custom.
 ---
 
 # Dame de pique — multijoueur
@@ -11,74 +11,69 @@ description: >-
 ## Docs obligatoires
 
 1. `docs/MULTIPLAYER_DESIGN.md` — spec phases, messages, modes
-2. `docs/DECISIONS.md` — **ADR-024**
+2. `docs/DECISIONS.md` — **ADR-024**, **ADR-025**
 3. `docs/MULTIPLAYER_AUDIT.md` — couplage solo / risques
-4. `docs/Multiplayer basics in godot.md` — tutoriel Godot (ENet, authority) ; **ne pas** copier Spawner/Synchronizer
+4. `docs/Multiplayer basics in godot.md` — tutoriel Godot (ENet) ; **ne pas** copier Spawner/Synchronizer
+
+Détail hot seat UI + Lune soupçonnée : [reference.md](reference.md)
 
 ## Architecture
 
 | Couche | Rôle |
 |--------|------|
-| `MatchLaunchConfig` / `GameSession` | Config lancement (solo, hot seat, online) |
-| `SeatSetup` | N humains + (4−N) IA |
+| `MatchLaunchConfig` / `GameSession` | Config lancement ; `is_multiplayer_social()` |
+| `SeatSetup` | N humains + (4−N) IA ; `shuffle_human_seats()` |
+| `TableSeatDisplayMap` | Rotation UI hot seat (siège logique → visuel) |
+| `TableHotSeat` / `HotSeatPrivacyOverlay` | Handoff + maintien ESPACE 3 s |
+| `MoonSuspicionManager` | Soupçon Lune social (bouton, file, RPC) |
 | `LocalMatchController` | Solo / hot seat local |
-| `HostMatchController` / `ClientMatchController` | Phase C+ |
-| `NetworkService` | ENet P2P (stub → phase C) |
-| `NetworkMessages` | Constantes messages |
-| `GameSnapshotBuilder` | Public / privé |
+| `HostMatchController` / `ClientMatchController` | En ligne |
+| `NetworkMatchRelay` | RPC coups + soupçon Lune |
 
-## Règles non négociables (ADR-024)
+## Règles non négociables (ADR-024 / ADR-025)
 
 - Host valide chaque `PlayCardAction` ; client n'applique jamais un coup non confirmé
 - **Pas** de `MultiplayerSynchronizer` pour le gameplay Hearts
 - **Pas** de spawn joueurs 2D — 4 sièges fixes
-- Sièges vides = IA
+- Hot seat : **ne jamais** mélanger siège logique et slot visuel sans `TableSeatDisplayMap`
+- Soupçon Lune : **aucun** effet sur scores / cartes / IA
 - `MatchManager` **n'est pas** un autoload
-- `NetworkService` pas autoload tant que phase C incomplète
 
 ## Phases
 
-| Phase | Contenu |
-|-------|---------|
+| Phase | Statut | Livrable |
+|-------|--------|----------|
 | A ✅ | Menu modes, `SeatSetup`, `MatchLaunchConfig` |
-| B | Hot seat : `active_human_seat`, `HotSeatPrivacyOverlay` |
-| C | ENet, host/client controllers, lobby IP:port |
-| D | Déconnexion 30 s, reconnexion, IA de remplacement |
+| B ✅ | Hot seat : rotation UI, shuffle, overlay 3 s, mains cachées |
+| C ✅ | ENet, host/client, lobby IP:port |
+| — ✅ | Lune soupçonnée (social, hot seat + online) |
+| D ⏳ | Déconnexion 30 s, reconnexion, IA de remplacement |
 | E–G | Android LAN, Steam, navigateur mobile |
 
 ## Fichiers clés
 
 ```
-scripts/match/match_mode.gd
 scripts/match/match_launch_config.gd
+scripts/match/moon_suspicion_event.gd
 scripts/network/seat_setup.gd
-scripts/network/network_service.gd
-scripts/network/network_messages.gd
+scripts/network/network_match_relay.gd
+scripts/ui/table/table_seat_display_map.gd
 scripts/ui/table/table_hot_seat.gd
 scripts/ui/table/hot_seat_privacy_overlay.gd
+scripts/ui/table/moon_suspicion_manager.gd
+scripts/ui/table/moon_suspicion_banner.gd
+scenes/table/moon_suspicion_banner.tscn
+assets/sprites/suspicious-moon.png
 ```
 
-## Tests à lancer après modification
+## Tests (voir reference.md pour commande complète)
 
-```powershell
-& "...\Godot_v4.7-stable_win64_console.exe" --headless --path . `
-  -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode `
-  -a res://tests/unit/test_seat_setup.gd `
-  -a res://tests/unit/test_match_launch_config.gd `
-  -a res://tests/unit/test_table_hot_seat.gd `
-  -a res://tests/unit/test_lobby_service.gd
-```
-
-## Tutoriel Godot — ce qu'on reprend / évite
-
-| Reprendre (phase C) | Éviter |
-|---------------------|--------|
-| `ENetMultiplayerPeer`, host/join | `MultiplayerSpawner` |
-| `multiplayer.peer_connected` | `MultiplayerSynchronizer` sync frame |
-| `get_remote_sender_id()` pour valider l'expéditeur | `@rpc call_local` sur gameplay |
-| Profiler réseau, 2 instances debug | Serveur headless MVP |
+`test_seat_setup`, `test_match_launch_config`, `test_table_hot_seat`, `test_table_seat_display_map`, `test_moon_suspicion_manager`, `test_lobby_service`
 
 ## i18n
 
-Clés menu : `MenuKeys.*` (`translations/menu.csv`)  
-Clés table hot seat : `TableKeys.HOT_SEAT_*` (`translations/table.csv`)
+`TableKeys.HOT_SEAT_*`, `TableKeys.MOON_SUSPICION_*`, `TableKeys.TOP_MOON_SUSPICION` → `translations/table.csv`
+
+## Après une feature multijoueur
+
+Quand l'utilisateur dit **doc ok** : skill global `agent-workflow` + mettre à jour ce SKILL, `docs/MULTIPLAYER_DESIGN.md`, ADR si décision d'architecture, hook `after-multiplayer-edit.ps1` si nouveaux chemins.

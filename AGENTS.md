@@ -68,7 +68,9 @@ Priorité : **toujours préférer un skill projet** s'il existe pour Dame de piq
 | i18n / traductions | `localization` (perso) — `translations/*.csv`, `LocaleAware` |
 | Nouveau écran menu | `godot-pixel-ui-button` + `gdscript-patterns` (perso) |
 | Simulation 1000 parties | `dame-de-pique-ai-gameplay` → `simulation/README.md` + télémétrie `telemetry-metrics.md` |
-| Multijoueur (modes, hot seat, LAN, réseau) | `dame-de-pique-multiplayer` + `docs/MULTIPLAYER_DESIGN.md` + ADR-024 |
+| Multijoueur (modes, hot seat, LAN, réseau) | `dame-de-pique-multiplayer` + `docs/MULTIPLAYER_DESIGN.md` + ADR-024 / ADR-025 |
+| Hot seat rotation UI / confidentialité | `dame-de-pique-multiplayer` → `reference.md` → `TableSeatDisplayMap` |
+| Lune soupçonnée (bouton social multijoueur) | `dame-de-pique-multiplayer` → `reference.md` → `MoonSuspicionManager` |
 | Multijoueur futur | `dame-de-pique-multiplayer` + `godot-multiplayer-turn-based` (global) + `docs/Multiplayer basics in godot.md` |
 | Jeu de cartes (autre titre) | `card-game-ai-design` (perso) |
 
@@ -130,7 +132,7 @@ Liste complète GodotPrompter : `~/.cursor/skills/` (60+ skills).
 | Hook | Déclencheur | Effet |
 |------|-------------|--------|
 | `after-ai-gameplay-edit.ps1` | Après édition fichier IA / Lune / tests IA | Rappel : tests `test_moon_*`, `test_adaptive_*`, `test_ai_*` |
-| `after-multiplayer-edit.ps1` | Après édition réseau / hot seat / lobby | Rappel : skill `dame-de-pique-multiplayer`, tests seat/setup/hot seat |
+| `after-multiplayer-edit.ps1` | Après édition réseau / hot seat / soupçon Lune / lobby | Rappel : skill `dame-de-pique-multiplayer`, tests seat/hot seat/display map/moon |
 
 ---
 
@@ -151,7 +153,7 @@ Liste complète GodotPrompter : `~/.cursor/skills/` (60+ skills).
 | Doc | Contenu |
 |-----|---------|
 | [docs/GDD.md](docs/GDD.md) | Règles Hearts |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | ADR — dont **ADR-023** (IA gameplay) |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | ADR — dont **ADR-023** (IA), **ADR-024/025** (multijoueur, hot seat UI, Lune soupçonnée) |
 | [docs/TECHNICAL_DESIGN.md](docs/TECHNICAL_DESIGN.md) | UI table, scènes |
 | [docs/TEST_PLAN.md](docs/TEST_PLAN.md) | Stratégie tests |
 | [docs/MULTIPLAYER_DESIGN.md](docs/MULTIPLAYER_DESIGN.md) | Spec multijoueur, phases A–G, références tutoriel Godot |
@@ -190,4 +192,4 @@ Quand tu **ajoutes un skill projet** dans `.cursor/skills/` :
 
 ---
 
-*Dernière mise à jour : juillet 2026 — IA gameplay, hooks, skills projet + index global `~/.cursor/README.md`.*
+*Dernière mise à jour : juillet 2026 — hot seat rotation UI, Lune soupçonnée, ADR-025, skill multiplayer/reference.*

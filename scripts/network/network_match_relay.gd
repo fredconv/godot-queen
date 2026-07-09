@@ -87,6 +87,43 @@ func broadcast_play_from_host(action: PlayCardAction, result: ActionResult) -> v
 	_broadcast_play(action, result)
 
 
+func broadcast_moon_suspicion_from_host(ctx: TableContext, event: MoonSuspicionEvent) -> void:
+	if not NetworkService.is_host():
+		return
+	await MoonSuspicionManager.apply_network_event(ctx, event)
+	var event_dict: Dictionary = event.to_dict()
+	for peer_id: int in multiplayer.get_peers():
+		rpc_apply_moon_suspicion.rpc_id(peer_id, event_dict)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_request_moon_suspicion(suspected_seat: int) -> void:
+	if not NetworkService.is_host():
+		return
+	var peer_id: int = multiplayer.get_remote_sender_id()
+	var suspector_seat: int = NetworkService.get_seat_for_peer(peer_id)
+	if suspector_seat < 0 or _table_ctx == null:
+		return
+	if not MoonSuspicionManager.validate_server(_table_ctx, suspector_seat, suspected_seat):
+		return
+	var event: MoonSuspicionEvent = MoonSuspicionManager.create_event_for_seats(
+		_table_ctx,
+		suspector_seat,
+		suspected_seat
+	)
+	await broadcast_moon_suspicion_from_host(_table_ctx, event)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_apply_moon_suspicion(event_dict: Dictionary) -> void:
+	if NetworkService.is_host():
+		return
+	if _table_ctx == null or not _table_ctx.is_active():
+		return
+	var event: MoonSuspicionEvent = MoonSuspicionEvent.from_dict(event_dict)
+	await MoonSuspicionManager.apply_network_event(_table_ctx, event)
+
+
 func _broadcast_play(action: PlayCardAction, result: ActionResult) -> void:
 	var action_dict: Dictionary = NetworkPlayPayload.action_to_dict(action)
 	var result_dict: Dictionary = NetworkPlayPayload.play_result_to_dict(result.play_result)

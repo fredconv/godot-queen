@@ -7,7 +7,7 @@ static func play(ctx: TableContext, player_index: int, mode: AiPlayMode.Kind, vi
 	if not ctx.is_active() or mode == AiPlayMode.Kind.MINIMIZE or visible_sec <= 0.0:
 		return
 
-	var seat: PlayerSeat = ctx.seats[player_index]
+	var seat: PlayerSeat = TableSeatDisplayMap.get_seat_node(ctx, player_index)
 	var bubble: Control = _create_bubble(ctx, player_index, mode)
 	ctx.animation_layer.add_child(bubble)
 	bubble.modulate.a = 0.0
@@ -36,7 +36,7 @@ static func _create_bubble(ctx: TableContext, player_index: int, mode: AiPlayMod
 	root.name = "AiThinkingBubble"
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var seat: PlayerSeat = ctx.seats[player_index]
+	var seat: PlayerSeat = TableSeatDisplayMap.get_seat_node(ctx, player_index)
 	var seat_center: Vector2 = seat.get_global_transform_with_canvas() * (seat.size / 2.0)
 
 	var panel := PanelContainer.new()

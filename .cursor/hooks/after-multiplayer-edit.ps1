@@ -22,14 +22,21 @@ $patterns = @(
     "scripts/network/",
     "scripts/match/match_launch_config.gd",
     "scripts/match/match_mode.gd",
+    "scripts/match/moon_suspicion_event.gd",
     "scripts/ui/table/table_hot_seat.gd",
     "scripts/ui/table/hot_seat_privacy_overlay.gd",
+    "scripts/ui/table/table_seat_display_map.gd",
+    "scripts/ui/table/moon_suspicion_manager.gd",
+    "scripts/ui/table/moon_suspicion_banner.gd",
     "scripts/ui/game_mode_screen.gd",
     "scripts/ui/hot_seat_lobby_screen.gd",
     "scripts/ui/multiplayer_lobby_screen.gd",
+    "scenes/table/moon_suspicion_banner.tscn",
     "tests/unit/test_seat_setup.gd",
     "tests/unit/test_match_launch_config.gd",
     "tests/unit/test_table_hot_seat.gd",
+    "tests/unit/test_table_seat_display_map.gd",
+    "tests/unit/test_moon_suspicion_manager.gd",
     "docs/MULTIPLAYER"
 )
 
@@ -45,9 +52,10 @@ if (-not $matched) { exit 0 }
 
 $response = @{
     agent_message = @(
-        "Fichier multijoueur modifie. Lire .cursor/skills/dame-de-pique-multiplayer/SKILL.md et docs/MULTIPLAYER_DESIGN.md."
-        "Lancer tests : test_seat_setup, test_match_launch_config, test_table_hot_seat, test_lobby_service."
-        "Ne pas introduire MultiplayerSynchronizer/Spawner pour le gameplay Hearts (ADR-024)."
+        "Fichier multijoueur modifie. Lire .cursor/skills/dame-de-pique-multiplayer/SKILL.md (+ reference.md) et docs/MULTIPLAYER_DESIGN.md."
+        "Tests : test_seat_setup, test_match_launch_config, test_table_hot_seat, test_table_seat_display_map, test_moon_suspicion_manager."
+        "Hot seat : TableSeatDisplayMap pour affichage ; pas ctx.seats[logical_seat] (ADR-025)."
+        "Pas de MultiplayerSynchronizer/Spawner pour le gameplay Hearts (ADR-024)."
     ) -join " "
 } | ConvertTo-Json -Compress
 

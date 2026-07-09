@@ -4,6 +4,9 @@ extends RefCounted
 
 
 static func refresh_opponent_hand_counts(ctx: TableContext) -> void:
+	if TableSeatDisplayMap.uses_rotation(ctx):
+		TableSeatDisplayMap.apply(ctx)
+		return
 	for player_index in range(HeartsRules.PLAYER_COUNT):
 		ctx.seats[player_index].hand_card_count = ctx.match_manager.hands[player_index].count()
 
@@ -11,16 +14,19 @@ static func refresh_opponent_hand_counts(ctx: TableContext) -> void:
 static func refresh_scores(ctx: TableContext) -> void:
 	var hand_scores: Array = ctx.match_manager.get_current_hand_raw_scores()
 	var hearts: Array = ctx.match_manager.get_current_hand_hearts_captured()
-	for player_index in range(HeartsRules.PLAYER_COUNT):
-		ctx.seats[player_index].score = hand_scores[player_index]
-		ctx.seats[player_index].heart_penalty = hearts[player_index]
+	if TableSeatDisplayMap.uses_rotation(ctx):
+		TableSeatDisplayMap.apply(ctx)
+	else:
+		for player_index in range(HeartsRules.PLAYER_COUNT):
+			ctx.seats[player_index].score = hand_scores[player_index]
+			ctx.seats[player_index].heart_penalty = hearts[player_index]
 	refresh_cumulative_scoreboard(ctx)
 
 
 static func refresh_cumulative_scoreboard(ctx: TableContext) -> void:
 	var names: Array = []
-	for seat in ctx.seats:
-		names.append(seat.player_name)
+	for player_index in range(HeartsRules.PLAYER_COUNT):
+		names.append(TableSeatDisplayMap.get_logical_display_name(ctx, player_index))
 	ctx.match_scoreboard.update_display(
 		ctx.match_manager.hand_number,
 		names,
@@ -31,15 +37,20 @@ static func refresh_cumulative_scoreboard(ctx: TableContext) -> void:
 static func refresh_turn_ui(ctx: TableContext) -> void:
 	var playing: bool = ctx.match_manager.phase == MatchManager.Phase.PLAYING
 	var local_seat: int = ctx.get_local_human_seat()
-	for player_index in range(HeartsRules.PLAYER_COUNT):
-		ctx.seats[player_index].set_active_turn(playing and player_index == ctx.match_manager.current_player)
+	if TableSeatDisplayMap.uses_rotation(ctx):
+		TableSeatDisplayMap.apply(ctx)
+	else:
+		for player_index in range(HeartsRules.PLAYER_COUNT):
+			ctx.seats[player_index].set_active_turn(playing and player_index == ctx.match_manager.current_player)
 
 	if playing:
 		if ctx.is_local_human_turn():
 			ctx.top_menu_bar.set_turn_text(_human_turn_hint_text(ctx, local_seat))
 		else:
 			ctx.top_menu_bar.set_turn_text(
-				TableCopy.opponent_turn_line(ctx.seats[ctx.match_manager.current_player].player_name)
+				TableCopy.opponent_turn_line(
+					TableSeatDisplayMap.get_logical_display_name(ctx, ctx.match_manager.current_player)
+				)
 			)
 		var hand_score: int = ctx.match_manager.get_current_hand_raw_scores()[local_seat]
 		var match_score: int = ctx.match_manager.score_manager.get_score(local_seat)
@@ -47,6 +58,7 @@ static func refresh_turn_ui(ctx: TableContext) -> void:
 
 	refresh_human_hand_legality(ctx)
 	TableFx.refresh_lead_suit_indicator(ctx)
+	MoonSuspicionManager.refresh_button(ctx)
 
 
 static func refresh_human_hand_legality(ctx: TableContext) -> void:

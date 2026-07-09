@@ -23,15 +23,16 @@ Règle : **chaque siège sans humain actif = IA** (`SeatSetup` / `LobbyService.a
 
 ### Hot seat (même machine)
 
-Passage de manette / écran entre joueurs locaux :
+Rotation **UI uniquement** : sièges logiques `0–3` inchangés côté `MatchManager` ; le joueur actif est toujours affiché en bas (`TableSeatDisplayMap`, pivot = `active_human_seat_index`).
 
-1. Joueur actif voit sa main et joue.
-2. Après son coup (ou fin de tour) → overlay plein écran : « Passez l'appareil au joueur {nom} » + « Appuyez sur Espace / Entrée ».
-3. Aucune main visible pendant le passage.
-4. Pli en cours et scores restent publics.
+1. **Début de partie** : shuffle aléatoire des humains sur les 4 places (`SeatSetup.shuffle_human_seats`).
+2. **Distribution** : toutes les mains en dos ; `hands_revealed_for_active_human = false`.
+3. **Handoff** : overlay « Passez l'appareil à {nom} » — **maintenir ESPACE 3 s** (barre de progression).
+4. Après validation : rotation UI, révélation de la main du joueur actif uniquement.
+5. Pli en cours et scores restent publics pendant le passage.
 
-**Phase B** : overlay confidentialité (`HotSeatPrivacyOverlay`) — livré.  
-**Futur (hors MVP)** : mains sur téléphone via navigateur (QR code) — complexité élevée.
+**Phase B** : livré (rotation UI, shuffle, overlay 3 s, `TableSeatDisplayMap`).  
+**Futur (hors MVP)** : mains sur téléphone via navigateur (QR code).
 
 ### En ligne (LAN P2P)
 
@@ -69,8 +70,9 @@ Implémentation : phase D (`DisconnectState`, messages `peer_disconnected`, `sea
 | 5.5 | ✅ | `LocalPlayerProfile`, sauvegarde v1 |
 | 6 | ✅ | `LobbyState`, `LobbyService` (local simulé) |
 | **A** | ✅ | `MatchMode`, `MatchLaunchConfig`, menu modes, `SeatSetup` |
-| **B** | ✅ | Hot seat : overlay passage + `active_human_seat` |
+| **B** | ✅ | Hot seat : rotation UI, shuffle, overlay 3 s, `TableSeatDisplayMap` |
 | **C** | ✅ | ENet : `NetworkService`, host/client controllers, lobby IP:port |
+| **B+** | ✅ | Lune soupçonnée (social, hot seat + online, sans effet gameplay) |
 | **D** | ⏳ | Déconnexion 30 s, reconnexion, remplacement IA |
 | **E** | ⏳ | Android LAN (host/client, IP locale) |
 | **F** | ⏳ | Steam (GodotSteam) |
@@ -93,6 +95,24 @@ Constantes dans `scripts/network/network_messages.gd` :
 | `peer_reconnected` | host → all | Reconnexion (phase D) |
 | `seat_reconnect_countdown` | host → all | Sync décompte 30 s (phase D) |
 | `seat_replaced_by_ai` | host → all | Remplacement IA (phase D) |
+| `request_moon_suspicion` | client → host | Soupçon Lune (social) |
+| `apply_moon_suspicion` | host → all | Bandeau soupçon Lune synchronisé |
+
+---
+
+## Lune soupçonnée (social)
+
+Événement **hors gameplay** : un humain signale qu'il soupçonne un adversaire de tenter la Lune.
+
+| Règle | Détail |
+|-------|--------|
+| Disponibilité | `is_multiplayer_social()` — hot seat ≥ 2 humains ou en ligne ; **pas en solo** |
+| Anti-spam | 1 soupçon / joueur / manche |
+| Hot seat | Soupçonneur voit le bandeau tout de suite ; file pour les autres humains après handoff |
+| En ligne | Host valide → RPC → tous les clients |
+| UI | Bouton `LUNE SOUPÇONNÉE`, picker adversaire, bandeau `suspicious-moon.png` |
+
+Fichiers : `MoonSuspicionEvent`, `MoonSuspicionManager`, `moon_suspicion_banner.tscn`, `NetworkMatchRelay` (RPC). Voir ADR-025.
 
 ---
 
@@ -124,8 +144,10 @@ Fichiers prévus :
 - `scripts/network/network_service.gd`, `host_match_controller.gd`, `client_match_controller.gd`
 - `scripts/network/disconnect_state.gd` (phase D)
 - `scripts/ui/game_mode_screen.gd`, `hot_seat_lobby_screen.gd`, `multiplayer_lobby_screen.gd`
-- `scripts/ui/table/hot_seat_privacy_overlay.gd` (phase B)
-- `scripts/ui/table/table_network_sync.gd` (phase C)
+- `scripts/ui/table/hot_seat_privacy_overlay.gd`
+- `scripts/ui/table/table_seat_display_map.gd`
+- `scripts/ui/table/moon_suspicion_manager.gd`
+- `scripts/ui/table/table_network_sync.gd` (phase C — non utilisé ; sync via relay)
 
 ---
 

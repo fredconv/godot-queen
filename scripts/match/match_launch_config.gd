@@ -6,6 +6,8 @@ extends RefCounted
 var mode: MatchMode.Type = MatchMode.Type.SOLO
 var seat_assignments: Array[SeatAssignment] = []
 var active_human_seat_index: int = 0
+## Hot seat : vrai une fois l'écran de confidentialité validé pour le joueur actif.
+var hands_revealed_for_active_human: bool = true
 
 
 func get_human_seat_indices() -> Array[int]:
@@ -23,7 +25,9 @@ func get_active_human_seat() -> int:
 func get_local_player_seat() -> int:
 	match mode:
 		MatchMode.Type.HOT_SEAT:
-			return active_human_seat_index
+			if active_human_seat_index >= 0:
+				return active_human_seat_index
+			return 0
 		MatchMode.Type.ONLINE_HOST:
 			return 0
 		MatchMode.Type.ONLINE_CLIENT:
@@ -40,6 +44,14 @@ func is_hot_seat_multi_human() -> bool:
 	return mode == MatchMode.Type.HOT_SEAT and get_human_seat_indices().size() > 1
 
 
+func is_multiplayer_social() -> bool:
+	if mode == MatchMode.Type.SOLO:
+		return false
+	if mode == MatchMode.Type.HOT_SEAT:
+		return is_hot_seat_multi_human()
+	return mode == MatchMode.Type.ONLINE_HOST or mode == MatchMode.Type.ONLINE_CLIENT
+
+
 func get_display_name_for_seat(seat_index: int) -> String:
 	for assignment: SeatAssignment in seat_assignments:
 		if assignment.seat_index == seat_index and assignment.profile != null:
@@ -52,4 +64,11 @@ func needs_handoff_for_current_player(current_player: int) -> bool:
 		return false
 	if current_player not in get_human_seat_indices():
 		return false
-	return current_player != active_human_seat_index
+	if active_human_seat_index != current_player:
+		return true
+	return not hands_revealed_for_active_human
+
+
+func reset_hot_seat_view_state() -> void:
+	active_human_seat_index = -1
+	hands_revealed_for_active_human = false

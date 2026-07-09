@@ -11,11 +11,11 @@ static func play(ctx: TableContext, announcement: Dictionary) -> void:
 	if player_index < 0:
 		return
 
-	var player_name: String = ctx.seats[player_index].player_name
+	var player_name: String = TableSeatDisplayMap.get_logical_display_name(ctx, player_index)
 	var target_index: int = announcement.get("target_player_index", -1)
 	var target_name: String = ""
 	if target_index >= 0:
-		target_name = ctx.seats[target_index].player_name
+		target_name = TableSeatDisplayMap.get_logical_display_name(ctx, target_index)
 
 	var message := GameCopy.ai_strategy_message(
 		player_name,

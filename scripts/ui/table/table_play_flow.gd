@@ -86,7 +86,7 @@ static func run_ai_turns(ctx: TableContext) -> void:
 			)
 			break
 
-		var seat: PlayerSeat = ctx.seats[player_index]
+		var seat: PlayerSeat = TableSeatDisplayMap.get_seat_node(ctx, player_index)
 		var start_center: Vector2 = seat.get_global_transform_with_canvas() * (seat.size / 2.0)
 		seat.hand_card_count = maxi(seat.hand_card_count - 1, 0)
 
@@ -140,11 +140,11 @@ static func apply_network_play(
 	if player_index == ctx.get_local_human_seat():
 		TableHumanHand.rebuild(ctx)
 	elif start_center == Vector2.ZERO:
-		var seat: PlayerSeat = ctx.seats[player_index]
+		var seat: PlayerSeat = TableSeatDisplayMap.get_seat_node(ctx, player_index)
 		start_center = seat.get_global_transform_with_canvas() * (seat.size / 2.0)
 		seat.hand_card_count = maxi(seat.hand_card_count - 1, 0)
 	if start_center == Vector2.ZERO:
-		var fallback_seat: PlayerSeat = ctx.seats[player_index]
+		var fallback_seat: PlayerSeat = TableSeatDisplayMap.get_seat_node(ctx, player_index)
 		start_center = fallback_seat.get_global_transform_with_canvas() * (fallback_seat.size / 2.0)
 	await animate_card_play(ctx, player_index, action.card, start_center)
 	if not ctx.is_active():
@@ -163,14 +163,14 @@ static func animate_card_play(
 	start_center: Vector2
 ) -> void:
 	var traveling_card: Control = _spawn_traveling_card(ctx, card, start_center)
-	var target_slot: Control = ctx.trick_slots[player_index]
+	var target_slot: Control = TableSeatDisplayMap.get_trick_slot(ctx, player_index)
 	var target_center: Vector2 = target_slot.get_global_transform_with_canvas() * (target_slot.size / 2.0)
 	var cards_in_trick: int = ctx.match_manager.trick_manager.played_count()
 	if cards_in_trick >= 2:
 		TableFx.fade_lead_suit_indicator(ctx, TableAnimations.CARD_PLAY_DURATION_SEC)
 	if card.is_queen_of_spades():
 		TableServiceAccess.audio(ctx.host).play_queen_of_spades()
-		ctx.queen_avatar_burst.play(ctx.seats[player_index].character_id)
+		ctx.queen_avatar_burst.play(player_index)
 		await TableAnimations.play_queen_bullet_time(
 			ctx.host,
 			traveling_card,
@@ -206,6 +206,7 @@ static func handle_post_play(ctx: TableContext, result: MatchManager.PlayResult)
 		if not ctx.is_active():
 			return
 		ctx.match_manager.start_new_hand()
+		MoonSuspicionManager.on_new_hand(ctx, ctx.match_manager.hand_number)
 		await TableDealing.play_sequence(ctx)
 		if not ctx.is_active():
 			return
@@ -242,7 +243,7 @@ static func resolve_trick_sequence(
 	if is_final_match_trick:
 		return
 
-	var winner_seat: PlayerSeat = ctx.seats[winner_index]
+	var winner_seat: PlayerSeat = TableSeatDisplayMap.get_seat_node(ctx, winner_index)
 	var target_center: Vector2 = winner_seat.get_global_transform_with_canvas() * (winner_seat.size / 2.0)
 	var card_views: Array[Control] = []
 	for card_view in ctx.trick_card_views.values():

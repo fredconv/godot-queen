@@ -51,6 +51,7 @@ func _ready() -> void:
 	_top_menu_bar.hamburger_pressed.connect(_on_top_menu_bar_hamburger_pressed)
 	_top_menu_bar.help_pressed.connect(_on_top_menu_bar_help_pressed)
 	_top_menu_bar.settings_pressed.connect(_on_top_menu_bar_settings_pressed)
+	_top_menu_bar.moon_suspicion_pressed.connect(_on_top_menu_bar_moon_suspicion_pressed)
 	_confirm_dialog.confirmed.connect(_on_confirm_dialog_confirmed)
 	_match_end_dialog.replay_requested.connect(_on_match_end_replay_requested)
 	_match_end_dialog.quit_requested.connect(_on_match_end_quit_requested)
@@ -110,6 +111,10 @@ func _on_top_menu_bar_scores_pressed() -> void:
 
 func _on_top_menu_bar_tricks_pressed() -> void:
 	TableTrickHistory.open(_ctx)
+
+
+func _on_top_menu_bar_moon_suspicion_pressed() -> void:
+	await MoonSuspicionManager.on_button_pressed(_ctx)
 
 
 func _on_top_menu_bar_new_game_pressed() -> void:

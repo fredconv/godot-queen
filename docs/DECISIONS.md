@@ -359,3 +359,23 @@ Registre des décisions d'architecture importantes, au format court : contexte, 
 7. **Navigateur mobile (QR)** : hors MVP ; documenté comme phase G.
 
 **Conséquences** : `MatchLaunchConfig` sur `GameSession` ; `SeatSetup` unifie solo/hot seat/online ; `NetworkService` et `NetworkMatchRelay` en autoload (phase C) ; tests unitaires sur `SeatSetup` et config de lancement.
+
+---
+
+## ADR-025 — Hot seat rotation UI et soupçon Lune social
+
+**Date** : 2026-07  
+**Statut** : accepté
+
+**Contexte** : le hot seat multi-humains exige que chaque joueur voie sa main en bas sans modifier l'ordre logique des sièges. Par ailleurs, les joueurs veulent signaler socialement une suspicion de Lune sans impacter les règles.
+
+**Décision** :
+
+1. **Séparation siège logique / affichage** : `TableSeatDisplayMap` calcule `visual = (logical - pivot + 4) % 4`. Le moteur (`MatchManager`) ne réordonne jamais les joueurs.
+2. **Confidentialité hot seat** : mains cachées jusqu'au handoff ; overlay avec maintien ESPACE 3 s ; `hands_revealed_for_active_human` sur `MatchLaunchConfig`.
+3. **Shuffle début de partie** : humains répartis aléatoirement (`SeatSetup.shuffle_human_seats`).
+4. **Soupçon Lune** : `MoonSuspicionManager` + `MoonSuspicionEvent` ; bandeau pixel art ; **aucun** effet sur scores, cartes ou IA.
+5. **File hot seat** : événements en attente jusqu'au prochain handoff de chaque humain (`seen_by_seats`).
+6. **En ligne** : host valide, diffuse via `NetworkMatchRelay` ; anti-spam 1 / joueur / manche.
+
+**Conséquences** : tout code table qui affiche nom, avatar, main ou pli d'un siège logique doit passer par `TableSeatDisplayMap` en hot seat multi-humain. Skill projet `dame-de-pique-multiplayer/reference.md`. Tests : `test_table_seat_display_map`, `test_moon_suspicion_manager`.

@@ -23,14 +23,17 @@ static func perform_handoff(ctx: TableContext) -> void:
 		return
 	var target_seat: int = ctx.match_manager.current_player
 	var player_name: String = ctx.launch_config.get_display_name_for_seat(target_seat)
+	ctx.launch_config.hands_revealed_for_active_human = false
 	if ctx.human_hand_area != null:
 		ctx.human_hand_area.visible = false
+	TableSeatDisplayMap.apply(ctx)
 	ctx.hot_seat_overlay.show_handoff(player_name)
 	await ctx.hot_seat_overlay.handoff_acknowledged
 	if not ctx.is_active():
 		return
 	ctx.launch_config.active_human_seat_index = target_seat
-	if ctx.human_hand_area != null:
-		ctx.human_hand_area.visible = true
+	ctx.launch_config.hands_revealed_for_active_human = true
+	TableSeatDisplayMap.apply(ctx)
 	TableHumanHand.rebuild(ctx)
+	await MoonSuspicionManager.flush_pending_alerts(ctx)
 	TableDisplay.refresh_turn_ui(ctx)

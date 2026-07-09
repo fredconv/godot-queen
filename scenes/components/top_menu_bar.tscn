@@ -46,6 +46,10 @@ text = "SCORES"
 [node name="BtnTricks" type="Button" parent="Margin/Bar/LeftButtons"]
 text = "PLIS"
 
+[node name="BtnMoonSuspicion" type="Button" parent="Margin/Bar/LeftButtons"]
+visible = false
+text = "LUNE SOUPÇONNÉE"
+
 [node name="CenterInfo" type="VBoxContainer" parent="Margin/Bar"]
 size_flags_horizontal = 3
 alignment = 1
@@ -84,6 +88,7 @@ focus_mode = 2
 [connection signal="pressed" from="Margin/Bar/LeftButtons/BtnHelp" to="." method="_on_btn_help_pressed"]
 [connection signal="pressed" from="Margin/Bar/LeftButtons/BtnScores" to="." method="_on_btn_scores_pressed"]
 [connection signal="pressed" from="Margin/Bar/LeftButtons/BtnTricks" to="." method="_on_btn_tricks_pressed"]
+[connection signal="pressed" from="Margin/Bar/LeftButtons/BtnMoonSuspicion" to="." method="_on_btn_moon_suspicion_pressed"]
 [connection signal="pressed" from="Margin/Bar/RightButtons/BtnNew" to="." method="_on_btn_new_pressed"]
 [connection signal="pressed" from="Margin/Bar/RightButtons/BtnToggleMusic" to="." method="_on_btn_toggle_music_pressed"]
 [connection signal="pressed" from="Margin/Bar/RightButtons/BtnNextMusic" to="." method="_on_btn_next_music_pressed"]

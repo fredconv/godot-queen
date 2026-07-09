@@ -8,6 +8,7 @@
 |-------|--------|
 | dame-de-pique-ai-gameplay | [SKILL.md](dame-de-pique-ai-gameplay/SKILL.md) |
 | godot-pixel-ui-button | [SKILL.md](godot-pixel-ui-button/SKILL.md) |
+| dame-de-pique-multiplayer | [SKILL.md](dame-de-pique-multiplayer/SKILL.md) (+ [reference.md](dame-de-pique-multiplayer/reference.md)) |
 | godot-performance-dame-de-pique | [SKILL.md](godot-performance-dame-de-pique/SKILL.md) |
 | context7-mcp | [SKILL.md](context7-mcp/SKILL.md) |
 

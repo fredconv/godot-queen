@@ -14,6 +14,9 @@ static func apply(ctx: TableContext) -> void:
 
 
 static func refresh_seat_names(ctx: TableContext) -> void:
+	if ctx.launch_config != null and TableSeatDisplayMap.uses_rotation(ctx):
+		TableSeatDisplayMap.apply(ctx)
+		return
 	if ctx.launch_config != null:
 		for assignment: SeatAssignment in ctx.launch_config.seat_assignments:
 			var seat_index: int = assignment.seat_index

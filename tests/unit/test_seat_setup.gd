@@ -25,7 +25,19 @@ func test_create_hot_seat_with_two_humans() -> void:
 	assert_that(config.mode).is_equal(MatchMode.Type.HOT_SEAT)
 	assert_int(config.get_human_seat_indices().size()).is_equal(2)
 	assert_bool(config.seat_assignments[2].profile.is_ai).is_true()
-	assert_str(config.seat_assignments[1].profile.display_name).is_equal("Bob")
+	assert_int(config.active_human_seat_index).is_equal(-1)
+	assert_bool(config.hands_revealed_for_active_human).is_false()
+
+
+func test_shuffle_human_seats_reassigns_humans_to_random_seats() -> void:
+	var config: MatchLaunchConfig = SeatSetup.create_hot_seat(2, PackedStringArray(["Alice", "Bob"]))
+	SeatSetup.shuffle_human_seats(config)
+	var human_seats: Array[int] = config.get_human_seat_indices()
+	assert_int(human_seats.size()).is_equal(2)
+	for seat_index in human_seats:
+		assert_bool(config.seat_assignments[seat_index].profile.is_human).is_true()
+	assert_int(config.active_human_seat_index).is_equal(-1)
+	assert_bool(config.hands_revealed_for_active_human).is_false()
 #endregion
 
 

@@ -18,13 +18,16 @@ static func create_solo(
 
 
 static func create_hot_seat(human_count: int, display_names: PackedStringArray) -> MatchLaunchConfig:
-	return create_local_humans(
+	var config := create_local_humans(
 		human_count,
 		display_names,
 		"",
 		"default",
 		MatchMode.Type.HOT_SEAT
 	)
+	if config.is_hot_seat_multi_human():
+		config.reset_hot_seat_view_state()
+	return config
 
 
 static func create_local_humans(
@@ -63,6 +66,42 @@ static func create_local_humans(
 		assignments.append(SeatAssignment.new(seat_index, profile))
 	config.seat_assignments = assignments
 	return config
+
+
+static func shuffle_human_seats(config: MatchLaunchConfig) -> void:
+	if not config.is_hot_seat_multi_human():
+		return
+
+	var human_profiles: Array[PlayerProfile] = []
+	for assignment: SeatAssignment in config.seat_assignments:
+		if assignment.profile != null and assignment.profile.is_human:
+			human_profiles.append(assignment.profile)
+
+	var seat_pool: Array[int] = []
+	for seat_index in range(HeartsRules.PLAYER_COUNT):
+		seat_pool.append(seat_index)
+	seat_pool.shuffle()
+
+	var assignments: Array[SeatAssignment] = []
+	for human_index in range(human_profiles.size()):
+		var seat_index: int = seat_pool[human_index]
+		var profile: PlayerProfile = human_profiles[human_index]
+		profile.seat_index = seat_index
+		assignments.append(SeatAssignment.new(seat_index, profile))
+
+	for seat_index in seat_pool.slice(human_profiles.size()):
+		var profile := PlayerProfile.new()
+		profile.seat_index = seat_index
+		profile.is_human = false
+		profile.is_ai = true
+		profile.is_ready = true
+		profile.is_connected = true
+		profile.display_name = "AI %d" % seat_index
+		assignments.append(SeatAssignment.new(seat_index, profile))
+
+	assignments.sort_custom(func(a: SeatAssignment, b: SeatAssignment) -> bool: return a.seat_index < b.seat_index)
+	config.seat_assignments = assignments
+	config.reset_hot_seat_view_state()
 
 
 static func create_online_from_lobby(
