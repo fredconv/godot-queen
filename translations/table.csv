@@ -10,7 +10,7 @@ TB_TURN_OPPONENT,%s joue...,%s is playing...,%s spielt...,%s está jugando...,%s
 TB_SCOREBOARD_TITLE,Partie — manche %d / %d pts,Match — hand %d / %d pts,Spiel — Stich %d / %d Pkt.,Partida — mano %d / %d pts,Partida — mão %d / %d pts,对局 — 第 %d 轮 / %d 分
 TB_THEME_CLASSIC,Feutre vert,Green felt,Grüner Filz,Fieltro verde,Feltro verde,绿色绒面
 TB_THEME_TAPIS,Tapis,Tablecloth,Tischtuch,Mantel,Mantel,桌布
-TB_TOP_HELP,AIDE,HELP,HILFE,AYUDA,AJUDA,帮助
+TB_TOP_HELP,RÈGLES,RULES,REGELN,REGLAS,REGRAS,规则
 TB_TOP_SCORES,SCORES,SCORES,PUNKTE,PUNTOS,PONTOS,统计
 TB_TOP_TRICKS,PLIS,TRICKS,STICHE,MANOS,MÃOS,最近墩
 TB_TOP_NEW,NOUVEAU,NEW,NEU,NUEVO,NOVO,新建
@@ -158,7 +158,7 @@ TB_TRICK_HISTORY_TITLE,Derniers plis,Recent tricks,Letzte Stiche,Últimas manos,
 TB_TRICK_HISTORY_EMPTY,Aucun pli terminé dans cette manche.,No completed tricks in this hand yet.,Noch kein abgeschlossener Stich in dieser Hand.,Ninguna mano completada en esta ronda.,Nenhum truque concluído nesta mão.,本轮尚无已完成的墩。
 TB_TRICK_HISTORY_LINE,Pli %d — gagnant : %s (%d pt),Trick %d — winner: %s (%d pts),Stich %d — Gewinner: %s (%d Pkt),Mano %d — ganador: %s (%d pts),Truque %d — vencedor: %s (%d pts),第 %d 墩 — 赢家：%s（%d 分）
 TB_HOT_SEAT_PASS_TITLE,Passez l'appareil à %s,Pass the device to %s,Gerät an %s übergeben,Pasa el dispositivo a %s,Passe o aparelho para %s,请将设备交给 %s
-TB_HOT_SEAT_PASS_HINT,Maintenez ESPACE pendant 3 secondes pour continuer.,Hold SPACE for 3 seconds to continue.,Leertaste 3 Sekunden gedrückt halten.,Mantén ESPACIO 3 segundos para continuar.,Mantenha ESPAÇO por 3 segundos para continuar.,按住空格 3 秒以继续。
+TB_HOT_SEAT_PASS_HINT,Maintenez ESPACE pendant 1,5 seconde pour continuer.,Hold SPACE for 1.5 seconds to continue.,Leertaste 1,5 Sekunden gedrückt halten.,Mantén ESPACIO 1,5 segundos para continuar.,Mantenha ESPAÇO por 1,5 segundos para continuar.,按住空格 1.5 秒以继续。
 TB_HOT_SEAT_HOLD_PROGRESS,Maintenez ESPACE… %d %%,Hold SPACE… %d %%,Leertaste halten… %d %%,Mantén ESPACIO… %d %%,Mantenha ESPAÇO… %d %%,按住空格… %d %%
 TB_TOP_MOON_SUSPICION,LUNE SOUPÇONNÉE,SUSPECT MOON,VERDÄCHTIGE LUNE,LUNA SOSPECHADA,LUA SUSPEITA,怀疑冲月
 TB_MOON_SUSPICION_PICKER_TITLE,Qui soupçonnez-vous de tenter la Lune ?,Who do you suspect of shooting the moon?,Wer versucht deiner Meinung nach die Lune?,¿A quién sospechas de intentar la Luna?,Quem você suspeita de tentar a Lua?,你怀疑谁在冲月？

@@ -84,6 +84,12 @@ func set_language(value: String) -> void:
 static func normalize_language(value: String) -> String:
 	return LocaleCatalog.normalize(value)
 
+
+## Wrapper instance — évite le warning STATIC_CALLED_ON_INSTANCE depuis l'UI.
+func normalize_language_value(value: String) -> String:
+	return normalize_language(value)
+
+
 ## --- Thème visuel de la table ---
 
 func get_table_theme() -> StringName:

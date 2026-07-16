@@ -374,7 +374,7 @@ Registre des décisions d'architecture importantes, au format court : contexte, 
 1. **Séparation siège logique / affichage** : `TableSeatDisplayMap` calcule `visual = (logical - pivot + 4) % 4`. Le moteur (`MatchManager`) ne réordonne jamais les joueurs.
 2. **Confidentialité hot seat** : mains cachées jusqu'au handoff ; overlay avec maintien ESPACE 3 s ; `hands_revealed_for_active_human` sur `MatchLaunchConfig`.
 3. **Shuffle début de partie** : humains répartis aléatoirement (`SeatSetup.shuffle_human_seats`).
-4. **Soupçon Lune** : `MoonSuspicionManager` + `MoonSuspicionEvent` ; bandeau pixel art ; **aucun** effet sur scores, cartes ou IA.
+4. **Soupçon Lune** : `MoonSuspicionManager` + `MoonSuspicionEvent` ; bouton d'action ancré en bas à droite (`MoonSuspicionActionButton`) ; bandeau pixel art ; **effet gameplay** : les IA autres que le joueur soupçonné passent en mode casser la Lune (`human_declared_moon_suspect` dans le contexte IA) ; pas d'effet sur les scores ni les cartes jouables directement.
 5. **File hot seat** : événements en attente jusqu'au prochain handoff de chaque humain (`seen_by_seats`).
 6. **En ligne** : host valide, diffuse via `NetworkMatchRelay` ; anti-spam 1 / joueur / manche.
 

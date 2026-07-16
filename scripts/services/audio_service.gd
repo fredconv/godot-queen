@@ -64,6 +64,12 @@ func ensure_music_playing() -> void:
 		return
 	play_random()
 
+
+## Réactive la musique à l'écran d'accueil (même si désactivée en partie).
+func enable_music_for_home_screen() -> void:
+	ConfigService.set_music_enabled(true)
+	ensure_music_playing()
+
 ## --- API typée (préférer ces méthodes aux chaînes génériques `play_sfx`) ---
 
 ## Une carte distribuée individuellement (à appeler une fois par carte lors

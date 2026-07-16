@@ -25,4 +25,16 @@ func test_detects_likely_moon_attempt() -> void:
 	assert_bool(MoonSuspicion.should_break_moon(context)).is_true()
 	var suspect: Dictionary = MoonSuspicion.find_top_suspect(context)
 	assert_int(suspect.get("player_index", -1)).is_equal(1)
+
+
+func test_should_not_break_when_moon_busted() -> void:
+	var context := {
+		"player_index": 0,
+		"moon_busted": true,
+		"hand_raw_scores": [0, 9, 3, 0],
+		"tricks_won_counts": [0, 3, 1, 0],
+		"consecutive_trick_wins": [0, 2, 0, 0],
+		"trick_number": 6,
+	}
+	assert_bool(MoonSuspicion.should_break_moon(context)).is_false()
 #endregion

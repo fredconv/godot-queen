@@ -88,6 +88,16 @@ assets/sprites/suspicious-moon.png
 
 `test_seat_setup`, `test_match_launch_config`, `test_table_hot_seat`, `test_table_seat_display_map`, `test_moon_suspicion_manager`, `test_disconnect_state`, `test_lobby_service`
 
+## Validation MCP (UI / runtime)
+
+Charger **`dame-de-pique-mcp-playtest`**. Après fix hot seat / overlay / splash :
+
+- Overlay : maintien ESPACE **1,5 s** (`HotSeatPrivacyOverlay.HOLD_DURATION_SEC`)
+- Affichage sièges : uniquement `TableSeatDisplayMap`
+- Rule : `.cursor/rules/dame-de-pique-mcp-loop.mdc`
+
+Dernier audit live : `docs/MCP-AUDIT-SPLASH-HOTSEAT-2026-07-16.md`
+
 ## Dépannage
 
 `.cursor/architecture/dame-de-pique/lessons-learned.md` + section Dépannage dans `reference.md`.

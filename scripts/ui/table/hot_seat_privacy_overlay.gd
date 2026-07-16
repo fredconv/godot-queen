@@ -1,12 +1,12 @@
 class_name HotSeatPrivacyOverlay
 extends Control
 ## Overlay plein écran : passage d'appareil entre joueurs hot seat.
-## Validation par maintien de la touche Espace (~3 s) avec barre de progression.
+## Validation par maintien de la touche Espace (~1,5 s) avec barre de progression.
 
 
 signal handoff_acknowledged
 
-const HOLD_DURATION_SEC: float = 3.0
+const HOLD_DURATION_SEC: float = 1.5
 
 @onready var _title_label: Label = $Backdrop/Panel/Margin/VBox/TitleLabel
 @onready var _hint_label: Label = $Backdrop/Panel/Margin/VBox/HintLabel

@@ -27,6 +27,9 @@ DebugService="*res://scripts/services/debug_service.gd"
 GameSession="*res://scripts/services/game_session.gd"
 NetworkService="*res://scripts/network/network_service.gd"
 NetworkMatchRelay="*res://scripts/network/network_match_relay.gd"
+MCPScreenshot="*res://addons/godot_mcp/mcp_screenshot_service.gd"
+MCPInputService="*res://addons/godot_mcp/mcp_input_service.gd"
+MCPGameInspector="*res://addons/godot_mcp/mcp_game_inspector_service.gd"
 
 [display]
 
@@ -41,7 +44,7 @@ movie_writer/movie_file="C:/Projects/Godot/EXPORT TESTABLE/queen_movie_01.avi"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/godot_mcp/plugin.cfg")
 
 [gui]
 

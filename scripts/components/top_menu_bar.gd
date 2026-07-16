@@ -14,7 +14,6 @@ signal menu_pressed
 signal settings_pressed
 signal music_toggle_pressed
 signal music_next_pressed
-signal moon_suspicion_pressed
 
 const LEGACY_ICON_HAMBURGER: Rect2i = Rect2i(603, 49, 144, 128)
 const LEGACY_ICON_SETTINGS: Rect2i = Rect2i(603, 592, 144, 128)
@@ -23,7 +22,6 @@ const LEGACY_ICON_SETTINGS: Rect2i = Rect2i(603, 592, 144, 128)
 @onready var _btn_help: Button = $Margin/Bar/LeftButtons/BtnHelp
 @onready var _btn_scores: Button = $Margin/Bar/LeftButtons/BtnScores
 @onready var _btn_tricks: Button = $Margin/Bar/LeftButtons/BtnTricks
-@onready var _btn_moon_suspicion: Button = $Margin/Bar/LeftButtons/BtnMoonSuspicion
 @onready var _turn_label: Label = $Margin/Bar/CenterInfo/TurnLabel
 @onready var _score_label: Label = $Margin/Bar/CenterInfo/ScoreLabel
 @onready var _btn_new: Button = $Margin/Bar/RightButtons/BtnNew
@@ -41,16 +39,16 @@ var _all_buttons: Array[Button] = []
 
 func _ready() -> void:
 	theme = PIXEL_THEME
-	_text_buttons = [_btn_help, _btn_scores, _btn_tricks, _btn_moon_suspicion, _btn_new, _btn_toggle_music, _btn_next_music, _btn_menu]
+	# Audio (MUSIQUE / SUIVANT) reste dans Configuration — masqué pour alléger la barre en jeu.
+	_btn_toggle_music.visible = false
+	_btn_next_music.visible = false
+	_text_buttons = [_btn_help, _btn_scores, _btn_tricks, _btn_new, _btn_menu]
 	_all_buttons = [
 		_btn_hamburger,
 		_btn_help,
 		_btn_scores,
 		_btn_tricks,
-		_btn_moon_suspicion,
 		_btn_new,
-		_btn_toggle_music,
-		_btn_next_music,
 		_btn_menu,
 		_btn_settings,
 	]
@@ -58,11 +56,6 @@ func _ready() -> void:
 	UiFocusNav.chain_horizontal(_all_buttons)
 	LocaleAware.bind(self, refresh_locale)
 	refresh_locale()
-
-
-func set_moon_suspicion_available(visible: bool, enabled: bool) -> void:
-	_btn_moon_suspicion.visible = visible
-	_btn_moon_suspicion.disabled = not enabled
 
 
 func set_turn_text(text: String) -> void:
@@ -82,7 +75,6 @@ func refresh_locale() -> void:
 	_btn_help.text = tr(TableKeys.TOP_HELP)
 	_btn_scores.text = tr(TableKeys.TOP_SCORES)
 	_btn_tricks.text = tr(TableKeys.TOP_TRICKS)
-	_btn_moon_suspicion.text = tr(TableKeys.TOP_MOON_SUSPICION)
 	_btn_new.text = tr(TableKeys.TOP_NEW)
 	_btn_menu.text = tr(TableKeys.TOP_MENU)
 	_btn_next_music.text = tr(TableKeys.TOP_MUSIC_NEXT)
@@ -132,10 +124,6 @@ func _on_btn_scores_pressed() -> void:
 
 func _on_btn_tricks_pressed() -> void:
 	tricks_pressed.emit()
-
-
-func _on_btn_moon_suspicion_pressed() -> void:
-	moon_suspicion_pressed.emit()
 
 
 func _on_btn_new_pressed() -> void:

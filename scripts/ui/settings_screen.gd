@@ -16,6 +16,7 @@ extends ModalOverlayScreen
 @onready var _language_option: OptionButton = $Panel/Margin/VBox/LanguageRow/LanguageOption
 @onready var _display_name_label: Label = $Panel/Margin/VBox/DisplayNameRow/DisplayNameLabel
 @onready var _display_name_edit: LineEdit = $Panel/Margin/VBox/DisplayNameRow/DisplayNameEdit
+@onready var _btn_reset_stats: NinePatchButton = $Panel/Margin/VBox/BtnResetStats
 @onready var _btn_back: NinePatchButton = $Panel/Margin/VBox/BtnBack
 
 
@@ -34,14 +35,16 @@ func _ready() -> void:
 		_theme_option,
 		_language_option,
 		_display_name_edit,
+		_btn_reset_stats,
 		_btn_back,
 	])
 	LocaleAware.bind(self, _refresh_locale)
 
 
 func _before_open() -> void:
-	_load_from_config()
+	# Peupler les OptionButton avant toute sélection (évite item_count = 0).
 	_refresh_locale()
+	_load_from_config()
 
 
 func _on_overlay_opened() -> void:
@@ -52,6 +55,7 @@ func _on_overlay_opened() -> void:
 		_theme_option,
 		_language_option,
 		_display_name_edit,
+		_btn_reset_stats,
 		_btn_back,
 	])
 
@@ -64,10 +68,10 @@ func _refresh_locale() -> void:
 	_theme_label.text = tr(MenuKeys.SETTINGS_TABLE_THEME)
 	_language_label.text = tr(MenuKeys.SETTINGS_LANGUAGE)
 	_display_name_label.text = tr(MenuKeys.SETTINGS_DISPLAY_NAME)
+	_btn_reset_stats.set_button_text(tr(MenuKeys.SETTINGS_RESET_STATS))
 	_btn_back.set_button_text(tr(CommonKeys.BACK))
 	_build_theme_options()
 	_build_language_options()
-	_select_language_option(ConfigService.get_language())
 	_set_slider_label(_sfx_value_label, _sfx_slider.value)
 	_set_slider_label(_music_value_label, _music_slider.value)
 
@@ -107,6 +111,8 @@ func _load_from_config() -> void:
 
 
 func _select_theme_option(theme_id: StringName) -> void:
+	if _theme_option.item_count <= 0:
+		return
 	var normalized: StringName = TableThemePaths.normalize_theme_id(theme_id)
 	for index in _theme_option.item_count:
 		if TableThemePaths.THEME_IDS[index] == normalized:
@@ -116,7 +122,9 @@ func _select_theme_option(theme_id: StringName) -> void:
 
 
 func _select_language_option(language: String) -> void:
-	var normalized: String = ConfigService.normalize_language(language)
+	if _language_option.item_count <= 0:
+		return
+	var normalized: String = ConfigService.normalize_language_value(language)
 	_language_option.set_block_signals(true)
 	for index in _language_option.item_count:
 		if _language_option.get_item_metadata(index) == normalized:
@@ -156,6 +164,10 @@ func _on_language_option_selected(index: int) -> void:
 	var language: Variant = _language_option.get_item_metadata(index)
 	if language is String and language != ConfigService.get_language():
 		ConfigService.set_language(language)
+
+
+func _on_btn_reset_stats_pressed() -> void:
+	StatsService.reset_stats()
 
 
 func _on_btn_back_pressed() -> void:

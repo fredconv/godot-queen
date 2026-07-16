@@ -197,6 +197,72 @@ func test_suspect_moon_when_opponent_looks_dangerous() -> void:
 	assert_int(announcement.get("target_player_index", -1)).is_equal(1)
 
 
+func test_human_declared_suspect_triggers_break_for_other_ais() -> void:
+	var strategy := AdaptiveAiStrategy.new(
+		AiPersonalityKind.Kind.BALANCED,
+		HeuristicStrategy.new()
+	)
+	var context := {
+		"hand_number": 1,
+		"player_index": 0,
+		"human_declared_moon_suspect": 2,
+		"confidence": 0.5,
+		"moon_feasible": false,
+		"moon_busted": false,
+		"is_leading": true,
+		"trick_number": 4,
+		"match_scores": [10, 20, 15, 8],
+		"hand_raw_scores": [0, 0, 0, 0],
+		"tricks_won_counts": [0, 0, 0, 0],
+		"consecutive_trick_wins": [0, 0, 0, 0],
+	}
+	assert_int(strategy.peek_play_mode(context)).is_equal(AiPlayMode.Kind.BREAK_MOON)
+
+
+func test_human_declared_suspect_skips_break_for_suspected_ai() -> void:
+	var strategy := AdaptiveAiStrategy.new(
+		AiPersonalityKind.Kind.BALANCED,
+		HeuristicStrategy.new()
+	)
+	var context := {
+		"hand_number": 1,
+		"player_index": 2,
+		"human_declared_moon_suspect": 2,
+		"confidence": 0.5,
+		"moon_feasible": false,
+		"moon_busted": false,
+		"is_leading": true,
+		"trick_number": 4,
+		"match_scores": [10, 20, 15, 8],
+		"hand_raw_scores": [0, 0, 0, 0],
+		"tricks_won_counts": [0, 0, 0, 0],
+		"consecutive_trick_wins": [0, 0, 0, 0],
+	}
+	assert_int(strategy.peek_play_mode(context)).is_equal(AiPlayMode.Kind.MINIMIZE)
+
+
+func test_moon_busted_stops_break_moon_even_with_human_suspect() -> void:
+	var strategy := AdaptiveAiStrategy.new(
+		AiPersonalityKind.Kind.BALANCED,
+		HeuristicStrategy.new()
+	)
+	var context := {
+		"hand_number": 1,
+		"player_index": 0,
+		"human_declared_moon_suspect": 2,
+		"moon_busted": true,
+		"confidence": 0.5,
+		"moon_feasible": false,
+		"is_leading": true,
+		"trick_number": 8,
+		"match_scores": [10, 20, 15, 8],
+		"hand_raw_scores": [0, 3, 9, 0],
+		"tricks_won_counts": [0, 1, 3, 0],
+		"consecutive_trick_wins": [0, 0, 1, 0],
+	}
+	assert_int(strategy.peek_play_mode(context)).is_equal(AiPlayMode.Kind.MINIMIZE)
+
+
 func test_second_announcement_blocked_same_hand() -> void:
 	var strategy := AdaptiveAiStrategy.new(
 		AiPersonalityKind.Kind.BALANCED,

@@ -1,11 +1,20 @@
 extends Control
 ## MainMenu
-## Écran de menu principal (étape 7 de docs/ROADMAP.md). Contrôleur minimal :
-## lance une partie de démonstration sur `table.tscn`, quitte le jeu, ou
-## affiche les écrans Scores / Configuration / Crédits.
+## Écran de menu principal : intro visuelle puis navigation vers la table ou les overlays.
 
+
+const BG_HOLD_SEC: float = 2.4
+const OVERLAY_FADE_SEC: float = 0.85
+const MENU_FADE_SEC: float = 0.55
+const MENU_BUTTON_FILL: Color = Color(0.05, 0.16, 0.09, 1.0)
+
+@onready var _background_texture: TextureRect = $BackgroundTexture
+@onready var _dark_overlay: ColorRect = $DarkOverlay
+@onready var _center_container: CenterContainer = $CenterContainer
+## Titre UI masqué : branding déjà dans `accueil-bg.png` (évite double titre I5).
 @onready var _title_label: Label = $CenterContainer/MenuColumn/TitleLabel
 @onready var _btn_new_game: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnNewGame
+@onready var _btn_rules: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnRules
 @onready var _btn_scores: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnScores
 @onready var _btn_settings: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnSettings
 @onready var _btn_credits: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnCredits
@@ -19,18 +28,20 @@ extends Control
 @onready var _game_mode_screen: Control = $GameModeScreen
 @onready var _hot_seat_lobby_screen: Control = $HotSeatLobbyScreen
 @onready var _multiplayer_lobby_screen: Control = $MultiplayerLobbyScreen
+@onready var _help_screen: Control = $HelpScreen
 
 var _menu_buttons: Array[BaseButton] = []
 
 
 func _ready() -> void:
-	_menu_buttons = [_btn_new_game, _btn_scores, _btn_settings, _btn_credits, _btn_quit]
+	_menu_buttons = [_btn_new_game, _btn_rules, _btn_scores, _btn_settings, _btn_credits, _btn_quit]
 	for button: BaseButton in _menu_buttons:
 		UiOffsetAnim.prepare_hidden(button)
 	UiFocusNav.chain_vertical(_menu_buttons)
 	_settings_screen.closed.connect(_on_overlay_closed)
 	_scores_screen.closed.connect(_on_overlay_closed)
 	_credits_screen.closed.connect(_on_overlay_closed)
+	_help_screen.closed.connect(_on_overlay_closed)
 	_profile_setup_screen.completed.connect(_on_profile_setup_completed)
 	_game_mode_screen.solo_selected.connect(_on_game_mode_solo_selected)
 	_game_mode_screen.hot_seat_selected.connect(_on_game_mode_hot_seat_selected)
@@ -42,13 +53,32 @@ func _ready() -> void:
 	LocaleAware.bind(self, _refresh_locale)
 	PlayerProfileService.profile_changed.connect(_refresh_player_label)
 	_refresh_locale()
-	AudioService.ensure_music_playing()
+	_setup_intro_state()
+	_apply_menu_button_styles()
+	AudioService.enable_music_for_home_screen()
 	call_deferred("_after_ready")
+
+
+func _setup_intro_state() -> void:
+	_background_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	_title_label.visible = false
+	_dark_overlay.modulate.a = 0.0
+	_center_container.modulate.a = 0.0
+	_player_label.modulate.a = 0.0
+	_set_menu_interactive(false)
+
+
+func _apply_menu_button_styles() -> void:
+	for button: BaseButton in _menu_buttons:
+		var menu_button := button as NinePatchButton
+		if menu_button != null:
+			menu_button.ensure_opaque_background(MENU_BUTTON_FILL)
 
 
 func _refresh_locale() -> void:
 	_title_label.text = tr(MenuKeys.TITLE)
 	_btn_new_game.set_button_text(tr(MenuKeys.NEW_GAME))
+	_btn_rules.set_button_text(tr(MenuKeys.RULES))
 	_btn_scores.set_button_text(tr(MenuKeys.SCORES))
 	_btn_settings.set_button_text(tr(MenuKeys.SETTINGS))
 	_btn_credits.set_button_text(tr(MenuKeys.CREDITS))
@@ -63,13 +93,32 @@ func _refresh_player_label() -> void:
 
 
 func _after_ready() -> void:
+	await _play_home_intro()
 	if PlayerProfileService.needs_setup():
-		_set_menu_interactive(false)
 		_profile_setup_screen.open()
 	else:
 		PlayerProfileService.touch_last_used()
-		_play_menu_entrance()
+		await _reveal_menu()
 		_focus_default_button()
+
+
+func _play_home_intro() -> void:
+	await get_tree().create_timer(BG_HOLD_SEC).timeout
+	var overlay_tween: Tween = create_tween()
+	overlay_tween.tween_property(_dark_overlay, "modulate:a", 1.0, OVERLAY_FADE_SEC) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await overlay_tween.finished
+
+
+func _reveal_menu() -> void:
+	var menu_tween: Tween = create_tween().set_parallel(true)
+	menu_tween.tween_property(_center_container, "modulate:a", 1.0, MENU_FADE_SEC) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	menu_tween.tween_property(_player_label, "modulate:a", 1.0, MENU_FADE_SEC) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	await menu_tween.finished
+	_set_menu_interactive(true)
+	_play_menu_entrance()
 
 
 func _play_menu_entrance() -> void:
@@ -77,8 +126,7 @@ func _play_menu_entrance() -> void:
 
 
 func _on_profile_setup_completed() -> void:
-	_set_menu_interactive(true)
-	_play_menu_entrance()
+	await _reveal_menu()
 	_focus_default_button()
 
 
@@ -86,6 +134,8 @@ func _focus_default_button() -> void:
 	if _profile_setup_screen.visible:
 		return
 	if _is_overlay_open():
+		return
+	if not _btn_new_game.is_inside_tree():
 		return
 	_btn_new_game.grab_focus()
 
@@ -105,6 +155,7 @@ func _is_overlay_open() -> bool:
 		or _game_mode_screen.visible
 		or _hot_seat_lobby_screen.visible
 		or _multiplayer_lobby_screen.visible
+		or _help_screen.visible
 	)
 
 
@@ -141,6 +192,10 @@ func _on_hot_seat_start_requested(config: MatchLaunchConfig) -> void:
 
 func _on_btn_scores_pressed() -> void:
 	_open_overlay(_scores_screen)
+
+
+func _on_btn_rules_pressed() -> void:
+	_open_overlay(_help_screen)
 
 
 func _on_btn_settings_pressed() -> void:

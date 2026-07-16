@@ -77,9 +77,15 @@ var _tricks_taken: Array = []
 var _completed_tricks: Array[Dictionary] = []
 var _trick_winner_history: Array[int] = []
 var _consecutive_trick_wins: Array[int] = [0, 0, 0, 0]
+## Siège déclaré par un humain comme chasseur de Lune (-1 = aucun).
+var human_declared_moon_suspect: int = -1
 
 ## Collecte optionnelle des décisions IA (simulation, analyse d'équilibre).
 var telemetry: AiTelemetryCollector = null
+
+## Si faux, n'émet pas vers l'autoload `GameEvents` (batch simulation / tests
+## headless) — évite de polluer StatsService / AudioService / GameSession.
+var emit_game_events: bool = true
 
 func _init() -> void:
 	rule_engine = RuleEngine.new()
@@ -96,7 +102,8 @@ func start_new_match(seed_value: int = -1) -> void:
 		var ai_player: AiPlayer = ai_players[player_index]
 		if ai_player != null:
 			ai_player.reset_for_new_match()
-	GameEvents.match_started.emit()
+	if emit_game_events:
+		GameEvents.match_started.emit()
 	if telemetry != null:
 		telemetry.begin_match()
 	start_new_hand(seed_value)
@@ -114,6 +121,7 @@ func start_new_hand(seed_value: int = -1) -> void:
 	_completed_tricks = []
 	_trick_winner_history = []
 	_consecutive_trick_wins = [0, 0, 0, 0]
+	human_declared_moon_suspect = -1
 	for _i in range(HeartsRules.PLAYER_COUNT):
 		_tricks_taken.append([] as Array[CardModel])
 
@@ -149,6 +157,14 @@ func set_ai_player(player_index: int, ai_player: AiPlayer) -> void:
 func is_ai_controlled(player_index: int) -> bool:
 	return ai_players[player_index] != null
 
+
+func set_human_declared_moon_suspect(seat_index: int) -> void:
+	human_declared_moon_suspect = seat_index
+
+
+func clear_human_declared_moon_suspect() -> void:
+	human_declared_moon_suspect = -1
+
 ## Construit le contexte transmis à `AiPlayer.choose_card()` pour
 ## `player_index`, à partir de l'état courant de la manche.
 func build_ai_context(player_index: int) -> Dictionary:
@@ -181,6 +197,7 @@ func build_ai_context(player_index: int) -> Dictionary:
 			rule_engine.trick_number
 		),
 		"tricks_taken": _tricks_taken,
+		"human_declared_moon_suspect": human_declared_moon_suspect,
 	}
 
 ## Historique des derniers plis terminés de la manche en cours (copie).
@@ -259,7 +276,8 @@ func play_card(player_index: int, card: CardModel) -> PlayResult:
 	hands[player_index].remove_card(card)
 	trick_manager.add_play(player_index, card)
 	rule_engine.record_card_played(card)
-	GameEvents.card_played.emit(player_index, card)
+	if emit_game_events:
+		GameEvents.card_played.emit(player_index, card)
 	result.success = true
 
 	if trick_manager.is_complete():
@@ -277,6 +295,10 @@ func is_match_over() -> bool:
 ## Points bruts capturés par chaque joueur dans la manche en cours (somme des
 ## cartes à points dans `_tricks_taken`, sans ajustement « shoot the moon »).
 ## Utilisé par l'UI pour afficher la progression avant la fin de manche.
+func is_moon_busted_in_current_hand() -> bool:
+	return MoonFeasibility.is_moon_busted_globally(_tricks_taken)
+
+
 func get_current_hand_raw_scores() -> Array[int]:
 	var scores: Array[int] = []
 	for player_index in range(HeartsRules.PLAYER_COUNT):
@@ -349,7 +371,8 @@ func _resolve_trick(result: PlayResult) -> void:
 	result.trick_completed = true
 	result.trick_winner = winner
 	result.trick_points = points
-	GameEvents.trick_resolved.emit(winner, points)
+	if emit_game_events:
+		GameEvents.trick_resolved.emit(winner, points)
 
 	if telemetry != null:
 		telemetry.record_trick_resolved(
@@ -362,6 +385,9 @@ func _resolve_trick(result: PlayResult) -> void:
 	trick_manager.reset()
 	trick_leader = winner
 	current_player = winner
+
+	if MoonFeasibility.is_moon_busted_globally(_tricks_taken):
+		clear_human_declared_moon_suspect()
 
 	if rule_engine.trick_number >= HeartsRules.CARDS_PER_HAND:
 		_end_hand(result)
@@ -381,12 +407,14 @@ func _end_hand(result: PlayResult) -> void:
 	_update_ai_confidence_after_hand(hand_scores)
 	score_manager.add_hand_scores(hand_scores)
 	for player_index in hand_scores.keys():
-		GameEvents.score_updated.emit(player_index, score_manager.get_score(player_index))
+		if emit_game_events:
+			GameEvents.score_updated.emit(player_index, score_manager.get_score(player_index))
 
 	if _has_reached_match_threshold():
 		phase = Phase.MATCH_END
 		result.match_completed = true
-		GameEvents.match_ended.emit(get_match_winner())
+		if emit_game_events:
+			GameEvents.match_ended.emit(get_match_winner())
 
 func _has_reached_match_threshold() -> bool:
 	for score in score_manager.get_scores():

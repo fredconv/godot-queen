@@ -23,6 +23,7 @@ var _confirm_action: ConfirmAction = ConfirmAction.NONE
 @onready var _help_screen: Control = $UILayer/HelpScreen
 @onready var _human_hand_area: Control = $HumanHandArea
 @onready var _hot_seat_overlay: HotSeatPrivacyOverlay = $HotSeatLayer/HotSeatPrivacyOverlay
+@onready var _moon_suspicion_button: MoonSuspicionActionButton = $UILayer/MoonSuspicionButton
 @onready var _trick_area: Control = $TrickArea
 @onready var _background_color: ColorRect = $Background/ColorFill
 @onready var _background_texture: TextureRect = $Background/TextureFill
@@ -51,7 +52,7 @@ func _ready() -> void:
 	_top_menu_bar.hamburger_pressed.connect(_on_top_menu_bar_hamburger_pressed)
 	_top_menu_bar.help_pressed.connect(_on_top_menu_bar_help_pressed)
 	_top_menu_bar.settings_pressed.connect(_on_top_menu_bar_settings_pressed)
-	_top_menu_bar.moon_suspicion_pressed.connect(_on_top_menu_bar_moon_suspicion_pressed)
+	_moon_suspicion_button.pressed.connect(_on_moon_suspicion_button_pressed)
 	_confirm_dialog.confirmed.connect(_on_confirm_dialog_confirmed)
 	_match_end_dialog.replay_requested.connect(_on_match_end_replay_requested)
 	_match_end_dialog.quit_requested.connect(_on_match_end_quit_requested)
@@ -94,6 +95,7 @@ func _build_context() -> TableContext:
 	ctx.trick_slots = _trick_slots
 	ctx.human_hand_area = _human_hand_area
 	ctx.hot_seat_overlay = _hot_seat_overlay
+	ctx.moon_suspicion_button = _moon_suspicion_button
 	return ctx
 
 
@@ -113,7 +115,7 @@ func _on_top_menu_bar_tricks_pressed() -> void:
 	TableTrickHistory.open(_ctx)
 
 
-func _on_top_menu_bar_moon_suspicion_pressed() -> void:
+func _on_moon_suspicion_button_pressed() -> void:
 	await MoonSuspicionManager.on_button_pressed(_ctx)
 
 

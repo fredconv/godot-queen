@@ -38,6 +38,7 @@ var seats: Array[PlayerSeat] = []
 var trick_slots: Array[Control] = []
 var human_hand_area: Control
 var hot_seat_overlay: HotSeatPrivacyOverlay
+var moon_suspicion_button: MoonSuspicionActionButton = null
 var moon_suspicion_manager: MoonSuspicionManager = null
 
 

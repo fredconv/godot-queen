@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bns58tswniro6" path="res://scenes/menus/button_template.tscn" id="2_button"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backdrop"]
-bg_color = Color(0, 0, 0, 0.62)
+bg_color = Color(0, 0, 0, 0.78)
 
 [node name="SettingsScreen" type="Control"]
 anchor_right = 1.0
@@ -24,9 +24,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -260.0
-offset_top = -240.0
+offset_top = -270.0
 offset_right = 260.0
-offset_bottom = 240.0
+offset_bottom = 270.0
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
 theme_override_constants/margin_left = 8
@@ -115,8 +115,13 @@ text = "Pseudo"
 size_flags_horizontal = 3
 max_length = 16
 
+[node name="BtnResetStats" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
+layout_mode = 2
+size_flags_horizontal = 4
+
 [node name="BtnBack" parent="Panel/Margin/VBox" instance=ExtResource("2_button")]
 layout_mode = 2
 size_flags_horizontal = 4
 
+[connection signal="pressed" from="Panel/Margin/VBox/BtnResetStats" to="." method="_on_btn_reset_stats_pressed"]
 [connection signal="pressed" from="Panel/Margin/VBox/BtnBack" to="." method="_on_btn_back_pressed"]

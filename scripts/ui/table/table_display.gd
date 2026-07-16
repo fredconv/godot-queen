@@ -62,6 +62,8 @@ static func refresh_turn_ui(ctx: TableContext) -> void:
 
 
 static func refresh_human_hand_legality(ctx: TableContext) -> void:
+	if not _can_apply_hand_legality(ctx):
+		return
 	var legal: Array[CardModel] = current_human_legal_plays(ctx)
 	var allow_play: bool = not ctx.turn_locked
 	for i in ctx.hand_card_views.size():
@@ -71,6 +73,15 @@ static func refresh_human_hand_legality(ctx: TableContext) -> void:
 		card_view.modulate = Color.WHITE
 		card_view.set_playable(is_legal)
 		card_view.mouse_filter = Control.MOUSE_FILTER_STOP if is_legal else Control.MOUSE_FILTER_IGNORE
+
+
+static func _can_apply_hand_legality(ctx: TableContext) -> bool:
+	if ctx.hand_card_views.is_empty():
+		return false
+	if ctx.is_hot_seat_multi_human() and ctx.launch_config != null \
+			and not ctx.launch_config.hands_revealed_for_active_human:
+		return false
+	return ctx.hand_cards.size() == ctx.hand_card_views.size()
 
 
 static func _human_turn_hint_text(ctx: TableContext, local_seat: int) -> String:

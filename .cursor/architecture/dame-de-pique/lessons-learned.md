@@ -91,6 +91,32 @@ Appliquer à tout helper `_discard_banner` (ex. `table_ai_announcement.gd`).
 
 **Fichiers** : `table_trick_display.gd`, `table_hot_seat.gd`, `table_play_flow.gd`, `table_context.gd` (`pending_trick_collection_winner`)
 
+**UX handoff** : reconstruire la main (`TableHumanHand.rebuild`) **avant** `_reveal_pending_trick_after_handoff`, pas après le délai de 2 s — sinon le bas de table reste vide pendant l'affichage du pli précédent.
+
+---
+
+## UI table — `Out of bounds get index '0'` sur `Array[CardModel]`
+
+**Symptôme** : crash dans `table_display.gd` → `refresh_human_hand_legality` après distribution hot seat (`unlock_turn` depuis `table_dealing.gd`).
+
+**Cause** : `build_hidden_face_down()` remplit `hand_card_views` (dos) mais laisse `hand_cards` vide ; `refresh_human_hand_legality` indexait les deux tableaux en parallèle.
+
+**Fix** : `_can_apply_hand_legality()` — ne pas appliquer la légalité si main non révélée (`hands_revealed_for_active_human`) ou si tailles `hand_cards` / `hand_card_views` divergent.
+
+**Fichiers** : `scripts/ui/table/table_display.gd`
+
+---
+
+## UI — bandeau Lune soupçonnée trop zoomé / avatar géant
+
+**Symptôme** : `suspicious-moon.png` recadré (yeux seulement), grand `avatar_adv` sur le côté.
+
+**Cause** : hauteur fixe 120 px sur texture large ; zoom `Camera2D` 1.35 + shake de toute la table ; `SpecialAvatarPaths` (images HD).
+
+**Fix** : largeur 96 % viewport + hauteur proportionnelle ; bandeau sur `UILayer` ; assombrissement sans zoom caméra ; `PlayerAvatar` (`Char_XXX`) 64 px sous le bandeau.
+
+**Fichiers** : `moon_suspicion_banner.gd`, `moon_suspicion_banner.tscn`, `moon_suspicion_manager.gd`
+
 ---
 
 ## Godot — nouveau `class_name` non reconnu

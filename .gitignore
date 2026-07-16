@@ -31,3 +31,7 @@ simulation/results/index.*.translation
 
 # Config MCP locale (clé API Context7) — copier depuis .cursor/mcp.example.json
 .cursor/mcp.json
+
+# Godot MCP Pro playtest screenshots
+.mcp_audit/
+

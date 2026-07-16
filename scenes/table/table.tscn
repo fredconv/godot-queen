@@ -1,9 +1,9 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene format=3 uid="uid://bre5ru2200ige"]
 
-[ext_resource type="Script" path="res://scripts/ui/table.gd" id="1_table"]
+[ext_resource type="Script" uid="uid://crsly8ch4p0nn" path="res://scripts/ui/table.gd" id="1_table"]
 [ext_resource type="PackedScene" path="res://scenes/components/top_menu_bar.tscn" id="2_topbar"]
 [ext_resource type="PackedScene" path="res://scenes/components/player_seat.tscn" id="3_seat"]
-[ext_resource type="Theme" path="res://resources/themes/pixel_theme.tres" id="4_pixel_theme"]
+[ext_resource type="Theme" uid="uid://ddhm44lokfxyx" path="res://resources/themes/pixel_theme.tres" id="4_pixel_theme"]
 [ext_resource type="PackedScene" path="res://scenes/components/confirm_dialog.tscn" id="5_confirm_dialog"]
 [ext_resource type="PackedScene" path="res://scenes/components/match_end_dialog.tscn" id="6_match_end_dialog"]
 [ext_resource type="PackedScene" path="res://scenes/components/match_scoreboard.tscn" id="7_scoreboard"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://scenes/menus/settings_screen.tscn" id="10_settings"]
 [ext_resource type="PackedScene" path="res://scenes/menus/help_screen.tscn" id="11_help"]
 [ext_resource type="PackedScene" path="res://scenes/table/hot_seat_privacy_overlay.tscn" id="12_hot_seat"]
+[ext_resource type="Script" uid="uid://hqmkvji5f0qg" path="res://scripts/ui/table/moon_suspicion_action_button.gd" id="13_moon_btn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
 bg_color = Color(1, 1, 1, 0.08)
@@ -25,37 +26,46 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="Table" type="Control"]
+[node name="Table" type="Control" unique_id=1929440376]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme = ExtResource("4_pixel_theme")
 script = ExtResource("1_table")
 
-[node name="Background" type="Control" parent="."]
+[node name="Background" type="Control" parent="." unique_id=1160108945]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-[node name="ColorFill" type="ColorRect" parent="Background"]
+[node name="ColorFill" type="ColorRect" parent="Background" unique_id=915982617]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 color = Color(0.028, 0.26, 0.12, 1)
 
-[node name="TextureFill" type="TextureRect" parent="Background"]
+[node name="TextureFill" type="TextureRect" parent="Background" unique_id=550860469]
 visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 6
 
-[node name="PlayerSeats" type="Control" parent="."]
+[node name="PlayerSeats" type="Control" parent="." unique_id=2144682387]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-[node name="SeatTop" parent="PlayerSeats" instance=ExtResource("3_seat")]
+[node name="SeatTop" parent="PlayerSeats" unique_id=865398899 instance=ExtResource("3_seat")]
+anchors_preset = 0
 anchor_right = 1.0
 offset_left = 24.0
 offset_top = 18.0
@@ -66,7 +76,8 @@ player_name = "Adversaire 1"
 character_id = 1
 hand_card_count = 8
 
-[node name="SeatLeft" parent="PlayerSeats" instance=ExtResource("3_seat")]
+[node name="SeatLeft" parent="PlayerSeats" unique_id=1223240138 instance=ExtResource("3_seat")]
+anchors_preset = 0
 anchor_top = 0.5
 anchor_bottom = 0.5
 offset_left = 8.0
@@ -78,7 +89,8 @@ player_name = "Adversaire 2"
 character_id = 2
 hand_card_count = 8
 
-[node name="SeatRight" parent="PlayerSeats" instance=ExtResource("3_seat")]
+[node name="SeatRight" parent="PlayerSeats" unique_id=412386743 instance=ExtResource("3_seat")]
+anchors_preset = 0
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
@@ -92,22 +104,20 @@ player_name = "Adversaire 3"
 character_id = 3
 hand_card_count = 8
 
-[node name="SeatBottom" parent="PlayerSeats" instance=ExtResource("3_seat")]
-anchor_left = 0.0
+[node name="SeatBottom" parent="PlayerSeats" unique_id=1287139185 instance=ExtResource("3_seat")]
+anchors_preset = 0
 anchor_top = 1.0
-anchor_right = 0.0
 anchor_bottom = 1.0
 offset_left = 268.0
 offset_top = -160.0
 offset_right = 392.0
 offset_bottom = -16.0
-orientation = 1
 player_name = "Vous"
-character_id = 0
 hand_card_count = 0
 show_hand_back = false
 
-[node name="TrickArea" type="Control" parent="."]
+[node name="TrickArea" type="Control" parent="." unique_id=1106779223]
+anchors_preset = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -118,37 +128,47 @@ offset_right = 165.0
 offset_bottom = 150.0
 mouse_filter = 2
 
-[node name="TrickCardTop" type="Panel" parent="TrickArea"]
+[node name="TrickCardTop" type="Panel" parent="TrickArea" unique_id=13124460]
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -45.0
-offset_top = -110.0
+offset_top = -115.0
 offset_right = 45.0
-offset_bottom = -4.0
+offset_bottom = -9.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
 
-[node name="TrickCardBottom" type="Panel" parent="TrickArea"]
+[node name="TrickCardBottom" type="Panel" parent="TrickArea" unique_id=2029453899]
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -45.0
-offset_top = 4.0
+offset_top = 8.0
 offset_right = 45.0
-offset_bottom = 110.0
+offset_bottom = 114.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
 
-[node name="TrickCardLeft" type="Panel" parent="TrickArea"]
+[node name="TrickCardLeft" type="Panel" parent="TrickArea" unique_id=2001374918]
+layout_mode = 0
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_right = 90.0
 offset_top = -64.0
+offset_right = 90.0
 offset_bottom = 64.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
 
-[node name="TrickCardRight" type="Panel" parent="TrickArea"]
+[node name="TrickCardRight" type="Panel" parent="TrickArea" unique_id=1285912478]
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
@@ -158,75 +178,97 @@ offset_top = -64.0
 offset_bottom = 64.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
 
-[node name="HumanHandArea" type="Control" parent="."]
+[node name="HumanHandArea" type="Control" parent="." unique_id=1995994430]
+anchors_preset = 0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = -230.0
 mouse_filter = 2
 
-[node name="PlayerBottomHand" type="Control" parent="HumanHandArea"]
+[node name="PlayerBottomHand" type="Control" parent="HumanHandArea" unique_id=903880166]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-; Couche dédiée aux cartes en cours d'animation (glissement main/siège -> pli,
-; ramassage du pli vers le siège du vainqueur) : dernier enfant du layer de
-; jeu (layer 0 implicite) pour se dessiner par-dessus sièges/pli/main pendant
-; le vol de la carte, tout en restant sous `UILayer` (layer 10).
-[node name="AnimationLayer" type="Control" parent="."]
+[node name="AnimationLayer" type="Control" parent="." unique_id=1680837999]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-; CanvasLayer dédié au chrome UI (barre de menu + dialogue de confirmation) :
-; garantit qu'il se dessine toujours au-dessus du reste de la table (fond,
-; sièges, plis, main) quel que soit l'ordre des autres nœuds, y compris à
-; l'export (voir docs/DECISIONS.md ADR-015).
-[node name="UILayer" type="CanvasLayer" parent="."]
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=936200157]
 layer = 10
 
-[node name="TopMenuBar" parent="UILayer" instance=ExtResource("2_topbar")]
-anchor_right = 1.0
+[node name="TopMenuBar" parent="UILayer" unique_id=609066652 instance=ExtResource("2_topbar")]
+layout_mode = 3
+anchors_preset = 10
+offset_bottom = 0.0
+grow_horizontal = 2
 
-[node name="ConfirmDialog" parent="UILayer" instance=ExtResource("5_confirm_dialog")]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="ConfirmDialog" parent="UILayer" unique_id=1292767078 instance=ExtResource("5_confirm_dialog")]
+layout_mode = 3
+anchors_preset = 15
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="MatchEndDialog" parent="UILayer" instance=ExtResource("6_match_end_dialog")]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="MatchEndDialog" parent="UILayer" unique_id=1873070760 instance=ExtResource("6_match_end_dialog")]
+layout_mode = 3
+anchors_preset = 15
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="HandEndDialog" parent="UILayer" instance=ExtResource("8_hand_end")]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="HandEndDialog" parent="UILayer" unique_id=1261353207 instance=ExtResource("8_hand_end")]
+layout_mode = 3
+anchors_preset = 15
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="MatchScoreboard" parent="UILayer" instance=ExtResource("7_scoreboard")]
+[node name="MatchScoreboard" parent="UILayer" unique_id=1434217074 instance=ExtResource("7_scoreboard")]
+layout_mode = 3
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -260.0
 offset_top = 72.0
 offset_right = -12.0
 offset_bottom = 220.0
+grow_horizontal = 0
 
-[node name="ScoresScreen" parent="UILayer" instance=ExtResource("9_scores")]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="SettingsScreen" parent="UILayer" instance=ExtResource("10_settings")]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="HelpScreen" parent="UILayer" instance=ExtResource("11_help")]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="HotSeatLayer" type="CanvasLayer" parent="."]
-layer = 11
-
-[node name="HotSeatPrivacyOverlay" parent="HotSeatLayer" instance=ExtResource("12_hot_seat")]
+[node name="ScoresScreen" parent="UILayer" unique_id=898378043 instance=ExtResource("9_scores")]
+layout_mode = 3
 anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="SettingsScreen" parent="UILayer" unique_id=107660229 instance=ExtResource("10_settings")]
+layout_mode = 3
+anchors_preset = 15
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HelpScreen" parent="UILayer" unique_id=916272188 instance=ExtResource("11_help")]
+layout_mode = 3
+anchors_preset = 15
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MoonSuspicionButton" type="Button" parent="UILayer" unique_id=1349630887]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -230.0
+offset_top = -96.0
+offset_right = -16.0
+offset_bottom = -28.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("13_moon_btn")
+
+[node name="HotSeatLayer" type="CanvasLayer" parent="." unique_id=871718325]
+layer = 11
+
+[node name="HotSeatPrivacyOverlay" parent="HotSeatLayer" unique_id=1684295380 instance=ExtResource("12_hot_seat")]

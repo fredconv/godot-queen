@@ -1,6 +1,7 @@
 keys,fr,en,de,es,pt,zh
 MN_TITLE,Dame de pique,Hearts,Herz Dame,Corazones,Copas,红心大战
 MN_NEW_GAME,NOUVELLE PARTIE,NEW GAME,NEUES SPIEL,NUEVA PARTIDA,NOVA PARTIDA,新游戏
+MN_RULES,RÈGLES,RULES,REGELN,REGLAS,REGRAS,规则
 MN_SCORES,SCORES,SCORES,PUNKTE,PUNTUACIÓN,PONTUAÇÃO,统计
 MN_SETTINGS,CONFIGURATION,SETTINGS,EINSTELLUNGEN,CONFIGURACIÓN,CONFIGURAÇÃO,设置
 MN_CREDITS,CRÉDITS,CREDITS,DANKSAGUNG,CRÉDITOS,CRÉDITOS,致谢
@@ -31,6 +32,7 @@ MN_PROFILE_SETUP_PLACEHOLDER,Pseudo,Display name,Spielername,Nombre de usuario,N
 MN_PROFILE_SETUP_CONFIRM,CONFIRMER,CONFIRM,BESTÄTIGEN,CONFIRMAR,CONFIRMAR,确认
 MN_PROFILE_SETUP_INVALID,"Pseudo invalide (2-16 caractères, caractères interdits filtrés).","Invalid name (2-16 characters, forbidden characters filtered).","Ungültiger Name (2-16 Zeichen, verbotene Zeichen gefiltert).","Nombre inválido (2-16 caracteres, caracteres prohibidos filtrados).","Nome inválido (2-16 caracteres, caracteres proibidos filtrados).",无效昵称（2-16 个字符，禁止特殊字符）。
 MN_SETTINGS_DISPLAY_NAME,Pseudo,Display name,Spielername,Nombre de usuario,Nome de usuário,昵称
+MN_SETTINGS_RESET_STATS,RÉINITIALISER STATS,RESET STATS,STATISTIK ZURÜCKSETZEN,REINICIAR ESTADÍSTICAS,REDEFINIR ESTATÍSTICAS,重置统计
 MN_GAME_MODE_TITLE,Mode de jeu,Game mode,Spielmodus,Modo de juego,Modo de jogo,游戏模式
 MN_GAME_MODE_SOLO,Solo,Solo,Solo,Solo,Solo,单人
 MN_GAME_MODE_HOT_SEAT,Hot seat,Hot seat,Hot seat,Hot seat,Hot seat,同机多人
@@ -41,12 +43,34 @@ MN_HOT_SEAT_PLAYER,Joueur %d,Player %d,Spieler %d,Jugador %d,Jogador %d,玩家 %
 MN_HOT_SEAT_START,LANCER,START,STARTEN,INICIAR,INICIAR,开始
 MN_MP_TITLE,Multijoueur,Multiplayer,Mehrspieler,Multijugador,Multijogador,多人游戏
 MN_MP_HOST,Héberger une partie,Host game,Spiel hosten,Crear partida,Hospedar partida,创建房间
-MN_MP_JOIN,Rejoindre,Join,Beitreten,Unirse,Entrar,加入
+MN_MP_JOIN,Rejoindre (IP),Join (IP),Beitreten (IP),Unirse (IP),Entrar (IP),加入（IP）
 MN_MP_START,LANCER LA PARTIE,START MATCH,SPIEL STARTEN,INICIAR PARTIDA,INICIAR PARTIDA,开始游戏
 MN_MP_ADDRESS,Adresse,Address,Adresse,Dirección,Endereço,地址
 MN_MP_PORT,Port,Port,Port,Puerto,Porta,端口
-MN_MP_LOBBY_HINT,"LAN ENet : hébergez ou rejoignez une partie (1 à 4 joueurs).","ENet LAN: host or join a game (1 to 4 players).","ENet-LAN: Spiel hosten oder beitreten (1–4 Spieler).","LAN ENet: crea o únete a una partida (1–4 jugadores).","LAN ENet: hospede ou entre numa partida (1–4 jogadores).",ENet 局域网：创建或加入游戏（1–4 名玩家）。
-MN_MP_HOSTING_STATUS,"Hébergement port %s — %d joueur(s) connecté(s).","Hosting port %s — %d player(s) connected.","Hosting Port %s — %d Spieler verbunden.","Alojando puerto %s — %d jugador(es) conectado(s).","Hospedando porta %s — %d jogador(es) conectado(s).",托管端口 %s — 已连接 %d 名玩家。
+MN_MP_LOBBY_HINT,"Entrez le code d'un ami, cherchez son pseudo, ou hébergez une partie.","Enter a friend's code, search their name, or host a game.","Freundescode eingeben, Namen suchen oder Spiel hosten.","Introduce el código, busca el nombre o crea partida.","Introduza o código, procure o nome ou hospede.","输入好友代码、搜索昵称或创建房间。"
+MN_MP_INVITE_CODE_LABEL,Code d'invitation,Invite code,Einladungscode,Código de invitación,Código de convite,邀请码
+MN_MP_INVITE_CODE_PLACEHOLDER,XXXX-XXXX,XXXX-XXXX,XXXX-XXXX,XXXX-XXXX,XXXX-XXXX,XXXX-XXXX
+MN_MP_SEARCH_LABEL,Chercher un ami,Find a friend,Freund suchen,Buscar amigo,Procurar amigo,查找好友
+MN_MP_SEARCH_PLACEHOLDER,Pseudo,Nickname,Nickname,Apodo,Alcunha,昵称
+MN_MP_BTN_JOIN_CODE,Rejoindre par code,Join by code,Per Code beitreten,Unirse por código,Entrar por código,通过代码加入
+MN_MP_BTN_SEARCH,CHERCHER,SEARCH,SUCHEN,BUSCAR,PROCURAR,搜索
+MN_MP_HOST_CODE_LABEL,Votre code à partager,Your share code,Dein Teilen-Code,Tu código para compartir,Código para partilhar,分享代码
+MN_MP_HOST_CODE_HINT,Vos amis entrent ce code dans Multijoueur.,Friends enter this code in Multiplayer.,Freunde geben den Code im Mehrspieler-Menü ein.,Tus amigos introducen este código en Multijugador.,Os amigos introduzem este código em Multijogador.,好友在多人游戏中输入此代码。
+MN_MP_SESSION_ENTRY_ONLINE,%s — %d/%d — %s,%s — %d/%d — %s,%s — %d/%d — %s,%s — %d/%d — %s,%s — %d/%d — %s,%s — %d/%d — %s
+MN_MP_ONLINE_UNAVAILABLE,"Codes et recherche indisponibles (réseau local actif).","Codes and search unavailable (local network still works).","Codes und Suche nicht verfügbar (LAN aktiv).","Códigos y búsqueda no disponibles (LAN activa).","Códigos e pesquisa indisponíveis (LAN ativa).",在线代码和搜索不可用（局域网仍可用）。
+MN_MP_INVITE_NOT_FOUND,Partie introuvable. Vérifiez le code.,Game not found. Check the code.,Spiel nicht gefunden. Code prüfen.,Partida no encontrada. Revisa el código.,Partida não encontrada. Verifique o código.,未找到游戏。请检查代码。
+MN_MP_SEARCH_EMPTY,Aucun ami trouvé avec ce pseudo.,No friend found with that name.,Kein Freund mit diesem Namen.,Ningún amigo con ese nombre.,Nenhum amigo com esse nome.,未找到该昵称的好友。
+MN_MP_SESSIONS_LABEL,Parties trouvées,Games found,Spiele gefunden,Partidas encontradas,Partidas encontradas,找到的游戏
+MN_MP_SESSION_ENTRY,%s — %d/%d (réseau local),%s — %d/%d (local),%s — %d/%d (lokal),%s — %d/%d (local),%s — %d/%d (local),%s — %d/%d（局域网）
+MN_MP_NO_SESSIONS,Aucune partie sur le réseau local. Utilisez un code ou cherchez un ami.,No local games. Use a code or search for a friend.,Kein LAN-Spiel. Code nutzen oder Freund suchen.,Sin partidas locales. Usa un código o busca un amigo.,Sem partidas locais. Use um código ou procure um amigo.,无局域网游戏。使用代码或搜索好友。
+MN_MP_ADVANCED_OPTIONS,Connexion manuelle (IP),Manual connection (IP),Manuelle Verbindung (IP),Conexión manual (IP),Ligação manual (IP),手动连接（IP）
+MN_MP_HIDE_ADVANCED,Masquer la connexion manuelle,Hide manual connection,Manuelle Verbindung ausblenden,Ocultar conexión manual,Ocultar ligação manual,隐藏手动连接
+MN_MP_ERROR_NO_SESSION,Sélectionnez une partie ou entrez un code d'invitation.,Select a game or enter an invite code.,Spiel wählen oder Einladungscode eingeben.,Selecciona partida o introduce código.,Selecione partida ou introduza código.,选择游戏或输入邀请码。
+MN_MP_HOST_SHARE_COPY,COPIER,COPY,KOPIEREN,COPIAR,COPIAR,复制
+MN_MP_HOST_SHARE_COPIED,Copié !,Copied!,Kopiert!,¡Copiado!,Copiado!,已复制！
+MN_MP_PUBLIC_IP_LOADING,Recherche de votre adresse Internet…,Looking up your public address…,Öffentliche Adresse wird ermittelt…,Buscando tu dirección pública…,A obter o endereço público…,正在查询公网地址…
+MN_MP_PUBLIC_IP_FAILED,Adresse publique indisponible (vérifiez Internet).,Public address unavailable (check Internet).,Öffentliche Adresse nicht verfügbar (Internet prüfen).,Dirección pública no disponible (revisa Internet).,Endereço público indisponível (verifique Internet).,无法获取公网地址（请检查网络）。
+MN_MP_HOSTING_STATUS,"Votre partie — %d joueur(s) connecté(s).","Your game — %d player(s) connected.","Dein Spiel — %d Spieler verbunden.","Tu partida — %d jugador(es) conectado(s).","A tua partida — %d jogador(es) ligado(s).",你的房间 — 已连接 %d 名玩家。
 MN_MP_CONNECTING_STATUS,Connexion en cours…,Connecting…,Verbindung…,Conectando…,A conectar…,连接中…
 MN_MP_CONNECTED_STATUS,Connecté — en attente du lancement par l'hôte.,Connected — waiting for host to start.,Verbunden — warte auf Host-Start.,Conectado — esperando al anfitrión.,Conectado — à espera do anfitrião.,已连接 — 等待主机开始。
 MN_MP_ERROR_HOST,Échec hébergement : %s,Host failed: %s,Hosting fehlgeschlagen: %s,Error al crear partida: %s,Falha ao hospedar: %s,创建房间失败：%s

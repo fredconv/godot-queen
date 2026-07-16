@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="OnlineRegistryConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/network/online_registry_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+supabase_url = ""
+supabase_anon_key = ""
+table_name = "public_lobbies"
+heartbeat_interval_sec = 15.0
+lobby_max_age_sec = 45.0

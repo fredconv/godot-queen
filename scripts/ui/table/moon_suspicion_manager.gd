@@ -1,6 +1,6 @@
 class_name MoonSuspicionManager
 extends RefCounted
-## Gestion des soupçons de Lune (multijoueur social uniquement).
+## Soupçon de Lune : déclaration humaine, alerte sociale, contre-jeu IA.
 
 
 const BANNER_SCENE: PackedScene = preload("res://scenes/table/moon_suspicion_banner.tscn")
@@ -10,12 +10,32 @@ var _pending_events: Array[MoonSuspicionEvent] = []
 var _hand_number: int = 1
 
 
+static func is_moon_declarable(ctx: TableContext) -> bool:
+	if ctx.match_manager == null:
+		return false
+	if ctx.match_manager.phase != MatchManager.Phase.PLAYING:
+		return false
+	return not ctx.match_manager.is_moon_busted_in_current_hand()
+
+
+## Visible seulement après assez de plis (ou Cœurs défoncés) — évite le clutter début de manche.
+static func should_show_button(ctx: TableContext) -> bool:
+	if not is_moon_declarable(ctx) or ctx.match_manager == null:
+		return false
+	var rule_engine: RuleEngine = ctx.match_manager.rule_engine
+	if rule_engine == null:
+		return false
+	if rule_engine.hearts_broken:
+		return true
+	return rule_engine.trick_number >= MoonSuspicion.MIN_TRICK_TO_BREAK
+
+
 static func is_available(ctx: TableContext) -> bool:
-	return ctx.launch_config != null and ctx.launch_config.is_multiplayer_social()
+	return should_show_button(ctx)
 
 
 static func can_trigger(ctx: TableContext) -> bool:
-	if not is_available(ctx) or ctx.match_manager == null:
+	if not should_show_button(ctx) or ctx.match_manager == null:
 		return false
 	if ctx.turn_locked or not ctx.is_local_human_turn():
 		return false
@@ -28,11 +48,16 @@ static func can_trigger(ctx: TableContext) -> bool:
 
 
 static func refresh_button(ctx: TableContext) -> void:
-	if ctx.top_menu_bar == null or not ctx.top_menu_bar.has_method("set_moon_suspicion_available"):
+	if ctx.moon_suspicion_button == null:
 		return
-	var visible: bool = is_available(ctx)
+	var button_visible: bool = should_show_button(ctx)
 	var enabled: bool = can_trigger(ctx)
-	ctx.top_menu_bar.set_moon_suspicion_available(visible, enabled)
+	var animate_dismiss: bool = (
+		not button_visible
+		and ctx.match_manager != null
+		and ctx.match_manager.phase == MatchManager.Phase.PLAYING
+	)
+	ctx.moon_suspicion_button.set_action_available(button_visible, enabled, animate_dismiss)
 
 
 static func reset_for_match(ctx: TableContext) -> void:
@@ -46,6 +71,11 @@ static func on_new_hand(ctx: TableContext, hand_number: int) -> void:
 	manager._hand_number = hand_number
 	manager._used_suspector_seats.clear()
 	manager._pending_events.clear()
+	if ctx.match_manager != null:
+		ctx.match_manager.clear_human_declared_moon_suspect()
+	if ctx.moon_suspicion_button != null:
+		ctx.moon_suspicion_button.reset_for_new_hand()
+	refresh_button(ctx)
 
 
 static func on_button_pressed(ctx: TableContext) -> void:
@@ -64,6 +94,7 @@ static func submit_suspicion(ctx: TableContext, suspector_seat: int, suspected_s
 	if manager == null:
 		return
 	manager._used_suspector_seats[suspector_seat] = true
+	_apply_gameplay_suspect(ctx, suspected_seat)
 	var event := _create_event(ctx, suspector_seat, suspected_seat)
 	refresh_button(ctx)
 
@@ -83,6 +114,7 @@ static func apply_network_event(ctx: TableContext, event: MoonSuspicionEvent) ->
 	if manager == null:
 		return
 	manager._used_suspector_seats[event.suspector_seat] = true
+	_apply_gameplay_suspect(ctx, event.suspected_seat)
 	refresh_button(ctx)
 	await play_alert(ctx, event)
 
@@ -113,7 +145,11 @@ static func play_alert(ctx: TableContext, event: MoonSuspicionEvent) -> void:
 	ctx.turn_locked = true
 	refresh_button(ctx)
 	var banner: MoonSuspicionBanner = BANNER_SCENE.instantiate() as MoonSuspicionBanner
-	ctx.animation_layer.add_child(banner)
+	var ui_layer: CanvasLayer = ctx.host.get_node_or_null("UILayer") as CanvasLayer
+	if ui_layer != null:
+		ui_layer.add_child(banner)
+	else:
+		ctx.animation_layer.add_child(banner)
 	if not banner.is_node_ready():
 		await banner.ready
 	await banner.play(ctx, event)
@@ -137,7 +173,7 @@ static func _dispatch_hot_seat(ctx: TableContext, event: MoonSuspicionEvent) -> 
 
 
 static func _validate_suspicion(ctx: TableContext, suspector_seat: int, suspected_seat: int) -> bool:
-	if not is_available(ctx) or ctx.match_manager == null:
+	if not is_moon_declarable(ctx) or ctx.match_manager == null:
 		return false
 	if suspector_seat < 0 or suspected_seat < 0 or suspector_seat == suspected_seat:
 		return false
@@ -247,3 +283,9 @@ static func _build_picker_overlay(ctx: TableContext, suspector_seat: int, result
 
 static func _manager(ctx: TableContext) -> MoonSuspicionManager:
 	return ctx.moon_suspicion_manager
+
+
+static func _apply_gameplay_suspect(ctx: TableContext, suspected_seat: int) -> void:
+	if ctx.match_manager == null or suspected_seat < 0:
+		return
+	ctx.match_manager.set_human_declared_moon_suspect(suspected_seat)

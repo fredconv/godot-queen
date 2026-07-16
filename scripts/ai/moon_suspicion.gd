@@ -76,6 +76,8 @@ static func evaluate_player(
 
 
 static func should_break_moon(context: Dictionary) -> bool:
+	if context.get("moon_busted", false):
+		return false
 	if context.get("trick_number", 1) < MIN_TRICK_TO_BREAK:
 		return false
 	var suspect: Dictionary = find_top_suspect(context)

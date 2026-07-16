@@ -39,6 +39,32 @@ func set_button_text(value: String) -> void:
 		call_deferred("set_button_text", value)
 
 
+func apply_button_size(size: Vector2i) -> void:
+	button_size = size
+	custom_minimum_size = Vector2(size)
+
+
+func ensure_opaque_background(
+	fill_color: Color = UiPalette.BTN_BG,
+	border_color: Color = UiPalette.PANEL_BORDER,
+	corner_radius: int = 6
+) -> void:
+	if has_node("OpaqueBackground"):
+		return
+	var panel := Panel.new()
+	panel.name = "OpaqueBackground"
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var style := StyleBoxFlat.new()
+	style.bg_color = fill_color
+	style.border_color = border_color
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(corner_radius)
+	panel.add_theme_stylebox_override("panel", style)
+	add_child(panel)
+	move_child(panel, 0)
+
+
 func _configure_nine_patch() -> void:
 	var margin: int = UiNinePatchCatalog.PATCH_MARGIN
 	_nine_patch.texture = patch_texture

@@ -48,6 +48,7 @@ Journal complet : `.cursor/architecture/dame-de-pique/lessons-learned.md`
 | Assertion `create_for_opponent_seat` siège 0 | `SeatSetup` → `create_for_seat(seat_index)` |
 | `_discard_banner` previously freed | Paramètre `Variant` + `is_instance_valid` |
 | Main bas décalée / IA en bas | Pivot humain + main dans `HumanHandArea` (ADR-026) |
+| `Out of bounds` `hand_cards[0]` après deal | `refresh_human_hand_legality` → `_can_apply_hand_legality` |
 | Pli ne tourne pas / vide après handoff | `TableTrickDisplay` + différer collecte si `should_defer_trick_collection` |
 
 ---
@@ -74,6 +75,8 @@ Hot seat :
 3. Chaque autre humain voit l'alerte **après** handoff (mains déjà révélées pour lui).
 
 En ligne : host valide → `broadcast_moon_suspicion_from_host` → tous les clients `rpc_apply_moon_suspicion`.
+
+**Bandeau** : largeur ~96 % viewport, hauteur selon ratio `suspicious-moon.png`, centré écran ; sprite `Char_XXX` (pas `avatar_adv`). Pas de zoom caméra table (évite avatars géants). Parent : `UILayer`.
 
 ---
 

@@ -1,8 +1,8 @@
 # État du projet — Dame de Pique (Hearts)
 
-> **Dernière mise à jour :** juillet 2026  
-> **Commit de référence :** `5dd612f` (`feat/simulation-batch`)  
-> **Prochaine étape prévue :** Étape 8 — Audio & polish visuel (puis stabilisation / export)
+> **Dernière mise à jour :** juillet 2026 (post audit pré-1.0 + sprints S0/S1)  
+> **Branche active :** `feat/simulation-batch`  
+> **Prochaine étape :** Sprint S3 hygiene (`I7`/`I8`) puis polish audio / export
 
 Document destiné à une **relecture par un collègue** avant de poursuivre le développement. Il résume ce qui est implémenté, ce qui fonctionne en jeu, et les pistes d'amélioration identifiées.
 
@@ -113,9 +113,10 @@ simulation/          # Outil batch headless (hors livrable, non référencé par
 | **5 — IA** | ✅ | HeuristicStrategy, AiPlayer, personnalités mixtes, Lune (voir §5) |
 | **6 — Table jouable** | ✅ | Câblage UI ↔ MatchManager, animations de pli |
 | **7 — Menus & UX** | ✅ | Config, scores, crédits, profil, i18n 6 langues, `UiFocusNav` |
-| **7.5 — Préparation multijoueur** | ✅ | Actions, snapshots, lobby local (phases 0–6) ; réseau ENet ⏳ |
-| **8 — Audio & polish** | 🔄 | Thème pixel, UIBundleFree, overlays — reste audio final, mobile, icône |
-| **9 — Stabilisation** | ⏳ | E2E, perf, tests UI ciblés |
+| **7.5 — Préparation multijoueur** | ✅ | Actions, snapshots, lobby local (phases 0–6) |
+| **7.6–7.8 — Modes + hot seat + LAN** | ✅ | Solo / Hot seat / ENet LAN (phases A–C) + déconnexion D |
+| **8 — Audio & polish** | 🔄 | Thème pixel, UIBundleFree — reste audio final, mobile, icône ; voir audit pré-1.0 |
+| **9 — Stabilisation** | ⏳ | E2E MCP, perf, tests UI ciblés |
 | **10 — Export** | ⏳ | Preset Windows, build de validation |
 
 ---
@@ -173,7 +174,8 @@ Conformes à `docs/GDD.md` et `docs/DECISIONS.md` (ADR-016) :
 | Fonctionnalité | État |
 |---|---|
 | Sauvegarde / reprise d'une **partie en cours** | ❌ |
-| Multijoueur réseau (ENet, Steam) | ⏳ phase 7+ — voir `docs/MULTIPLAYER_DESIGN.md` |
+| Multijoueur réseau (ENet LAN) | ✅ phase C — Steam / online registry = suite |
+| Audit pré-1.0 + sprint S0 | ✅ `docs/AUDIT-PRE-1.0.md` — settings/stats/docs |
 | Sélecteur multi-ruleset (Spades, Whist, …) | 📋 après polish |
 | Passe de 3 cartes | ❌ ADR-018 |
 

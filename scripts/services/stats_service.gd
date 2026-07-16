@@ -2,6 +2,8 @@ extends Node
 ## StatsService (autoload)
 ## Statistiques de partie persistées localement via `SaveService`.
 ## Écoute `GameEvents.match_ended` pour enregistrer victoire/défaite du joueur humain.
+## Les runs de simulation batch désactivent `MatchManager.emit_game_events` pour
+## ne pas polluer ces stats.
 
 const StatsStoreClass = preload("res://scripts/core/stats_store.gd")
 
@@ -22,6 +24,12 @@ func get_stats() -> Dictionary:
 func get_win_rate_percent() -> int:
 	_ensure_loaded()
 	return StatsStoreClass.win_rate_percent(_stats)
+
+
+func reset_stats() -> void:
+	_ensure_loaded()
+	_stats = StatsStoreClass.default_stats()
+	_save_stats()
 
 
 func _ensure_loaded() -> void:

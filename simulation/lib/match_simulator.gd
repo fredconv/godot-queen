@@ -43,6 +43,7 @@ func play_match(seed_value: int, telemetry: AiTelemetryCollector = null) -> Dict
 
 func _new_match_manager(seed_value: int) -> MatchManager:
 	var match_manager := MatchManager.new()
+	match_manager.emit_game_events = false
 	for player_index in range(HeartsRules.PLAYER_COUNT):
 		var strategy: AiStrategy = strategy_factory.call(player_index, seed_value + player_index)
 		match_manager.set_ai_player(

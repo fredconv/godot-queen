@@ -7,12 +7,13 @@ const MAIN_MENU_SCENE: String = "res://scenes/menus/main_menu.tscn"
 
 
 #region structure
-func test_main_menu_loads_with_five_nine_patch_buttons() -> void:
+func test_main_menu_loads_with_six_nine_patch_buttons() -> void:
 	var runner := scene_runner(MAIN_MENU_SCENE)
 	await runner.simulate_frames(2)
 
 	var buttons: Array[Node] = [
 		runner.find_child("BtnNewGame", true, false),
+		runner.find_child("BtnRules", true, false),
 		runner.find_child("BtnScores", true, false),
 		runner.find_child("BtnSettings", true, false),
 		runner.find_child("BtnCredits", true, false),

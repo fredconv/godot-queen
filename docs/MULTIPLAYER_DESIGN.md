@@ -110,7 +110,7 @@ Constantes dans `scripts/network/network_messages.gd` :
 | Anti-spam | 1 soupçon / joueur / manche |
 | Hot seat | Soupçonneur voit le bandeau tout de suite ; file pour les autres humains après handoff |
 | En ligne | Host valide → RPC → tous les clients |
-| UI | Bouton `LUNE SOUPÇONNÉE`, picker adversaire, bandeau `suspicious-moon.png` |
+| UI | Bouton `LUNE SOUPÇONNÉE`, picker adversaire, bandeau `suspicious-moon.png` (pleine largeur écran, `PlayerAvatar` animé) |
 
 Fichiers : `MoonSuspicionEvent`, `MoonSuspicionManager`, `moon_suspicion_banner.tscn`, `NetworkMatchRelay` (RPC). Voir ADR-025.
 

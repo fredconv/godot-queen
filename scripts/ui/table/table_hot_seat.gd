@@ -36,15 +36,23 @@ static func perform_handoff(ctx: TableContext) -> void:
 	await ctx.hot_seat_overlay.handoff_acknowledged
 	if not ctx.is_active():
 		return
+	_clear_lingering_dim(ctx)
 	ctx.launch_config.active_human_seat_index = target_seat
 	ctx.launch_config.hands_revealed_for_active_human = true
 	TableSeatDisplayMap.apply(ctx)
 	TableTrickDisplay.sync_card_positions(ctx)
+	TableHumanHand.rebuild(ctx)
 	if ctx.pending_trick_collection_winner >= 0:
 		await _reveal_pending_trick_after_handoff(ctx)
-	TableHumanHand.rebuild(ctx)
 	await MoonSuspicionManager.flush_pending_alerts(ctx)
 	TableDisplay.refresh_turn_ui(ctx)
+
+
+static func _clear_lingering_dim(ctx: TableContext) -> void:
+	if ctx.bullet_time_dim == null:
+		return
+	ctx.bullet_time_dim.visible = false
+	ctx.bullet_time_dim.modulate.a = 0.0
 
 
 static func _reveal_pending_trick_after_handoff(ctx: TableContext) -> void:

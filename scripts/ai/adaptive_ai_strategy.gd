@@ -91,10 +91,17 @@ func choose_card(legal_plays: Array[CardModel], context: Dictionary, rng: Random
 			rng
 		)
 
+	return _play_personality_card(legal_plays, context, rng)
+
+
+func _play_personality_card(
+	legal_plays: Array[CardModel],
+	context: Dictionary,
+	rng: RandomNumberGenerator
+) -> CardModel:
 	if _was_chasing_moon:
 		_handle_moon_abandon(context)
 		_was_chasing_moon = false
-
 	_update_personality_strategy(context)
 	return _active_strategy.choose_card(legal_plays, context, rng)
 
@@ -125,10 +132,18 @@ func _select_play_mode(context: Dictionary) -> AiPlayMode.Kind:
 
 
 func _should_break_opponent_moon(context: Dictionary) -> bool:
+	if context.get("moon_busted", false):
+		return false
+	var player_index: int = context.get("player_index", -1)
+	var human_suspect: int = context.get("human_declared_moon_suspect", -1)
+	if human_suspect >= 0:
+		if player_index == human_suspect:
+			return false
+		return context.get("trick_number", 1) >= MoonSuspicion.MIN_TRICK_TO_BREAK
 	if not MoonSuspicion.should_break_moon(context):
 		return false
 	var suspect: Dictionary = MoonSuspicion.find_top_suspect(context)
-	return suspect.get("player_index", -1) != context.get("player_index", -1)
+	return suspect.get("player_index", -1) != player_index
 
 
 func _wants_chase_moon(context: Dictionary) -> bool:
@@ -320,9 +335,14 @@ func _queue_announcement_if_allowed(
 
 func _enrich_break_context(context: Dictionary) -> Dictionary:
 	var enriched := context.duplicate()
-	var suspect: Dictionary = MoonSuspicion.find_top_suspect(context)
-	enriched["moon_suspect_index"] = suspect.get("player_index", -1)
-	enriched["moon_suspect_score"] = suspect.get("score", 0.0)
+	var human_suspect: int = context.get("human_declared_moon_suspect", -1)
+	if human_suspect >= 0:
+		enriched["moon_suspect_index"] = human_suspect
+		enriched["moon_suspect_score"] = 100.0
+	else:
+		var suspect: Dictionary = MoonSuspicion.find_top_suspect(context)
+		enriched["moon_suspect_index"] = suspect.get("player_index", -1)
+		enriched["moon_suspect_score"] = suspect.get("score", 0.0)
 	return enriched
 
 

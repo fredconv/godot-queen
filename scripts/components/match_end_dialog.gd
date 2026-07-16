@@ -1,18 +1,21 @@
 class_name MatchEndDialog
 extends Control
-## MatchEndDialog
-## Popup de fin de partie : identifie le vainqueur (avatar, nom), pointe vers
-## son siège via une flèche (haut/bas/gauche/droite), affiche les scores de
-## tous les joueurs et propose de rejouer.
+## Popup de fin de partie : vainqueur, classement et actions rejouer / quitter.
+
 
 signal replay_requested
 signal quit_requested
 
-@onready var _title_label: Label = $Panel/Content/TitleLabel
+const ENTRANCE_DURATION_SEC: float = 0.38
+const ARROW_PULSE_SEC: float = 0.62
+
+@onready var _panel: PanelContainer = $Panel
+@onready var _title_label: Label = $Panel/Content/DecorRow/TitleLabel
+@onready var _ranking_header: Label = $Panel/Content/RankingHeader
 @onready var _winner_avatar: Control = $Panel/Content/WinnerRow/WinnerAvatar
 @onready var _winner_name_label: Label = $Panel/Content/WinnerRow/WinnerNameLabel
 @onready var _winner_detail_label: Label = $Panel/Content/WinnerDetailLabel
-@onready var _scores_list: VBoxContainer = $Panel/Content/ScoresList
+@onready var _scores_list: VBoxContainer = $Panel/Content/ScoresBox/ScoresList
 @onready var _btn_replay: NinePatchButton = $Panel/Content/ButtonsRow/BtnReplay
 @onready var _btn_quit: NinePatchButton = $Panel/Content/ButtonsRow/BtnQuit
 
@@ -24,9 +27,11 @@ signal quit_requested
 ]
 
 var _last_result: Dictionary = {}
+var _arrow_tween: Tween = null
 
 
 func _ready() -> void:
+	_panel.pivot_offset = _panel.size * 0.5
 	LocaleAware.bind(self, _refresh_locale)
 	UiFocusNav.chain_horizontal([_btn_replay, _btn_quit])
 	_refresh_locale()
@@ -48,15 +53,21 @@ func show_result(
 	}
 	_render_result()
 	visible = true
+	_play_entrance_animation()
+	_start_arrow_pulse(winner_index)
 	UiFocusNav.grab_first([_btn_replay, _btn_quit])
 
 
 func close() -> void:
+	_stop_arrow_pulse()
 	visible = false
+	_panel.scale = Vector2.ONE
+	_panel.modulate = Color.WHITE
 
 
 func _refresh_locale() -> void:
 	_title_label.text = tr(DialogKeys.MATCH_END_TITLE)
+	_ranking_header.text = tr(DialogKeys.MATCH_RANKING_HEADER)
 	_btn_replay.set_button_text(tr(DialogKeys.MATCH_REPLAY))
 	_btn_quit.set_button_text(tr(DialogKeys.MATCH_QUIT))
 	if not _last_result.is_empty():
@@ -78,11 +89,10 @@ func _render_result() -> void:
 
 	_winner_avatar.set("character_index", character_ids[winner_index])
 	_winner_name_label.text = DialogCopy.match_winner_line(player_names[winner_index])
-	if _winner_detail_label:
-		_winner_detail_label.text = DialogCopy.match_winner_detail(
-			hand_scores[winner_index],
-			cumulative_scores[winner_index]
-		)
+	_winner_detail_label.text = DialogCopy.match_winner_detail(
+		hand_scores[winner_index],
+		cumulative_scores[winner_index]
+	)
 	ScoreResultsList.populate_match_rows(
 		_scores_list,
 		player_names,
@@ -90,6 +100,43 @@ func _render_result() -> void:
 		cumulative_scores,
 		winner_index
 	)
+	for child in _scores_list.get_children():
+		var row: Label = child as Label
+		if row == null:
+			continue
+		row.add_theme_font_size_override("font_size", LocaleFonts.MENU_SCORE_FONT_SIZE)
+		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+
+func _play_entrance_animation() -> void:
+	_panel.pivot_offset = _panel.size * 0.5
+	_panel.scale = Vector2(0.86, 0.86)
+	_panel.modulate.a = 0.0
+	var tween: Tween = create_tween().set_parallel(true)
+	tween.tween_property(_panel, "scale", Vector2.ONE, ENTRANCE_DURATION_SEC) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(_panel, "modulate:a", 1.0, ENTRANCE_DURATION_SEC * 0.75)
+
+
+func _start_arrow_pulse(winner_index: int) -> void:
+	_stop_arrow_pulse()
+	var arrow: Control = _arrows_by_player[winner_index] as Control
+	if arrow == null:
+		return
+	arrow.modulate.a = 1.0
+	_arrow_tween = create_tween().set_loops()
+	_arrow_tween.tween_property(arrow, "modulate:a", 0.35, ARROW_PULSE_SEC) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_arrow_tween.tween_property(arrow, "modulate:a", 1.0, ARROW_PULSE_SEC) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+
+func _stop_arrow_pulse() -> void:
+	if _arrow_tween != null and _arrow_tween.is_valid():
+		_arrow_tween.kill()
+	_arrow_tween = null
+	for arrow in _arrows_by_player:
+		(arrow as Control).modulate.a = 1.0
 
 
 func _on_btn_replay_pressed() -> void:

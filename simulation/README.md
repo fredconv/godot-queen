@@ -2,6 +2,8 @@
 
 Outil **hors livrable** : ce dossier n'est pas référencé par `project.godot` (pas d'autoload, pas de scène). Tu peux le supprimer ou l'exclure des presets d'export sans impacter le jeu.
 
+`MatchSimulator` positionne `MatchManager.emit_game_events = false` pour que les milliers de parties batch **ne polluent pas** `StatsService` / `AudioService` / `GameSession`.
+
 ## Personnalités IA (adversaires)
 
 Par défaut (`scripts/ai/ai_personality_catalog.gd`) :

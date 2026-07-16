@@ -1,0 +1,36 @@
+---
+description: >-
+  Après fix UI/table/menus Dame de Pique : boucle MCP playtest (play + screenshot)
+  avant de déclarer OK. Hot seat = TableSeatDisplayMap uniquement.
+globs: scenes/**/*.tscn,scripts/ui/**/*.gd,scripts/components/**/*.gd,scripts/ui/table/**/*.gd
+alwaysApply: false
+---
+
+# Dame de Pique — boucle MCP
+
+## Quand cette rule s’applique
+
+Fichiers menus, table, sièges, overlay hot seat, TopMenuBar, splash / main_menu.
+
+## Avant de dire « OK » / « fixé »
+
+1. Charger le skill **`dame-de-pique-mcp-playtest`**
+2. Vérifier Godot MCP connecté (`get_project_info`) sur  
+   `CreativeOS/projects/Games/DameDePique`
+3. Rejouer la **recette minimale** touchée :
+   - splash / main_menu → Recette A
+   - hot seat / sièges / overlay → Recette B
+   - TopMenuBar → Recette C
+4. Joindre au rapport : screenshot path + erreurs log (ou « aucune »)
+
+Sans MCP connecté : le dire explicitement ; ne pas inventer un playtest réussi.
+
+## Hot seat — non négociable
+
+- Affichage siège : uniquement via `TableSeatDisplayMap`
+- Overlay : maintien ESPACE **1,5 s** (`HotSeatPrivacyOverlay`)
+- Ne jamais réordonner les sièges logiques dans `MatchManager` pour l’UI
+
+## Hors scope MCP
+
+Règles / scoring / deck → **GdUnit** (`tests/unit`). MCP = UI + runtime + input.

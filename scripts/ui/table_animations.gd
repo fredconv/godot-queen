@@ -167,8 +167,12 @@ static func emphasize_queen_of_spades(host: Node, card_view: Control) -> void:
 
 ## Met en évidence la carte gagnante d'un pli : réutilise la surbrillance à
 ## crochets de coin existante (`CardView.set_selected`) et ajoute un léger
-## agrandissement.
+## agrandissement. Passe au-dessus des autres cartes du pli (z_index + ordre).
 static func highlight_winning_card(host: Node, card_view: Control) -> void:
+	var parent: Node = card_view.get_parent()
+	if parent != null:
+		parent.move_child(card_view, -1)
+	card_view.z_index = 50
 	card_view.set_selected(true)
 	var tween: Tween = host.create_tween()
 	tween.set_trans(Tween.TRANS_BACK)
