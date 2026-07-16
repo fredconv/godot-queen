@@ -18,15 +18,15 @@ var public_events: Array[GameEvent] = []
 
 
 static func from_play_result(
-	play_result: MatchManager.PlayResult,
+	source_play_result: MatchManager.PlayResult,
 	events: Array[GameEvent] = []
 ) -> ActionResult:
 	var result := ActionResult.new()
-	result.play_result = play_result
+	result.play_result = source_play_result
 	result.public_events = events
-	result.success = play_result.success
-	if not play_result.success:
-		match play_result.play_error:
+	result.success = source_play_result.success
+	if not source_play_result.success:
+		match source_play_result.play_error:
 			MatchManager.PlayError.WRONG_PHASE:
 				result.error_code = ERROR_WRONG_PHASE
 			MatchManager.PlayError.NOT_YOUR_TURN:

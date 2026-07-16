@@ -38,7 +38,7 @@ static func play(ctx: TableContext, is_first_hand_of_match: bool) -> void:
 	_discard_banner(banner)
 
 
-static func _create_banner(ctx: TableContext, is_first_hand_of_match: bool) -> Control:
+static func _create_banner(_ctx: TableContext, is_first_hand_of_match: bool) -> Control:
 	var root := Control.new()
 	root.name = "HandStartBanner"
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)

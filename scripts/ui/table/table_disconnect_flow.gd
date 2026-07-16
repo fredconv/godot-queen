@@ -13,7 +13,7 @@ static func bind_relay(ctx: TableContext) -> void:
 	NetworkMatchRelay.seat_reconnected.connect(_on_reconnected.bind(ctx))
 
 
-static func _on_disconnect_announced(ctx: TableContext, seat_index: int, display_name: String) -> void:
+static func _on_disconnect_announced(ctx: TableContext, _seat_index: int, display_name: String) -> void:
 	if not ctx.is_active() or ctx.top_menu_bar == null:
 		return
 	ctx.top_menu_bar.set_turn_text(
@@ -21,7 +21,12 @@ static func _on_disconnect_announced(ctx: TableContext, seat_index: int, display
 	)
 
 
-static func _on_countdown(ctx: TableContext, seat_index: int, display_name: String, remaining_sec: int) -> void:
+static func _on_countdown(
+	ctx: TableContext,
+	_seat_index: int,
+	display_name: String,
+	remaining_sec: int
+) -> void:
 	if not ctx.is_active() or ctx.top_menu_bar == null:
 		return
 	ctx.top_menu_bar.set_turn_text(
@@ -29,7 +34,7 @@ static func _on_countdown(ctx: TableContext, seat_index: int, display_name: Stri
 	)
 
 
-static func _on_replaced_by_ai(ctx: TableContext, seat_index: int, display_name: String) -> void:
+static func _on_replaced_by_ai(ctx: TableContext, _seat_index: int, display_name: String) -> void:
 	if not ctx.is_active() or ctx.top_menu_bar == null:
 		return
 	ctx.top_menu_bar.set_turn_text(
@@ -41,7 +46,7 @@ static func _on_replaced_by_ai(ctx: TableContext, seat_index: int, display_name:
 		await TablePlayFlow.run_ai_turns(ctx)
 
 
-static func _on_reconnected(ctx: TableContext, seat_index: int, display_name: String) -> void:
+static func _on_reconnected(ctx: TableContext, _seat_index: int, display_name: String) -> void:
 	if not ctx.is_active() or ctx.top_menu_bar == null:
 		return
 	ctx.top_menu_bar.set_turn_text(

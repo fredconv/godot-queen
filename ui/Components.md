@@ -4,9 +4,9 @@
 
 | Composant | Scène / script | Rôle |
 |-----------|----------------|------|
-| **PixelButton** | `scenes/components/ui/pixel_button.tscn` | Bouton NinePatch médiéval 32×32, 192×48 |
+| **PixelButton** | `scripts/components/ui/pixel_button.gd` (`class_name`) ; scène template archivée | Bouton NinePatch médiéval 32×32, 192×48 |
 | **ButtonTemplate** | `scenes/menus/button_template.tscn` | Bouton 9-slice générique 15×15 (`NinePatchButton`) |
-| **DialogTemplate** | `scenes/menus/dialog_template.tscn` | Panneau dialog 9-slice (`NinePatchPanel`) |
+| **DialogTemplate** | `assets/_archive/scenes/menus/dialog_template.tscn` (hors export) | Panneau dialog 9-slice (`NinePatchPanel`) |
 | **UiOffsetAnim** | `scripts/core/ui/ui_offset_anim.gd` | Entrée/sortie via `offset_transform_scale` (Godot 4.7) |
 | Menu principal | `scenes/menus/main_menu.tscn` | Titre + `button_template` orange (NinePatchButton) |
 | Overlays menu | `settings_screen`, `scores_screen`, `credits_screen`, `profile_setup_screen` | Modales ; thème `pixel_theme` |

@@ -113,25 +113,29 @@ Art splash « LA DAME DE PIQUE » + Label UI « Dame de pique ».
 Warning `STATIC_CALLED_ON_INSTANCE` sur `normalize_language()`.  
 **Correction :** `ConfigService.normalize_language(...)` + fix C1.
 
-#### I7 — Scènes / assets morts à exclure de l’export
-- `main.tscn`, `pixel_button.tscn`, `dialog_template.tscn`
-- `assets/sprites/ui/medieval/_debug_*.png`
-- Packs UIBundleFree non utilisés (sauf slices réellement référencés)
-- `reports/` (déjà gitignore — vérifier non inclus dans export)
-- Cartes `*_alt.png`, jokers, `card_back_blue` (vrai unused ; le reste du deck est **faux positif** MCP car `CardTexturePaths.load()`)
+#### I7 — Scènes / assets morts à exclure de l’export — ✅ S3
+- `main.tscn`, `pixel_button.tscn`, `dialog_template.tscn` → `assets/_archive/scenes/`
+- `assets/sprites/ui/medieval/_debug_*.png` → archive
+- Feuilles demo UIBundleFree (FreeUI, Pastel, …) → archive ; **gardés** : `MediavelFree.png`, `freecasinoui.png`
+- Cartes `*_alt.png`, jokers, `card_back_blue`, blanks → archive
+- One-shots (`super_attaque`, `bouton_9patch`, `PixelifySans`, …) → archive
+- Export Windows : `exclude_filter=assets/_archive/*,reports/*,simulation/*,.mcp_audit/*`
+- Deck principal + audio `AudioPaths` : **faux positifs** MCP (chargement dynamique) — documentés dans `assets/_archive/README.md`
 
-**Correction :** dossier `assets/_archive/` ou filtre export ; ne pas supprimer le deck principal.
-
-#### I8 — Warnings GDScript (debugger 37+)
-Shadow : `player_profile.is_connected`, `rule_engine.can_lead_suit(hearts_broken)`, `nine_patch_button.size`, `ui_offset_anim.ease`.  
-Unused params dans `ai_telemetry_collector`, `table_disconnect_flow`.  
-**Correction :** renommer (`peer_connected`, `_hearts_broken`, `_size`, `_ease`) ; préfixer `_` les params unused. Passe « zero warning » avant 1.0.
+#### I8 — Warnings GDScript (debugger 37+) — ✅ S3
+Shadow / unused corrigés :
+- `PlayerProfile` / `PlayerConnection` : `is_connected` → `peer_connected` (clé JSON inchangée)
+- `RuleEngine.can_lead_suit(..., are_hearts_broken)`
+- `NinePatchButton.apply_button_size(target_size)` / `PixelButton` local size
+- `UiOffsetAnim.tween_scale(..., ease_type)`
+- `PlayCardAction` / `ActionResult` / `MatchControllerBase` / `TableDisconnectFlow` / `TableHandStart` / `AiTelemetryCollector` (params `_` / renames)
+- Vérif MCP post-fix : plus de `SHADOWED_*` / `UNUSED_*` projet — reste seulement `DebugService.log_info` (volontaire via `push_warning`).
 
 ---
 
 ### AMÉLIORATION — post-1.0 ou polish
 
-#### A1 — Factoriser gros scripts
+#### A1 — Factoriser gros scripts — ⏸️ différé (post-1.0)
 | Fichier | LOC | Proposition |
 |---------|-----|-------------|
 | `network_service.gd` | ~470 | Extraire host/client session, disconnect, lobby peers |
@@ -140,25 +144,30 @@ Unused params dans `ai_telemetry_collector`, `table_disconnect_flow`.
 | `ai_telemetry_collector.gd` | ~482 | Hors chemin critique UI — OK à laisser si simulation only |
 | `match_manager.gd` | ~375 | Déjà découpé Trick/Score — OK |
 
-#### A2 — Overlays à la demande
-Instancier `SettingsScreen` / `HelpScreen` via `PackedScene` au `open()` au lieu de les garder dans `main_menu` **et** `table`.  
-Réduit nœuds et risque de double état.
+**Motif différé :** refactor multi-fichiers à risque sur le chemin LAN (S0–S3 stables). Pas bloquant 1.0 — jouable ; découpage prévu post-merge.
 
-#### A3 — Terminologie i18n
-« Hot seat » en FR → « Partage d’appareil » / « À tour de rôle » (garder Hot seat en EN).
+#### A2 — Overlays à la demande — ✅ S4
+`SettingsScreen` / `HelpScreen` retirés de `main_menu.tscn` et `table.tscn` ; `preload` + instantiate au premier `open()` (`main_menu.gd` / `table.gd`).  
+**Preuve MCP :** table sans nœuds Settings/Help jusqu’à ouverture ; OptionButton peuplés (theme=2, lang=6).
 
-#### A4 — Responsive / mobile (ROADMAP étape 8)
-Viewport 1280×720 fixe ; tester safe area Android ; TopMenuBar déjà hauteur 56 (OK).
+#### A3 — Terminologie i18n — ✅ S4
+FR (et DE/ES/PT) : `MN_GAME_MODE_HOT_SEAT` / `MN_HOT_SEAT_TITLE` → « Partage d'appareil » ; EN reste « Hot seat ».  
+**Preuve MCP :** labels `Mode de jeu;Solo;Partage d'appareil;En ligne` + `.mcp_audit/a3_game_mode_hot_seat_label.png`.
 
-#### A5 — Audio polish
-Scan MCP liste WAV/MP3 « unused » — vérifier `AudioService` charge dynamique ; finir volumes/transitions (ROADMAP).
+#### A4 — Responsive / mobile (ROADMAP étape 8) — ⏸️ différé
+Viewport 1280×720 fixe ; safe area Android hors scope 1.0 desktop/store PC. Suivre ROADMAP étape 8.
 
-#### A6 — Perf runtime
-Mesurer **en play** (`get_performance_monitors`) : orphelins 721 = surtout **éditeur**.  
-En jeu : surveiller instanciation `CardView` / tweens ; pool éventuel.
+#### A5 — Audio polish — ✅ S4 (léger)
+Confirmé : SFX/musiques via `AudioPaths` + `AudioService` (faux positifs MCP — déjà `assets/_archive/README.md`).  
+Crossfade volume court entre pistes (`MUSIC_FADE_OUT/IN_SEC`) dans `AudioService._play_track()`.
 
-#### A7 — Tests UI MCP
-Ajouter recettes skill `dame-de-pique-mcp-playtest` : settings open sans erreur OptionButton ; scores non aberrants ; moon button policy.
+#### A6 — Perf runtime — ✅ S4 (mesuré)
+**Play MCP** (`get_performance_monitors` sur table solo) : FPS ~145, frame ~4,6 ms, draw calls ~479.  
+Orphans ~449 = surtout session éditeur (même ordre de grandeur hors jeu) — pas de pool `CardView` requis pour 1.0.
+
+#### A7 — Tests UI MCP — ✅ S4
+Skill `dame-de-pique-mcp-playtest` : recettes **D** (settings OptionButton), **E** (scores), **F** (moon policy) + rule `dame-de-pique-mcp-loop` mise à jour.  
+Screenshots : `.mcp_audit/a7_settings_open.png`, `a6_table_play.png`, moon `visible=false` en début de manche.
 
 ---
 
@@ -190,8 +199,8 @@ Ajouter recettes skill `dame-de-pique-mcp-playtest` : settings open sans erreur 
 | **S0 — Blockers** | C1 settings, C2 stats, C3 docs | ✅ fait 2026-07-16 |
 | **S1 — UX table/menu** | I1 moon, I2 TopMenuBar, I4 overlay dim, I5 titre (+ I3 absorbé) | ✅ fait 2026-07-16 |
 | **S2 — Multi lobby** | I3 contraste + labels | ✅ absorbé dans S1 |
-| **S3 — Hygiene** | I7 archive assets, I8 zero-warnings | 1 j |
-| **S4 — Soft** | A1–A7 selon capacité | post-1.0 OK |
+| **S3 — Hygiene** | I7 archive assets, I8 zero-warnings | ✅ fait 2026-07-16 |
+| **S4 — Soft** | A2–A3, A5–A7 faits ; A1/A4 différés post-1.0 | ✅ fait 2026-07-16 |
 
 ---
 
@@ -214,4 +223,4 @@ Exploitation MCP : `docs/GODOT-MCP-PRO-EXPLOITATION.md`
 
 ---
 
-*Prochaine étape recommandée après validation de ce rapport : sprint S0 (C1+C2+C3), puis phase roadmap suivante (polish audio / export).*
+*Prochaine étape recommandée : merge `feat/simulation-batch` → `main` (A1 factorisation / A4 mobile = post-1.0).*

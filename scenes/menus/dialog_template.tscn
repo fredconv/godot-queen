@@ -1,25 +1,22 @@
-[gd_scene load_steps=3 format=3 uid="uid://cc54fovrebdoa"]
+[gd_scene format=3 uid="uid://c2jd4pgxeceil"]
 
-[ext_resource type="Script" path="res://scripts/components/ui/nine_patch_panel.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://cjo0e1aqebv8l" path="res://scripts/components/ui/nine_patch_panel.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://b1liq0iqhnvwx" path="res://assets/sprites/9_grid_Badge_patch.png" id="2_patch"]
 
-[node name="DialogTemplate" type="Control"]
+[node name="DialogTemplate" type="Control" unique_id=1306943189]
 custom_minimum_size = Vector2(320, 200)
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_script")
-patch_texture = ExtResource("2_patch")
 
-[node name="NinePatchBackground" type="NinePatchRect" parent="."]
+[node name="NinePatchBackground" type="NinePatchRect" parent="." unique_id=617117307]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 texture = ExtResource("2_patch")
-texture_filter = 0
 patch_margin_left = 5
 patch_margin_top = 5
 patch_margin_right = 5
@@ -27,7 +24,7 @@ patch_margin_bottom = 5
 axis_stretch_horizontal = 2
 axis_stretch_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1893900969]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,21 +37,21 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="Content" type="VBoxContainer" parent="MarginContainer"]
+[node name="Content" type="VBoxContainer" parent="MarginContainer" unique_id=371906475]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/Content"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/Content" unique_id=479260560]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.82, 0.45, 1)
 theme_override_font_sizes/font_size = 12
 text = "Title"
 horizontal_alignment = 1
 
-[node name="BodyLabel" type="Label" parent="MarginContainer/Content"]
+[node name="BodyLabel" type="Label" parent="MarginContainer/Content" unique_id=627774032]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.961, 0.941, 0.902, 1)

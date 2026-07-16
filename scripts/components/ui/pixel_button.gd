@@ -73,10 +73,10 @@ func _configure_nine_patch() -> void:
 
 
 func _apply_size_preset() -> void:
-	var size: Vector2i = UiButtonLayout.MENU_BUTTON_SIZE
+	var target_size: Vector2i = UiButtonLayout.MENU_BUTTON_SIZE
 	if size_preset == SizePreset.COMPACT:
-		size = UiButtonLayout.COMPACT_BUTTON_SIZE
-	custom_minimum_size = Vector2(size)
+		target_size = UiButtonLayout.COMPACT_BUTTON_SIZE
+	custom_minimum_size = Vector2(target_size)
 
 
 func _apply_icon_visibility() -> void:

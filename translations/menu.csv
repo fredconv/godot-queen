@@ -35,9 +35,9 @@ MN_SETTINGS_DISPLAY_NAME,Pseudo,Display name,Spielername,Nombre de usuario,Nome 
 MN_SETTINGS_RESET_STATS,RÉINITIALISER STATS,RESET STATS,STATISTIK ZURÜCKSETZEN,REINICIAR ESTADÍSTICAS,REDEFINIR ESTATÍSTICAS,重置统计
 MN_GAME_MODE_TITLE,Mode de jeu,Game mode,Spielmodus,Modo de juego,Modo de jogo,游戏模式
 MN_GAME_MODE_SOLO,Solo,Solo,Solo,Solo,Solo,单人
-MN_GAME_MODE_HOT_SEAT,Hot seat,Hot seat,Hot seat,Hot seat,Hot seat,同机多人
+MN_GAME_MODE_HOT_SEAT,Partage d'appareil,Hot seat,Gerät teilen,Dispositivo compartido,Compartilhar aparelho,同机多人
 MN_GAME_MODE_ONLINE,En ligne,Online,Online,En línea,Online,在线
-MN_HOT_SEAT_TITLE,Hot seat,Hot seat,Hot seat,Hot seat,Hot seat,同机多人
+MN_HOT_SEAT_TITLE,Partage d'appareil,Hot seat,Gerät teilen,Dispositivo compartido,Compartilhar aparelho,同机多人
 MN_HOT_SEAT_PLAYERS,Nombre de joueurs,Number of players,Spieleranzahl,Número de jugadores,Número de jogadores,玩家数量
 MN_HOT_SEAT_PLAYER,Joueur %d,Player %d,Spieler %d,Jugador %d,Jogador %d,玩家 %d
 MN_HOT_SEAT_START,LANCER,START,STARTEN,INICIAR,INICIAR,开始

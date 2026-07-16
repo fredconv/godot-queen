@@ -21,6 +21,9 @@ Fichiers menus, table, sièges, overlay hot seat, TopMenuBar, splash / main_menu
    - splash / main_menu → Recette A
    - hot seat / sièges / overlay → Recette B
    - TopMenuBar → Recette C
+   - Configuration / OptionButton → Recette D
+   - Scores / stats → Recette E
+   - Bouton Lune → Recette F
 4. Joindre au rapport : screenshot path + erreurs log (ou « aucune »)
 
 Sans MCP connecté : le dire explicitement ; ne pas inventer un playtest réussi.

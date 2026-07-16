@@ -43,16 +43,7 @@ const LEGACY_UI_SHEET: String = "res://assets/sprites/8bit-color-retro-pixel-art
 const TABLE_FELT: String = "res://assets/sprites/texture_tapis.jpg"
 #endregion
 
-#region Feuilles demo (référence uniquement — texte anglais incrusté)
-const DEMO_SHEETS: Array[String] = [
-	BUNDLE_ROOT + "FreeUI.png",
-	BUNDLE_ROOT + "FreeDemo.png",
-	BUNDLE_ROOT + "UiCozyFree.png",
-	BUNDLE_ROOT + "PastelUIFree.png",
-	BUNDLE_ROOT + "FreeHorrorUi.png",
-	BUNDLE_ROOT + "freefantasy.png",
-]
-#endregion
+# Feuilles demo archivées sous `res://assets/_archive/sprites/UIBundleFree/` (hors export).
 
 ## Régions source (pixels) pour re-découpe si le sheet change.
 const REGIONS_MEDIEVAL: Dictionary = {

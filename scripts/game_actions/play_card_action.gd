@@ -23,5 +23,5 @@ func to_dict() -> Dictionary:
 
 static func from_dict(data: Dictionary) -> PlayCardAction:
 	var card_id: int = int(data.get("card_id", -1))
-	var card: CardModel = CardModel.from_id(card_id) if card_id >= 0 else null
-	return PlayCardAction.new(int(data.get("player_index", -1)), card)
+	var parsed_card: CardModel = CardModel.from_id(card_id) if card_id >= 0 else null
+	return PlayCardAction.new(int(data.get("player_index", -1)), parsed_card)

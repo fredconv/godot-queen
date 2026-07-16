@@ -24,6 +24,10 @@ const HOVER_COOLDOWN_SEC: float = 0.12
 ## Volume relatif (0-1, multiplié par le volume utilisateur) du son de survol :
 ## plus discret que les autres SFX puisqu'il se déclenche très fréquemment.
 const HOVER_VOLUME_SCALE: float = 0.6
+## Crossfade court entre pistes (A5) — pas de double lecteur, fade volume seul.
+const MUSIC_FADE_OUT_SEC: float = 0.35
+const MUSIC_FADE_IN_SEC: float = 0.4
+const MUSIC_FADE_FLOOR_DB: float = -40.0
 
 var _sfx_streams: Dictionary = {}
 var _sfx_players: Array[AudioStreamPlayer] = []
@@ -38,6 +42,7 @@ var _music_streams: Dictionary = {}
 var _music_playlist_order: Array[String] = []
 var _music_playlist_pos: int = -1
 var _current_music_path: String = ""
+var _music_fade_tween: Tween
 
 func _ready() -> void:
 	_preload_streams()
@@ -155,6 +160,9 @@ func set_music_enabled(enabled: bool) -> void:
 func refresh_music_volume() -> void:
 	if _music_player == null:
 		return
+	# Ne pas écraser un crossfade en cours (A5).
+	if _music_fade_tween != null and is_instance_valid(_music_fade_tween):
+		return
 	_music_player.volume_db = _music_volume_to_db()
 
 ## Ancienne API générique : conservée pour compatibilité mais non mappée à un
@@ -252,8 +260,29 @@ func _play_track(path: String) -> void:
 		DebugService.log_warning("AudioService: musique non préchargée (%s)" % path)
 		return
 	_current_music_path = path
+	if _music_fade_tween != null and is_instance_valid(_music_fade_tween):
+		_music_fade_tween.kill()
+		_music_fade_tween = null
+	var target_db: float = _music_volume_to_db()
+	var should_fade: bool = _music_player.playing and _music_player.stream != null
+	if should_fade:
+		_music_fade_tween = create_tween()
+		_music_fade_tween.tween_property(
+			_music_player, "volume_db", MUSIC_FADE_FLOOR_DB, MUSIC_FADE_OUT_SEC
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		_music_fade_tween.tween_callback(
+			_swap_music_stream.bind(stream, MUSIC_FADE_FLOOR_DB)
+		)
+		_music_fade_tween.tween_property(
+			_music_player, "volume_db", target_db, MUSIC_FADE_IN_SEC
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		return
+	_swap_music_stream(stream, target_db)
+
+
+func _swap_music_stream(stream: AudioStream, start_db: float) -> void:
 	_music_player.stream = stream
-	_music_player.volume_db = _music_volume_to_db()
+	_music_player.volume_db = start_db
 	_music_player.stream_paused = false
 	_music_player.play()
 

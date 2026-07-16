@@ -39,9 +39,9 @@ func set_button_text(value: String) -> void:
 		call_deferred("set_button_text", value)
 
 
-func apply_button_size(size: Vector2i) -> void:
-	button_size = size
-	custom_minimum_size = Vector2(size)
+func apply_button_size(target_size: Vector2i) -> void:
+	button_size = target_size
+	custom_minimum_size = Vector2(target_size)
 
 
 func ensure_opaque_background(

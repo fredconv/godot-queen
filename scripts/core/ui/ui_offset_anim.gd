@@ -19,11 +19,11 @@ static func tween_scale(
 	target: Vector2,
 	duration: float = 0.15,
 	trans: Tween.TransitionType = Tween.TRANS_BACK,
-	ease: Tween.EaseType = Tween.EASE_OUT
+	ease_type: Tween.EaseType = Tween.EASE_OUT
 ) -> Tween:
 	enable_on(control)
 	var tween := control.create_tween()
-	tween.set_ease(ease).set_trans(trans)
+	tween.set_ease(ease_type).set_trans(trans)
 	tween.tween_property(control, "offset_transform_scale", target, duration)
 	return tween
 

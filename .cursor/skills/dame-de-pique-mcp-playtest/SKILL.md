@@ -44,9 +44,11 @@ Pièges connus :
 | Écran | Texte bouton / label |
 |-------|----------------------|
 | Main menu | `NOUVELLE PARTIE`, `RÈGLES`, `SCORES`, … |
-| Mode | `Solo`, `Hot seat`, `En ligne` |
+| Mode | `Solo`, `Partage d'appareil` (EN: `Hot seat`), `En ligne` |
 | Lobby hot seat | `LANCER` |
 | Overlay handoff | maintien `KEY_SPACE` **1,5 s** (`HotSeatPrivacyOverlay.HOLD_DURATION_SEC`) |
+| Configuration | `CONFIGURATION` / overlay Settings (lazy A2) |
+| Stats | `SCORES` → overlay Stats |
 
 ## Recette A — Splash / main menu
 
@@ -64,7 +66,7 @@ Pièges connus :
 ## Recette B — Hot seat (lobby → table → overlay)
 
 1. Depuis menu (après A) : `click_button_by_text` `NOUVELLE PARTIE`
-2. `click_button_by_text` `Hot seat`
+2. `click_button_by_text` `Partage d'appareil` (locale FR ; EN: `Hot seat`)
 3. Optionnel : régler nombre de joueurs UI si besoin (défaut OK)
 4. `click_button_by_text` `LANCER`
 5. Attendre chargement table (~1–2 s)
@@ -79,12 +81,44 @@ Pièges connus :
 
 ## Recette C — Smoke TopMenuBar (régression export)
 
-En play sur table : propriétés `TopMenuBar` / hauteur `size.y` > 0.
+En play sur table : propriétés `TopMenuBar` / hauteur `size.y` > 0.  
+Assert : pas de boutons MUSIQUE / SUIVANT visibles (I2 — audio dans Configuration).
+
+## Recette D — Configuration OptionButton (C1 / A7)
+
+1. Menu principal interactif (après A)
+2. `click_button_by_text` `CONFIGURATION` (ou `call('_on_btn_settings_pressed')`)
+3. Attendre 0,3 s — SettingsScreen lazy-instancié (A2)
+4. `get_output_log` / debugger : **aucune** erreur `item_count = 0` / OptionButton
+5. `get_game_screenshot` → `res://.mcp_audit/settings_open.png`
+6. Fermer (RETOUR / Échap)
+
+**Pass si :** overlay ouvert, thèmes/langues peuplés, pas d’erreur OptionButton.
+
+## Recette E — Scores non aberrants (C2 / A7)
+
+1. Menu : `click_button_by_text` `SCORES`
+2. Lire le label « Parties terminées : N »
+3. Assert : N raisonnable pour un joueur humain (pas des dizaines de milliers post-reset)
+4. Si N aberrant : Configuration → `RÉINITIALISER STATS`, re-vérifier
+5. Screenshot → `res://.mcp_audit/scores_stats.png`
+
+**Pass si :** compteur cohérent avec parties UI (simulation isolée via `emit_game_events = false`).
+
+## Recette F — Bouton Lune soupçonnée (I1 / A7)
+
+1. Solo → table (ou hot seat après handoff)
+2. Début de manche (pli 1–2, Cœurs non défoncés) :
+   - `MoonSuspicionButton.visible` = **false** (ou `should_show_button()` faux)
+3. Après pli ≥ 3 **ou** Cœurs défoncés : bouton peut apparaître (disabled tant que non déclarable)
+4. Screenshot early → `res://.mcp_audit/moon_hidden_early.png`
+
+**Pass si :** pas de panneau « LUNE SOUPÇONNÉE » dès le premier pli.
 
 ## Rapport obligatoire
 
 ```
-MCP Playtest — [A splash | B hot-seat | C bar]
+MCP Playtest — [A splash | B hot-seat | C bar | D settings | E scores | F moon]
 - project_path: …
 - branch attendue: feat/simulation-batch
 - connected: oui/non

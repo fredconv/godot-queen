@@ -146,10 +146,10 @@ static func _find_two_of_clubs(cards: Array[CardModel]) -> CardModel:
 ## Détermine si `suit` peut être entamée compte tenu de `hearts_broken` et du
 ## contenu de `hand`. Fonction pure indépendante de l'état d'instance (utile
 ## pour l'IA ou des tests isolés sans `RuleEngine` complet).
-static func can_lead_suit(suit: int, hand: PlayerHand, hearts_broken: bool) -> bool:
+static func can_lead_suit(suit: int, hand: PlayerHand, are_hearts_broken: bool) -> bool:
 	if suit != Suit.HEARTS:
 		return true
-	if hearts_broken:
+	if are_hearts_broken:
 		return true
 	return HeartsRules.has_only_hearts(hand.cards())
 

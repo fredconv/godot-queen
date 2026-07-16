@@ -49,7 +49,7 @@ static func create_local_humans(
 		profile.is_human = is_human
 		profile.is_ai = not is_human
 		profile.is_ready = true
-		profile.is_connected = true
+		profile.peer_connected = true
 		if is_human:
 			if seat_index < display_names.size() and not display_names[seat_index].is_empty():
 				profile.display_name = display_names[seat_index]
@@ -95,7 +95,7 @@ static func shuffle_human_seats(config: MatchLaunchConfig) -> void:
 		profile.is_human = false
 		profile.is_ai = true
 		profile.is_ready = true
-		profile.is_connected = true
+		profile.peer_connected = true
 		profile.display_name = "AI %d" % seat_index
 		assignments.append(SeatAssignment.new(seat_index, profile))
 

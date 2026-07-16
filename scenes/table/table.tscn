@@ -9,8 +9,6 @@
 [ext_resource type="PackedScene" path="res://scenes/components/match_scoreboard.tscn" id="7_scoreboard"]
 [ext_resource type="PackedScene" path="res://scenes/components/hand_end_dialog.tscn" id="8_hand_end"]
 [ext_resource type="PackedScene" path="res://scenes/menus/scores_screen.tscn" id="9_scores"]
-[ext_resource type="PackedScene" path="res://scenes/menus/settings_screen.tscn" id="10_settings"]
-[ext_resource type="PackedScene" path="res://scenes/menus/help_screen.tscn" id="11_help"]
 [ext_resource type="PackedScene" path="res://scenes/table/hot_seat_privacy_overlay.tscn" id="12_hot_seat"]
 [ext_resource type="Script" uid="uid://hqmkvji5f0qg" path="res://scripts/ui/table/moon_suspicion_action_button.gd" id="13_moon_btn"]
 
@@ -237,18 +235,6 @@ offset_bottom = 220.0
 grow_horizontal = 0
 
 [node name="ScoresScreen" parent="UILayer" unique_id=898378043 instance=ExtResource("9_scores")]
-layout_mode = 3
-anchors_preset = 15
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="SettingsScreen" parent="UILayer" unique_id=107660229 instance=ExtResource("10_settings")]
-layout_mode = 3
-anchors_preset = 15
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="HelpScreen" parent="UILayer" unique_id=916272188 instance=ExtResource("11_help")]
 layout_mode = 3
 anchors_preset = 15
 grow_horizontal = 2

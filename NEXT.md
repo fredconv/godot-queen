@@ -15,13 +15,25 @@
 - [x] I4 — Assombrir fond des overlays menu + dim hot-seat
 - [x] I5 — Double titre splash / Label
 
-## Priorite immediate — Sprint S3 (hygiene) ou S4 soft
+## Fait (S3 — 2026-07-16)
 
-Voir `docs/AUDIT-PRE-1.0.md` :
+- [x] I7 — Archive assets/scènes morts + filtre export
+- [x] I8 — Zero warnings GDScript projet (shadow / unused)
 
-- [ ] I7–I8 — Hygiene assets / zero-warnings GDScript
-- [ ] ROADMAP étape 8 — audio final, icône, mobile
-- [ ] Merge `feat/simulation-batch` → `main` après polish
+## Fait (S4 — 2026-07-16)
+
+- [x] A2 — Overlays Settings/Help à la demande
+- [x] A3 — Terminologie i18n hot seat FR
+- [x] A5 — Audio fade + doc faux positifs
+- [x] A6 — Mesure perf play MCP
+- [x] A7 — Recettes playtest D/E/F
+- [x] A1 / A4 — documentés comme différés (post-1.0 / ROADMAP 8)
+
+## Priorite immediate
+
+- [ ] Merge `feat/simulation-batch` → `main`
+- [ ] ROADMAP étape 8 — icône store, mobile/safe area (A4), polish audio restant
+- [ ] Post-1.0 : A1 factorisation `network_service` / lobby / `player_seat`
 
 Note : S2 (I3) a été absorbé dans S1.
 

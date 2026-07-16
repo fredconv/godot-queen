@@ -3,7 +3,7 @@ extends RefCounted
 ## Interface commune pour piloter une partie (local ou réseau autoritaire).
 
 
-func start_new_match(seed_value: int = -1) -> void:
+func start_new_match(_seed_value: int = -1) -> void:
 	pass
 
 

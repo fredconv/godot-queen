@@ -7,6 +7,9 @@ const BG_HOLD_SEC: float = 2.4
 const OVERLAY_FADE_SEC: float = 0.85
 const MENU_FADE_SEC: float = 0.55
 const MENU_BUTTON_FILL: Color = Color(0.05, 0.16, 0.09, 1.0)
+## Overlays Settings / Help : instanciés au premier `open()` (A2).
+const _SETTINGS_SCENE: PackedScene = preload("res://scenes/menus/settings_screen.tscn")
+const _HELP_SCENE: PackedScene = preload("res://scenes/menus/help_screen.tscn")
 
 @onready var _background_texture: TextureRect = $BackgroundTexture
 @onready var _dark_overlay: ColorRect = $DarkOverlay
@@ -21,15 +24,15 @@ const MENU_BUTTON_FILL: Color = Color(0.05, 0.16, 0.09, 1.0)
 @onready var _btn_quit: NinePatchButton = $CenterContainer/MenuColumn/ButtonStack/BtnQuit
 @onready var _menu_root: Control = $CenterContainer/MenuColumn
 @onready var _player_label: Label = $PlayerLabel
-@onready var _settings_screen: Control = $SettingsScreen
 @onready var _scores_screen: Control = $ScoresScreen
 @onready var _credits_screen: Control = $CreditsScreen
 @onready var _profile_setup_screen: Control = $ProfileSetupScreen
 @onready var _game_mode_screen: Control = $GameModeScreen
 @onready var _hot_seat_lobby_screen: Control = $HotSeatLobbyScreen
 @onready var _multiplayer_lobby_screen: Control = $MultiplayerLobbyScreen
-@onready var _help_screen: Control = $HelpScreen
 
+var _settings_screen: Control
+var _help_screen: Control
 var _menu_buttons: Array[BaseButton] = []
 
 
@@ -38,10 +41,8 @@ func _ready() -> void:
 	for button: BaseButton in _menu_buttons:
 		UiOffsetAnim.prepare_hidden(button)
 	UiFocusNav.chain_vertical(_menu_buttons)
-	_settings_screen.closed.connect(_on_overlay_closed)
 	_scores_screen.closed.connect(_on_overlay_closed)
 	_credits_screen.closed.connect(_on_overlay_closed)
-	_help_screen.closed.connect(_on_overlay_closed)
 	_profile_setup_screen.completed.connect(_on_profile_setup_completed)
 	_game_mode_screen.solo_selected.connect(_on_game_mode_solo_selected)
 	_game_mode_screen.hot_seat_selected.connect(_on_game_mode_hot_seat_selected)
@@ -148,15 +149,35 @@ func _set_menu_interactive(enabled: bool) -> void:
 
 func _is_overlay_open() -> bool:
 	return (
-		_settings_screen.visible
+		(_settings_screen != null and _settings_screen.visible)
 		or _scores_screen.visible
 		or _credits_screen.visible
 		or _profile_setup_screen.visible
 		or _game_mode_screen.visible
 		or _hot_seat_lobby_screen.visible
 		or _multiplayer_lobby_screen.visible
-		or _help_screen.visible
+		or (_help_screen != null and _help_screen.visible)
 	)
+
+
+func _ensure_settings_screen() -> Control:
+	if _settings_screen != null and is_instance_valid(_settings_screen):
+		return _settings_screen
+	_settings_screen = _SETTINGS_SCENE.instantiate() as Control
+	_settings_screen.visible = false
+	add_child(_settings_screen)
+	_settings_screen.closed.connect(_on_overlay_closed)
+	return _settings_screen
+
+
+func _ensure_help_screen() -> Control:
+	if _help_screen != null and is_instance_valid(_help_screen):
+		return _help_screen
+	_help_screen = _HELP_SCENE.instantiate() as Control
+	_help_screen.visible = false
+	add_child(_help_screen)
+	_help_screen.closed.connect(_on_overlay_closed)
+	return _help_screen
 
 
 func _on_btn_new_game_pressed() -> void:
@@ -195,11 +216,11 @@ func _on_btn_scores_pressed() -> void:
 
 
 func _on_btn_rules_pressed() -> void:
-	_open_overlay(_help_screen)
+	_open_overlay(_ensure_help_screen())
 
 
 func _on_btn_settings_pressed() -> void:
-	_open_overlay(_settings_screen)
+	_open_overlay(_ensure_settings_screen())
 
 
 func _on_btn_credits_pressed() -> void:

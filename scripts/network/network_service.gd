@@ -219,7 +219,7 @@ func get_peer_for_seat(seat_index: int) -> int:
 func get_connected_human_count() -> int:
 	var count: int = 0
 	for assignment: SeatAssignment in lobby.seats:
-		if assignment.profile != null and assignment.profile.is_human and assignment.profile.is_connected:
+		if assignment.profile != null and assignment.profile.is_human and assignment.profile.peer_connected:
 			count += 1
 	return count
 
@@ -234,7 +234,7 @@ func is_player_disconnected(seat_index: int) -> bool:
 	var assignment: SeatAssignment = lobby.seats[seat_index]
 	if assignment.profile == null:
 		return false
-	return assignment.profile.is_human and not assignment.profile.is_connected
+	return assignment.profile.is_human and not assignment.profile.peer_connected
 
 
 func build_launch_config_for_local() -> MatchLaunchConfig:
@@ -288,7 +288,7 @@ func _register_host_player() -> void:
 	host_profile.peer_id = multiplayer.get_unique_id()
 	host_profile.is_human = true
 	host_profile.is_ai = false
-	host_profile.is_connected = true
+	host_profile.peer_connected = true
 	host_profile.is_ready = true
 	lobby.seats[0] = SeatAssignment.new(0, host_profile)
 	peer_to_seat[multiplayer.get_unique_id()] = 0
@@ -310,7 +310,7 @@ func _on_peer_connected(peer_id: int) -> void:
 	profile.peer_id = peer_id
 	profile.is_human = true
 	profile.is_ai = false
-	profile.is_connected = true
+	profile.peer_connected = true
 	profile.is_ready = false
 	lobby.seats[seat_index] = SeatAssignment.new(seat_index, profile)
 	lobby_state_changed.emit()
@@ -417,7 +417,7 @@ func receive_match_start(seed_value: int, seat_dicts: Array) -> void:
 
 
 func _handle_match_disconnect(seat_index: int, profile: PlayerProfile) -> void:
-	profile.is_connected = false
+	profile.peer_connected = false
 	_disconnect_state.begin_disconnect(seat_index, profile.display_name, profile.local_player_id)
 	seat_pending_disconnect.emit(seat_index, profile.display_name)
 	NetworkMatchRelay.broadcast_disconnect_event(seat_index, profile.display_name)
@@ -439,7 +439,7 @@ func _complete_reconnection(
 	assignment.profile.display_name = display_name
 	assignment.profile.local_player_id = local_player_id
 	assignment.profile.peer_id = peer_id
-	assignment.profile.is_connected = true
+	assignment.profile.peer_connected = true
 	assignment.profile.is_ready = true
 	peer_to_seat[peer_id] = seat_index
 	lobby_state_changed.emit()
@@ -472,7 +472,7 @@ func _replace_seat_with_ai(seat_index: int) -> void:
 	_disconnect_state.mark_replaced_by_ai(seat_index)
 	assignment.profile.is_human = false
 	assignment.profile.is_ai = true
-	assignment.profile.is_connected = false
+	assignment.profile.peer_connected = false
 	assignment.profile.peer_id = -1
 	var host_controller: HostMatchController = NetworkMatchRelay.get_host_controller()
 	if host_controller != null:

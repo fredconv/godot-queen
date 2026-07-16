@@ -8,9 +8,16 @@ extends Control
 
 enum ConfirmAction { NONE, LEAVE_MATCH, RESTART_MATCH }
 
+## Overlays Settings / Help : instanciés au premier `open()` (A2).
+const _SETTINGS_SCENE: PackedScene = preload("res://scenes/menus/settings_screen.tscn")
+const _HELP_SCENE: PackedScene = preload("res://scenes/menus/help_screen.tscn")
+
 var _ctx: TableContext
 var _confirm_action: ConfirmAction = ConfirmAction.NONE
+var _settings_screen: Control
+var _help_screen: Control
 
+@onready var _ui_layer: CanvasLayer = $UILayer
 @onready var _player_bottom_hand: Control = $HumanHandArea/PlayerBottomHand
 @onready var _animation_layer: Control = $AnimationLayer
 @onready var _top_menu_bar: Control = $UILayer/TopMenuBar
@@ -19,8 +26,6 @@ var _confirm_action: ConfirmAction = ConfirmAction.NONE
 @onready var _hand_end_dialog: Control = $UILayer/HandEndDialog
 @onready var _match_scoreboard: Control = $UILayer/MatchScoreboard
 @onready var _scores_screen: Control = $UILayer/ScoresScreen
-@onready var _settings_screen: Control = $UILayer/SettingsScreen
-@onready var _help_screen: Control = $UILayer/HelpScreen
 @onready var _human_hand_area: Control = $HumanHandArea
 @onready var _hot_seat_overlay: HotSeatPrivacyOverlay = $HotSeatLayer/HotSeatPrivacyOverlay
 @onready var _moon_suspicion_button: MoonSuspicionActionButton = $UILayer/MoonSuspicionButton
@@ -132,11 +137,29 @@ func _on_top_menu_bar_hamburger_pressed() -> void:
 
 
 func _on_top_menu_bar_help_pressed() -> void:
-	_help_screen.open()
+	_ensure_help_screen().open()
 
 
 func _on_top_menu_bar_settings_pressed() -> void:
-	_settings_screen.open()
+	_ensure_settings_screen().open()
+
+
+func _ensure_settings_screen() -> Control:
+	if _settings_screen != null and is_instance_valid(_settings_screen):
+		return _settings_screen
+	_settings_screen = _SETTINGS_SCENE.instantiate() as Control
+	_settings_screen.visible = false
+	_ui_layer.add_child(_settings_screen)
+	return _settings_screen
+
+
+func _ensure_help_screen() -> Control:
+	if _help_screen != null and is_instance_valid(_help_screen):
+		return _help_screen
+	_help_screen = _HELP_SCENE.instantiate() as Control
+	_help_screen.visible = false
+	_ui_layer.add_child(_help_screen)
+	return _help_screen
 
 
 func _on_locale_changed(_locale: String = "") -> void:

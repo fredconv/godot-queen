@@ -110,8 +110,8 @@ func record_trick_resolved(
 
 func end_hand(
 	tricks_taken: Array,
-	final_hand_scores: Dictionary,
-	display_scores_before_hand: Array
+	_final_hand_scores: Dictionary,
+	_display_scores_before_hand: Array
 ) -> void:
 	if not enabled:
 		return
@@ -148,7 +148,7 @@ func end_hand(
 		_finalize_moon_attempt(seat, attempt, moon_shooter == seat, raw_score, seat_stats)
 
 
-func end_match(winner_index: int, final_scores: Array, hand_count: int) -> void:
+func end_match(_winner_index: int, final_scores: Array, hand_count: int) -> void:
 	if not enabled:
 		return
 
@@ -295,7 +295,7 @@ func _start_moon_attempt(
 
 
 func _record_break_decision(
-	seat: int,
+	_seat: int,
 	trick_number: int,
 	context: Dictionary,
 	seat_stats: Dictionary
@@ -321,7 +321,7 @@ func _record_break_decision(
 
 
 func _process_moon_break_signals(
-	trick_number: int,
+	_trick_number: int,
 	winner_index: int,
 	trick_cards: Array
 ) -> void:
@@ -409,7 +409,6 @@ func _finalize_moon_attempt(
 
 func _record_queen_hand_stats(seat: int, captured: Array, seat_stats: Dictionary) -> void:
 	var took_queen := false
-	var dumped_queen := false
 	for card_variant: Variant in captured:
 		if card_variant is CardModel and card_variant.is_queen_of_spades():
 			took_queen = true
