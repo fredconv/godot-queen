@@ -6,44 +6,63 @@
 ## STATUS
 
 <!-- STATUS:START -->
-**Last updated:** 2026-07-16 (DESKTOP — S3 hygiene I7–I8 done, uncommitted)  
+**Last updated:** 2026-07-16 (DESKTOP — S3+S4 committed+pushed `28831ad`)  
 **Repository:** https://github.com/fredconv/godot-queen (branch `feat/simulation-batch`)
 
 ### Current Goal
-- Ship pre-1.0 polish on `feat/simulation-batch` then merge to `main`.
+- Merge `feat/simulation-batch` → `main` for pre-1.0.
 
 ### Current Status
 - Sprint **S0** done: C1 settings OptionButton, C2 simulation stats isolation + reset, C3 docs.
 - Sprint **S1** done: I1 moon button gating, I2 TopMenuBar cleanup, I3 lobby contrast/labels, I4 overlay dim, I5 double title fix.
-- Sprint **S3** done: I7 assets archive + export exclude; I8 GDScript shadow/unused warnings cleared (MCP verified).
-- MCP Pro verified on CreativeOS path; stats reset path available in Configuration.
-- Commit `14eff79` pushed (S0+S1). **S3 changes are local / not committed yet.**
+- Sprint **S3** done: I7 assets archive + export exclude; I8 GDScript shadow/unused warnings cleared.
+- Sprint **S4** soft polish: A2 lazy Settings/Help, A3 FR « Partage d'appareil », A5 music crossfade, A6 perf measured, A7 MCP recipes D/E/F.
+- **Deferred:** A1 (factorize large scripts) and A4 (mobile/safe area) → post-1.0 / ROADMAP étape 8.
+- Commit **`28831ad`** pushed to `origin/feat/simulation-batch` (S3 + A2–A7).
 
 ### TODO
-1. Commit + push S3 when requested.
-2. Optional soft polish **A1–A7** (see `docs/AUDIT-PRE-1.0.md`).
-3. Merge `feat/simulation-batch` → `main` after polish.
+1. Merge `feat/simulation-batch` → `main`.
+2. Post-1.0: A1 script splits; A4 mobile (ROADMAP 8); store icon.
 
 ### Decisions
 - Open Godot only from `C:\Users\fredc\Projects\CreativeOS\projects\Games\DameDePique`.
-- Standalone repo handoff via root `handoff.md` + `Invoke-SyncHandoff.ps1 -Scope HandoffOnly`.
+- Standalone repo handoff via root `handoff.md` (no local `scripts/handoff.ps1` — manual STATUS + log).
 - Dead assets live under `assets/_archive/` (excluded from Windows export).
+- A1/A4 explicitly deferred; not blockers for 1.0 merge.
 
 ### Known Issues
 - MCP `find_unused_resources` still lists deck/audio/UI slices as unused (dynamic `load()` false positives) — documented in `assets/_archive/README.md`.
-- Leftover local-only junk may remain: multiplayer PDF refs, `.DS_Store`, `gdunit_unit_result.log`.
+- Leftover local-only junk (not committed): multiplayer PDF refs, `.DS_Store`, `gdunit_unit_result.log`.
 
 ### Next Best Task
-- Commit S3, or soft polish **A1–A7**, then merge to `main`.
+- Merge `feat/simulation-batch` → `main`.
 
 ### Delegatable
-- Laptop: `git pull` after S3 push; MCP playtest smoke (settings, moon, lobby, overlays).
+- Laptop: `git pull` on `feat/simulation-batch`; smoke MCP D/E/F; review merge to main.
 <!-- STATUS:END -->
 
 ## CHANGELOG
 
 Entries are append-only. For each handoff, add a dated entry with **Done**, **Discussed**, and
 **TODO**. Preserve all previous entries so either machine can reconstruct the session context.
+
+---
+
+## 2026-07-16 — S3 I7–I8 + soft polish A2–A7 (commit+push)
+
+### Done
+- S3: I7 archive dead assets/scenes + export exclude; I8 GDScript shadow/unused cleared.
+- S4: A2 lazy Settings/Help; A3 FR hot-seat i18n; A5 music crossfade; A6 play perf MCP; A7 playtest recipes D/E/F.
+- Docs: STATUS / NEXT / CHANGELOG / AUDIT-PRE-1.0 updated.
+- Commit `28831ad` pushed to `origin/feat/simulation-batch`.
+
+### Discussed
+- A1 (god-object splits) and A4 (mobile) deferred post-1.0 — documented in AUDIT.
+- No `scripts/handoff.ps1` in this repo; handoff via root `handoff.md` only.
+
+### TODO
+- Merge branch → `main`.
+- Post-1.0 A1 / A4 when capacity allows.
 
 ---
 
