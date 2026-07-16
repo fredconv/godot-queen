@@ -31,7 +31,7 @@
 
 ## Priorite immediate
 
-- [ ] Merge `feat/simulation-batch` → `main`
+- [x] Merge `feat/simulation-batch` → `main` (2026-07-17, FF + push)
 - [ ] ROADMAP étape 8 — icône store, mobile/safe area (A4), polish audio restant
 - [ ] Post-1.0 : A1 factorisation `network_service` / lobby / `player_seat`
 

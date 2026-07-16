@@ -1,11 +1,11 @@
 # STATUS — Dame de Pique
 
-**Derniere mise a jour:** 2026-07-16 (sprint S4 soft A2–A7 ; A1/A4 différés)
+**Derniere mise a jour:** 2026-07-17 (merged `feat/simulation-batch` → `main` ; A1/A4 différés)
 
 | Element | Statut |
 |---------|--------|
 | Emplacement CreativeOS | OK — `projects/Games/DameDePique` |
-| Branche active | `feat/simulation-batch` |
+| Branche active | `main` (pre-1.0 S0–S4 merged) |
 | `project.godot` / main scene | OK — `bootstrap.tscn` |
 | Godot | 4.7.1-stable |
 | Addon `gdUnit4` | OK (activé) |

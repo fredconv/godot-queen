@@ -1,7 +1,7 @@
 # Audit pré-version 1.0 — Dame de Pique
 
-**Date :** 2026-07-16  
-**Branche :** `feat/simulation-batch`  
+**Date :** 2026-07-16 (statut merge : 2026-07-17 → `main`)  
+**Branche :** `main` (contenu issu de `feat/simulation-batch`)  
 **Chemin :** `C:/Users/fredc/Projects/CreativeOS/projects/Games/DameDePique/`  
 **Outils :** Godot MCP Pro (stats, complexité scènes, unused, cycles, signaux, perf éditeur) + lecture code + screenshots live  
 
@@ -223,4 +223,4 @@ Exploitation MCP : `docs/GODOT-MCP-PRO-EXPLOITATION.md`
 
 ---
 
-*Prochaine étape recommandée : merge `feat/simulation-batch` → `main` (A1 factorisation / A4 mobile = post-1.0).*
+*Merge `feat/simulation-batch` → `main` effectué 2026-07-17 (fast-forward). Prochaine étape : ROADMAP 8 / A1–A4 post-1.0.*

@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Meta
+- `feat/simulation-batch` merged into `main` (2026-07-17, fast-forward)
+
 ### Fixed
 - Configuration : peuplement OptionButton avant sélection (crash `item_count = 0`)
 - Simulation batch : `MatchManager.emit_game_events = false` — ne pollue plus StatsService / Audio / Session

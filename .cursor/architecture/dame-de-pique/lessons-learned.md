@@ -131,4 +131,52 @@ Appliquer à tout helper `_discard_banner` (ex. `table_ai_announcement.gd`).
 
 ---
 
-*Dernière mise à jour : juillet 2026 — Phase D déconnexion, hot seat illusion complète, fixes autoload / banner / IA siège 0.*
+## Simulation — stats polluées (~24k parties)
+
+**Symptôme** : écran Scores affiche des dizaines de milliers de parties après un batch headless.
+
+**Cause** : `MatchManager` émet `GameEvents.match_ended` ; `StatsService` (autoload) enregistre chaque fin de partie UI **et** simulation.
+
+**Fix** : `MatchManager.emit_game_events = false` dans le simulateur batch (`MatchSimulator` / `simulation/`). Bouton « Réinitialiser stats » en Configuration pour nettoyer une save déjà polluée.
+
+**Vigilance** : tout chemin headless / batch doit couper les side-effects autoload (stats, audio, session) avant de boucler des milliers de matchs.
+
+**Fichiers** : `scripts/match/match_manager.gd`, `simulation/lib/match_simulator.gd`, `simulation/README.md`
+
+---
+
+## MCP — `find_unused_resources` faux positifs (deck / audio / UI)
+
+**Symptôme** : scan MCP liste ~170 « unused » dont le deck principal et les SFX.
+
+**Cause** : chargement dynamique (`CardTexturePaths.load()`, `AudioPaths` + `AudioService`, `UiBundleCatalog`) — le grep MCP ne voit pas les références string.
+
+**Fix** : n’archiver que les assets **vraiment** morts (voir `assets/_archive/`). Ne pas supprimer le deck / audio listés dans les paths.
+
+**Vigilance** : croiser toujours avec `AudioPaths` / `CardTexturePaths` / catalogues UI avant quarantine.
+
+---
+
+## Autoload / MCP — `StatsStore` via `preload`, pas seulement `class_name`
+
+**Symptôme** : `Identifier not found: StatsStore` (ou type manquant) dans un autoload précoce ou un script MCP exécuté avant cache global.
+
+**Cause** : `class_name` dépend du cache global Godot ; les autoloads très tôt (et certains `execute_*_script` MCP) peuvent parser avant résolution.
+
+**Fix** : pattern `const StatsStoreClass = preload("res://scripts/core/stats_store.gd")` (comme `StatsService`) ; régénérer le cache `class_name` après ajout (`--headless --editor --quit`).
+
+**Fichiers** : `scripts/services/stats_service.gd`, `scripts/core/stats_store.gd`
+
+---
+
+## UI MCP — NinePatchButton ≠ Button
+
+**Symptôme** : `runtime ui --type_filter Button` ne trouve pas « NOUVELLE PARTIE ».
+
+**Cause** : boutons menu = `NinePatchButton` (pas `Button` Godot).
+
+**Fix** : chercher le **Label** enfant ou `call('_on_btn_…')` / `click_button_by_text`. Détail : skill `dame-de-pique-mcp-playtest`.
+
+---
+
+*Dernière mise à jour : 2026-07-17 — pre-1.0 S0–S4 merge `main`, DOC_OK (sim stats, MCP unused, StatsStore preload, NinePatch).*

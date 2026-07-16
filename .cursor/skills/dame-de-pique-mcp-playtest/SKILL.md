@@ -13,7 +13,7 @@ Référence produit : `docs/GODOT-MCP-PRO-EXPLOITATION.md`.
 
 ## Prérequis session
 
-1. Branche : `feat/simulation-batch` (ou main quand merge)
+1. Branche : `main` (historique pre-1.0 aussi sur `feat/simulation-batch`)
 2. Chemin Godot : `C:\Users\fredc\Projects\CreativeOS\projects\Games\DameDePique`
 3. **Une seule** instance éditeur Godot (ports 6005/6006 + MCP 6505–6509)
 4. Plugin **Godot MCP Pro** activé ; panneau MCP Pro = client connecté
@@ -35,9 +35,12 @@ node $cli editor screenshot   # décoder image_base64 → .mcp_audit/*.png
 
 Pièges connus :
 
-- Boutons menu = **NinePatchButton** : `runtime ui --type_filter Button` les rate ; chercher le **Label** enfant (`NOUVELLE PARTIE`) ou `call('_on_btn_…')`.
+- Boutons menu = **NinePatchButton** (≠ `Button`) : `runtime ui --type_filter Button` les rate ; chercher le **Label** enfant (`NOUVELLE PARTIE`) ou `call('_on_btn_…')`.
 - CLI `input key` envoie `key` au lieu de `keycode` → erreur Godot. Préférer MCP `simulate_key` (`keycode: KEY_SPACE`, `duration: 1.6`) ou forcer l’overlay via `runtime exec` + `_mcp_print`.
 - Après intro, si `BtnNewGame.disabled` : `call('_set_menu_interactive', true)` avant clic.
+- `find_unused_resources` : deck / audio / slices UI = **faux positifs** (load dynamique) — ne pas archiver ; voir `assets/_archive/README.md`.
+- Scripts MCP / autoloads précoces : préférer `preload("…/stats_store.gd")` si `StatsStore` (`class_name`) n’est pas encore résolu.
+- Batch simulation : `MatchManager.emit_game_events = false` sinon StatsService pollue l’écran SCORES.
 
 ## Textes UI (locale FR par défaut)
 
@@ -120,7 +123,7 @@ Assert : pas de boutons MUSIQUE / SUIVANT visibles (I2 — audio dans Configurat
 ```
 MCP Playtest — [A splash | B hot-seat | C bar | D settings | E scores | F moon]
 - project_path: …
-- branch attendue: feat/simulation-batch
+- branch attendue: main
 - connected: oui/non
 - résultats: PASS/FAIL par assert
 - screenshots: chemins res://.mcp_audit/…
