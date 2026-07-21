@@ -114,10 +114,16 @@ func _ensure_context_shell() -> void:
 		_human_hand_area,
 		_animation_layer,
 	])
+	TableContextShell.setup(_ctx, _context_shell)
 
 
 func get_context_shell() -> ContextShellHost:
 	return _context_shell
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if TableContextShell.handle_unhandled_key(_ctx, event):
+		get_viewport().set_input_as_handled()
 
 
 func _on_context_shell_layout_applied(insets: Vector4) -> void:
@@ -219,7 +225,11 @@ func _on_top_menu_bar_new_game_pressed() -> void:
 
 
 func _on_top_menu_bar_hamburger_pressed() -> void:
-	_match_scoreboard.visible = not _match_scoreboard.visible
+	## Phase b : hamburger ouvre/ferme le Context Shell (scoreboard docké dedans).
+	if _context_shell != null:
+		TableContextShell.toggle_sidebar(_ctx)
+	else:
+		_match_scoreboard.visible = not _match_scoreboard.visible
 
 
 func _on_top_menu_bar_help_pressed() -> void:

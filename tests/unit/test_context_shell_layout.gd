@@ -81,3 +81,16 @@ func test_apply_insets_bottom_anchored_hand_lifts_with_bottom_bar() -> void:
 	assert_float(next.y).is_equal(-286.0)
 	assert_float(next.w).is_equal(-56.0)
 	assert_float(next.z).is_equal(0.0)
+
+
+func test_ui_layout_snapshot_roundtrip() -> void:
+	var snap := UiLayoutSnapshot.new()
+	snap.sidebar_open = true
+	snap.shell_focus = false
+	snap.user_hide_bottom_bar = true
+	snap.bottom_bar_slot_active = false
+	var restored := UiLayoutSnapshot.from_dict(snap.to_dict())
+	assert_bool(restored.sidebar_open).is_true()
+	assert_bool(restored.shell_focus).is_false()
+	assert_bool(restored.user_hide_bottom_bar).is_true()
+	assert_bool(restored.bottom_bar_slot_active).is_false()

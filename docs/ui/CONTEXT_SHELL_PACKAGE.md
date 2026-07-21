@@ -46,13 +46,10 @@ Point d’entrée du package. Détails modules :
 
 ## Phase courante
 
-**a — Context Shell minimal** (en cours) :
+**b — Coordination table / sidebar / bottom bar** (en cours) :
 
-- `ContextShellLayout` — insets / compact / focus
-- `ContextShellHost` — `SidebarHost` + `BottomBarHost` + application d’insets
-- Table : bind `PlayerSeats`, `TrickArea`, `HumanHandArea`, `AnimationLayer`
-- `bottom_bar_slot_active = false` jusqu’à la phase **d** (ne pas manger la main)
-- Propriété Focus produit = `shell_focus` (**pas** `focus_mode` — conflit `Control`)
-- Insets : `apply_insets_to_offsets` respecte les ancres (TrickArea centré **ne doit pas** être écrasé)
+- `UiLayoutSnapshot` — restore Focus (phase g)
+- `ContextShellHost.mount_*` + content roots
+- `TableContextShell` — bouton ▶/◀, hamburger → toggle shell, dock `MatchScoreboard`, Escape
 
-Suivant : **b** coordination → **c** TogglePanel sidebar → **d** bottom bar.
+Suivant : **c** TogglePanel (anim slide) → **d** bottom bar.

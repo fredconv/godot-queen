@@ -11,7 +11,7 @@ Source : INBOX.md
 
 | ID | Title | Status |
 |----|-------|--------|
-| **00023–00025** | **Context Shell** | READY — phase **a** (layout + hosts) |
+| **00023–00025** | **Context Shell** | READY — phase **b** (coordination) |
 | — | Backlog optionnel | 00014 / 00013 / ROADMAP mobile |
 
 ---
@@ -55,4 +55,4 @@ Source : INBOX.md
 | D Visuel natif | 00021 | DONE |
 | Lobby split | 00010 | DONE |
 | Réactions | 00022 | DONE (MCP + GdUnit) |
-| E Context Shell | 00023 + 00024 + **00025** | READY — phase a en cours |
+| E Context Shell | 00023 + 00024 + **00025** | READY — phase b en cours |

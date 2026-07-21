@@ -84,6 +84,60 @@ func get_bottom_bar_host() -> Control:
 	return _bottom_bar_host
 
 
+func get_sidebar_content_root() -> Control:
+	_ensure_hosts()
+	return _ensure_content_root(_sidebar_host, &"SidebarContent")
+
+
+func get_bottom_bar_content_root() -> Control:
+	_ensure_hosts()
+	return _ensure_content_root(_bottom_bar_host, &"BottomBarContent")
+
+
+## Monte un nœud dans le slot sidebar (retire le placeholder chrome).
+func mount_sidebar_child(node: Control) -> void:
+	if node == null:
+		return
+	var root: Control = get_sidebar_content_root()
+	if node.get_parent() == root:
+		_paint_placeholder(_sidebar_host, false)
+		return
+	if node.get_parent() != null:
+		node.get_parent().remove_child(node)
+	root.add_child(node)
+	_paint_placeholder(_sidebar_host, false)
+
+
+func mount_bottom_bar_child(node: Control) -> void:
+	if node == null:
+		return
+	var root: Control = get_bottom_bar_content_root()
+	if node.get_parent() != root:
+		if node.get_parent() != null:
+			node.get_parent().remove_child(node)
+		root.add_child(node)
+	_paint_placeholder(_bottom_bar_host, false)
+
+
+func capture_layout_snapshot() -> UiLayoutSnapshot:
+	var snap := UiLayoutSnapshot.new()
+	snap.sidebar_open = sidebar_open
+	snap.shell_focus = shell_focus
+	snap.user_hide_bottom_bar = user_hide_bottom_bar
+	snap.bottom_bar_slot_active = bottom_bar_slot_active
+	return snap
+
+
+func restore_layout_snapshot(snap: UiLayoutSnapshot) -> void:
+	if snap == null:
+		return
+	## Restaurer sans émettre en boucle : assigner puis un seul apply.
+	sidebar_open = snap.sidebar_open
+	shell_focus = snap.shell_focus
+	user_hide_bottom_bar = snap.user_hide_bottom_bar
+	bottom_bar_slot_active = snap.bottom_bar_slot_active
+
+
 func toggle_sidebar() -> void:
 	sidebar_open = not sidebar_open
 
@@ -127,6 +181,29 @@ func _make_host(host_name: String) -> Control:
 	return host
 
 
+func _ensure_content_root(host: Control, root_name: StringName) -> Control:
+	var existing: Control = host.get_node_or_null(NodePath(String(root_name))) as Control
+	if existing != null:
+		return existing
+	var root := Control.new()
+	root.name = String(root_name)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	host.add_child(root)
+	## Au-dessus du Placeholder.
+	host.move_child(root, host.get_child_count() - 1)
+	return root
+
+
+func _host_has_mounted_content(host: Control) -> bool:
+	var content: Control = host.get_node_or_null("SidebarContent") as Control
+	if content == null:
+		content = host.get_node_or_null("BottomBarContent") as Control
+	if content == null:
+		return false
+	return content.get_child_count() > 0
+
+
 func _apply_layout() -> void:
 	_ensure_hosts()
 	var vp: Vector2 = size
@@ -164,9 +241,9 @@ func _layout_hosts(_vp: Vector2, insets: Vector4) -> void:
 	_bottom_bar_host.offset_top = -bottom_h
 	_bottom_bar_host.offset_bottom = 0.0
 
-	## Phase a : placeholders discrets (pas de widgets).
-	_paint_placeholder(_sidebar_host, sidebar_w > 0.5)
-	_paint_placeholder(_bottom_bar_host, bottom_h > 0.5)
+	## Placeholder seulement si slot ouvert et sans contenu monté.
+	_paint_placeholder(_sidebar_host, sidebar_w > 0.5 and not _host_has_mounted_content(_sidebar_host))
+	_paint_placeholder(_bottom_bar_host, bottom_h > 0.5 and not _host_has_mounted_content(_bottom_bar_host))
 
 
 func _paint_placeholder(host: Control, show_chrome: bool) -> void:

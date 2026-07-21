@@ -41,7 +41,8 @@
 - [x] **IDEA-00010** — découpe `multiplayer_lobby_screen` (sessions / invite / public IP) — DONE
 - [x] **IDEA-00022** — Réactions table — DONE
 - [x] **Context Shell phase a** — layout hosts + insets + dock pli — DONE (2026-07-21)
-- [ ] **Context Shell** phases b→h (TogglePanel, bottom bar, Focus, MCP doc)
+- [x] **Context Shell phase b** — coordination toggle / scoreboard dock / Escape — DONE
+- [ ] **Context Shell** phases c→h (TogglePanel, bottom bar, Focus, MCP doc)
 - [ ] Capturer living doc Focus Mode / Table seule (brief validé)
 - [ ] Optionnel : IDEA-00014 kill tweens carte si bug observé
 - [ ] ROADMAP étape 8 — icône store, mobile/safe area (A4), polish audio restant

@@ -41,6 +41,9 @@ var hot_seat_overlay: HotSeatPrivacyOverlay
 var moon_suspicion_button: MoonSuspicionActionButton = null
 var moon_suspicion_manager: MoonSuspicionManager = null
 var reaction_manager: ReactionManager = null
+var context_shell: ContextShellHost = null
+var shell_toggle_button: BaseButton = null
+var shell_scoreboard_home: Dictionary = {}
 
 
 func is_active() -> bool:
