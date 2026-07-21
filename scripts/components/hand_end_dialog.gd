@@ -7,6 +7,7 @@ extends Control
 
 signal continue_requested
 
+@onready var _panel: PanelContainer = $Panel
 @onready var _title_label: Label = $Panel/Content/TitleLabel
 @onready var _winner_avatar: Control = $Panel/Content/WinnerRow/WinnerAvatar
 @onready var _winner_name_label: Label = $Panel/Content/WinnerRow/WinnerNameLabel
@@ -15,11 +16,13 @@ signal continue_requested
 @onready var _btn_continue: NinePatchButton = $Panel/Content/BtnContinue
 
 var _last_result: Dictionary = {}
+var _entrance_tween: Tween = null
 
 
 func _ready() -> void:
 	LocaleAware.bind(self, _refresh_locale)
 	UiFocusNav.chain_vertical([_btn_continue])
+	UiStyleFactory.apply_pixel_panel(_panel, UiStyleFactory.pixel_overlay_panel_style(Vector4(20, 16, 20, 16)))
 	_refresh_locale()
 
 
@@ -39,11 +42,21 @@ func show_result(
 	}
 	_render_result()
 	visible = true
+	_play_entrance()
 	UiFocusNav.grab_first([_btn_continue])
 
 
 func close() -> void:
+	UiOffsetAnim.kill_tween(_entrance_tween)
+	_entrance_tween = null
 	visible = false
+	_panel.scale = Vector2.ONE
+	_panel.modulate = Color.WHITE
+
+
+func _play_entrance() -> void:
+	UiOffsetAnim.kill_tween(_entrance_tween)
+	_entrance_tween = UiOffsetAnim.play_dialog_entrance(self, _panel)
 
 
 func _refresh_locale() -> void:

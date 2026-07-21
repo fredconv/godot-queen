@@ -27,7 +27,13 @@ static func play(ctx: TableContext, announcement: Dictionary) -> void:
 	banner.modulate.a = 0.0
 
 	var fade_in: Tween = ctx.host.create_tween()
+	fade_in.set_parallel(true)
 	fade_in.tween_property(banner, "modulate:a", 1.0, 0.18).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	var panel: Control = banner.get_child(0) as Control
+	if panel != null:
+		UiOffsetAnim.enable_on(panel)
+		fade_in.tween_property(panel, "offset_transform_scale", Vector2.ONE, 0.18) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	await fade_in.finished
 	if not ctx.is_active():
 		_discard_banner(banner)
@@ -65,29 +71,22 @@ static func _create_banner(message: String) -> Control:
 	panel.offset_top = -40.0
 	panel.offset_right = 280.0
 	panel.offset_bottom = 40.0
-	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.129, 0.129, 0.157, 0.94)
-	panel_style.border_width_left = 3
-	panel_style.border_width_top = 3
-	panel_style.border_width_right = 3
-	panel_style.border_width_bottom = 3
-	panel_style.border_color = Color(0.831, 0.686, 0.216, 1.0)
-	panel_style.content_margin_left = 24.0
-	panel_style.content_margin_top = 14.0
-	panel_style.content_margin_right = 24.0
-	panel_style.content_margin_bottom = 14.0
-	panel.add_theme_stylebox_override("panel", panel_style)
+	UiStyleFactory.apply_pixel_panel(
+		panel,
+		UiStyleFactory.pixel_banner_panel_style(Vector4(24, 14, 24, 14), 3, 0.94)
+	)
 
 	var label := Label.new()
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.custom_minimum_size = Vector2(480.0, 0.0)
 	label.add_theme_font_size_override("font_size", 20)
-	label.add_theme_color_override("font_color", Color(0.961, 0.941, 0.902, 1.0))
+	label.add_theme_color_override("font_color", UiPalette.CREAM)
 	label.text = message
 
 	panel.add_child(label)
 	root.add_child(panel)
+	UiOffsetAnim.prepare_hidden(panel)
 	return root
 
 

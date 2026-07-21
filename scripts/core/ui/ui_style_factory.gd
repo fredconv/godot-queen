@@ -120,3 +120,118 @@ static func _medieval_focus_outline() -> StyleBoxFlat:
 	style.expand_margin_right = 2.0
 	style.expand_margin_bottom = 2.0
 	return style
+
+
+## Boutons barre HUD (top bar) — StyleBoxFlat pixel (coins 0, pas de soft UI).
+static func pixel_bar_button_style(
+	bg_color: Color,
+	border_color: Color,
+	border_width: int = 2
+) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.border_color = border_color
+	style.set_border_width_all(border_width)
+	style.set_corner_radius_all(0)
+	style.content_margin_left = 8
+	style.content_margin_right = 8
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	return style
+
+
+static func pixel_bar_focus_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = UiPalette.BTN_BG_HOVER
+	style.border_color = UiPalette.GOLD_BRIGHT
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(0)
+	style.content_margin_left = 8
+	style.content_margin_right = 8
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	style.expand_margin_left = 1.0
+	style.expand_margin_top = 1.0
+	style.expand_margin_right = 1.0
+	style.expand_margin_bottom = 1.0
+	return style
+
+
+## Panneaux / banners table — StyleBoxFlat pixel (coins 0, bordure or).
+static func pixel_banner_panel_style(
+	content_margin: Vector4 = Vector4(24, 16, 24, 16),
+	border_width: int = 3,
+	bg_alpha: float = 0.94
+) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(UiPalette.PANEL_BG.r, UiPalette.PANEL_BG.g, UiPalette.PANEL_BG.b, bg_alpha)
+	style.border_color = UiPalette.PANEL_BORDER
+	style.set_border_width_all(border_width)
+	style.set_corner_radius_all(0)
+	style.content_margin_left = content_margin.x
+	style.content_margin_top = content_margin.y
+	style.content_margin_right = content_margin.z
+	style.content_margin_bottom = content_margin.w
+	style.shadow_color = Color(0, 0, 0, 0.55)
+	style.shadow_size = 4
+	style.shadow_offset = Vector2(0, 3)
+	return style
+
+
+static func pixel_overlay_panel_style(
+	content_margin: Vector4 = Vector4(16, 14, 16, 14)
+) -> StyleBoxFlat:
+	## Modales : cadre or franc + ombre nette (lisible vs splash).
+	var style := pixel_banner_panel_style(content_margin, 3, 0.97)
+	style.bg_color = Color(0.08, 0.09, 0.12, 0.97)
+	style.border_color = UiPalette.GOLD_BRIGHT
+	style.shadow_size = 8
+	style.shadow_offset = Vector2(0, 5)
+	style.shadow_color = Color(0, 0, 0, 0.65)
+	return style
+
+
+static func pixel_compact_panel_style(
+	content_margin: Vector4 = Vector4(12, 8, 12, 8),
+	bg_color: Color = Color(0.05, 0.06, 0.08, 0.82)
+) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.border_color = UiPalette.PANEL_BORDER
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(0)
+	style.content_margin_left = content_margin.x
+	style.content_margin_top = content_margin.y
+	style.content_margin_right = content_margin.z
+	style.content_margin_bottom = content_margin.w
+	style.shadow_color = Color(0, 0, 0, 0.5)
+	style.shadow_size = 3
+	style.shadow_offset = Vector2(0, 2)
+	return style
+
+
+## Colonne boutons menu principal — panneau bien lisible sur le splash.
+static func menu_button_stack_panel_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.03, 0.05, 0.04, 0.88)
+	style.border_color = UiPalette.GOLD
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(0)
+	style.content_margin_left = 20
+	style.content_margin_top = 18
+	style.content_margin_right = 20
+	style.content_margin_bottom = 18
+	style.shadow_color = Color(0, 0, 0, 0.7)
+	style.shadow_size = 10
+	style.shadow_offset = Vector2(0, 6)
+	return style
+
+
+static func apply_pixel_panel(
+	panel: Control,
+	style: StyleBoxFlat = null
+) -> void:
+	if panel == null:
+		return
+	var box: StyleBoxFlat = style if style != null else pixel_overlay_panel_style()
+	panel.add_theme_stylebox_override("panel", box)

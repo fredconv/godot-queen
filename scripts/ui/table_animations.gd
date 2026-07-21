@@ -82,8 +82,14 @@ static func play_card_to_trick(host: Node, card_view: Control, target_global_cen
 		CARD_LAND_BOUNCE_UP_SEC
 	).set_ease(Tween.EASE_OUT)
 	bounce.tween_property(card_view, "global_position", target_pos, CARD_LAND_BOUNCE_DOWN_SEC) \
-		.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	await bounce.finished
+	## Impact subtil : flash modulate court après l’atterrissage.
+	if is_instance_valid(card_view):
+		var flash: Tween = host.create_tween()
+		flash.tween_property(card_view, "modulate", Color(1.12, 1.1, 1.0, 1.0), 0.05)
+		flash.tween_property(card_view, "modulate", Color.WHITE, 0.1)
+		await flash.finished
 
 
 ## Bullet time : glissement lent, zoom caméra fort et assombrissement jusqu'à

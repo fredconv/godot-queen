@@ -1,12 +1,9 @@
 extends ModalOverlayScreen
 ## Lobby multijoueur : code d'invitation, recherche par pseudo, découverte LAN.
+## Logique listes / code / IP publique extraite (IDEA-00010).
 
 
 signal match_starting
-
-const _LOBBY_BUTTON_SIZE := Vector2i(400, 48)
-const _PublicIpLookup = preload("res://scripts/network/public_ip_lookup.gd")
-const _InviteCodeGenerator = preload("res://scripts/network/invite_code_generator.gd")
 
 @onready var _title_label: Label = $Panel/Margin/VBox/TitleLabel
 @onready var _status_label: Label = $Panel/Margin/VBox/StatusLabel
@@ -38,10 +35,9 @@ const _InviteCodeGenerator = preload("res://scripts/network/invite_code_generato
 var _is_hosting: bool = false
 var _is_joining: bool = false
 var _advanced_visible: bool = false
-var _public_ip_lookup: RefCounted
-var _cached_public_ip: String = ""
 var _online_search_active: bool = false
 var _pending_join_by_code: bool = false
+var _public_ip: MultiplayerLobbyPublicIp = MultiplayerLobbyPublicIp.new()
 
 
 func _ready() -> void:
@@ -74,30 +70,19 @@ func _ready() -> void:
 	NetworkService.online_lobby_search_failed.connect(_on_online_lobby_search_failed)
 	_sessions_list.item_activated.connect(_on_session_activated)
 	_invite_code_edit.text_changed.connect(_on_invite_code_text_changed)
-	_apply_sessions_list_contrast()
+	_public_ip.lookup_succeeded.connect(_on_public_ip_lookup_succeeded)
+	MultiplayerLobbySessions.apply_list_contrast(_sessions_list)
+	_apply_lobby_button_chrome()
 	LocaleAware.bind(self, _refresh_locale)
 
 
-func _apply_sessions_list_contrast() -> void:
-	var list_bg := StyleBoxFlat.new()
-	list_bg.bg_color = Color(0.06, 0.08, 0.1, 1.0)
-	list_bg.set_border_width_all(2)
-	list_bg.border_color = UiPalette.GOLD
-	list_bg.content_margin_left = 6.0
-	list_bg.content_margin_top = 4.0
-	list_bg.content_margin_right = 6.0
-	list_bg.content_margin_bottom = 4.0
-	_sessions_list.add_theme_stylebox_override("panel", list_bg)
-	_sessions_list.add_theme_color_override("font_color", UiPalette.CREAM)
-	_sessions_list.add_theme_color_override("font_hovered_color", UiPalette.GOLD_BRIGHT)
-	_sessions_list.add_theme_color_override("font_selected_color", Color(0.05, 0.05, 0.05, 1.0))
-	var selected_bg := StyleBoxFlat.new()
-	selected_bg.bg_color = UiPalette.GOLD
-	_sessions_list.add_theme_stylebox_override("selected", selected_bg)
-	_sessions_list.add_theme_stylebox_override("selected_focus", selected_bg)
-	var hover_bg := StyleBoxFlat.new()
-	hover_bg.bg_color = Color(0.18, 0.2, 0.24, 1.0)
-	_sessions_list.add_theme_stylebox_override("hovered", hover_bg)
+func _apply_lobby_button_chrome() -> void:
+	const FILL := Color(0.05, 0.16, 0.09, 1.0)
+	for button: NinePatchButton in [_btn_host, _btn_join, _btn_start]:
+		if button != null:
+			button.ensure_opaque_background(FILL, UiPalette.GOLD, 0)
+	if _btn_back != null:
+		_btn_back.ensure_opaque_background(Color(0.07, 0.09, 0.1, 1.0), UiPalette.GOLD, 0)
 
 
 func _before_open() -> void:
@@ -106,7 +91,7 @@ func _before_open() -> void:
 	_advanced_visible = false
 	_online_search_active = false
 	_pending_join_by_code = false
-	_cached_public_ip = ""
+	_public_ip.clear_cache()
 	_invite_code_edit.text = ""
 	_search_edit.text = ""
 	_address_edit.text = "127.0.0.1"
@@ -118,15 +103,14 @@ func _before_open() -> void:
 	_set_advanced_visible(false)
 	_set_host_code_visible(false)
 	_set_join_mode_visible(true)
-	_apply_button_sizes()
 	_refresh_locale()
 	NetworkService.clear_online_search_results()
 	NetworkService.start_lan_browsing()
-	_start_public_ip_lookup()
+	_public_ip.start(self)
 
 
 func close() -> void:
-	_cancel_public_ip_lookup()
+	_public_ip.cancel()
 	if not _is_hosting and not _is_joining:
 		NetworkService.stop_lan_browsing()
 	super.close()
@@ -134,11 +118,6 @@ func close() -> void:
 
 func _on_overlay_opened() -> void:
 	_invite_code_edit.grab_focus()
-
-
-func _apply_button_sizes() -> void:
-	for button: NinePatchButton in [_btn_host, _btn_join, _btn_start, _btn_back]:
-		button.apply_button_size(_LOBBY_BUTTON_SIZE)
 
 
 func _refresh_locale() -> void:
@@ -159,10 +138,30 @@ func _refresh_locale() -> void:
 	_btn_join.set_button_text(tr(MenuKeys.MP_JOIN))
 	_btn_start.set_button_text(tr(MenuKeys.MP_START))
 	_btn_back.set_button_text(tr(CommonKeys.BACK))
+	var lobby_buttons: Array = [_btn_host, _btn_join, _btn_start, _btn_back]
+	NinePatchButton.uniform_fit_group(lobby_buttons)
+	NinePatchButton.sync_centered_panel_half_width($Panel as Control, lobby_buttons, 56.0, 280.0)
+	_fit_theme_row_buttons()
 	_refresh_advanced_toggle_label()
 	_refresh_status()
 	_refresh_sessions_list()
 	_refresh_host_code_display()
+
+
+func _fit_theme_row_buttons() -> void:
+	## Boutons Theme (pas NinePatch) : largeur mini selon le texte.
+	for button: Button in [_btn_join_code, _btn_search, _btn_copy_code, _btn_advanced]:
+		if button == null:
+			continue
+		var font: Font = button.get_theme_font("font")
+		if font == null:
+			font = ThemeDB.fallback_font
+		var font_size: int = button.get_theme_font_size("font_size")
+		if font_size <= 0:
+			font_size = 16
+		var text_w: float = font.get_string_size(button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+		var needed: int = NinePatchButton.snap_width_up(int(ceili(text_w)) + 28)
+		button.custom_minimum_size.x = float(maxi(needed, 96))
 
 
 func _refresh_advanced_toggle_label() -> void:
@@ -200,43 +199,7 @@ func _refresh_online_join_fields() -> void:
 
 
 func _refresh_sessions_list() -> void:
-	var selected_id: String = _get_selected_session_id()
-	_sessions_list.clear()
-	var sessions: Array[Dictionary] = _collect_visible_sessions()
-	for session: Dictionary in sessions:
-		var label: String = _format_session_label(session)
-		var item_index: int = _sessions_list.add_item(label)
-		_sessions_list.set_item_metadata(item_index, session)
-		if str(session.get("id", "")) == selected_id:
-			_sessions_list.select(item_index)
-
-
-func _collect_visible_sessions() -> Array[Dictionary]:
-	var sessions: Array[Dictionary] = []
-	if _online_search_active:
-		for session: Dictionary in NetworkService.get_online_search_results():
-			sessions.append(session)
-	else:
-		for session: Dictionary in NetworkService.get_lan_sessions():
-			var entry: Dictionary = session.duplicate()
-			entry["source"] = "lan"
-			sessions.append(entry)
-	return sessions
-
-
-func _format_session_label(session: Dictionary) -> String:
-	if str(session.get("source", "")) == "online":
-		return tr(MenuKeys.MP_SESSION_ENTRY_ONLINE) % [
-			session.get("host_name", ""),
-			session.get("players", 1),
-			session.get("max_players", HeartsRules.PLAYER_COUNT),
-			session.get("invite_code", ""),
-		]
-	return tr(MenuKeys.MP_SESSION_ENTRY) % [
-		session.get("host_name", session.get("address", "")),
-		session.get("players", 1),
-		session.get("max_players", HeartsRules.PLAYER_COUNT),
-	]
+	MultiplayerLobbySessions.refresh_list(_sessions_list, _online_search_active)
 
 
 func _refresh_host_code_display() -> void:
@@ -258,26 +221,6 @@ func _set_join_mode_visible(visible_state: bool) -> void:
 	_btn_join.visible = visible_state
 
 
-func _get_selected_session_id() -> String:
-	var selected_items: PackedInt32Array = _sessions_list.get_selected_items()
-	if selected_items.is_empty():
-		return ""
-	var session: Variant = _sessions_list.get_item_metadata(selected_items[0])
-	if session is Dictionary:
-		return str(session.get("id", ""))
-	return ""
-
-
-func _get_selected_session() -> Dictionary:
-	var selected_items: PackedInt32Array = _sessions_list.get_selected_items()
-	if selected_items.is_empty():
-		return {}
-	var session: Variant = _sessions_list.get_item_metadata(selected_items[0])
-	if session is Dictionary:
-		return session
-	return {}
-
-
 func _get_port() -> int:
 	return clampi(int(_port_edit.text), 1, 65535)
 
@@ -288,44 +231,13 @@ func _set_advanced_visible(visible_state: bool) -> void:
 	_refresh_advanced_toggle_label()
 
 
-func _start_public_ip_lookup() -> void:
-	_cancel_public_ip_lookup()
-	_public_ip_lookup = _PublicIpLookup.new()
-	_public_ip_lookup.lookup_succeeded.connect(_on_public_ip_lookup_succeeded)
-	_public_ip_lookup.lookup_failed.connect(_on_public_ip_lookup_failed)
-	_public_ip_lookup.fetch(self)
-
-
-func _cancel_public_ip_lookup() -> void:
-	if _public_ip_lookup != null:
-		if _public_ip_lookup.lookup_succeeded.is_connected(_on_public_ip_lookup_succeeded):
-			_public_ip_lookup.lookup_succeeded.disconnect(_on_public_ip_lookup_succeeded)
-		if _public_ip_lookup.lookup_failed.is_connected(_on_public_ip_lookup_failed):
-			_public_ip_lookup.lookup_failed.disconnect(_on_public_ip_lookup_failed)
-		_public_ip_lookup = null
-
-
 func _on_public_ip_lookup_succeeded(public_ip: String) -> void:
-	_cached_public_ip = public_ip
-	_cancel_public_ip_lookup()
 	if _is_hosting:
 		NetworkService.set_host_public_address(public_ip)
 
 
-func _on_public_ip_lookup_failed() -> void:
-	_cancel_public_ip_lookup()
-
-
 func _on_invite_code_text_changed(new_text: String) -> void:
-	var cursor: int = _invite_code_edit.caret_column
-	var normalized: String = _InviteCodeGenerator.normalize_raw(new_text)
-	if normalized.length() <= 4:
-		_invite_code_edit.text = normalized
-	elif normalized.length() <= 8:
-		_invite_code_edit.text = "%s-%s" % [normalized.substr(0, 4), normalized.substr(4)]
-	else:
-		_invite_code_edit.text = _InviteCodeGenerator.format_code(normalized.substr(0, 8))
-	_invite_code_edit.caret_column = mini(cursor + 1, _invite_code_edit.text.length())
+	MultiplayerLobbyInviteCode.apply_live_format(_invite_code_edit, new_text)
 
 
 func _on_btn_advanced_pressed() -> void:
@@ -349,7 +261,7 @@ func _on_btn_join_code_pressed() -> void:
 	if not NetworkService.is_online_registry_available():
 		_status_label.text = tr(MenuKeys.MP_ONLINE_UNAVAILABLE)
 		return
-	var invite_code: String = _InviteCodeGenerator.normalize_input(_invite_code_edit.text)
+	var invite_code: String = MultiplayerLobbyInviteCode.normalize_input(_invite_code_edit.text)
 	if invite_code.is_empty():
 		_status_label.text = tr(MenuKeys.MP_INVITE_NOT_FOUND)
 		return
@@ -391,10 +303,10 @@ func _on_btn_host_pressed() -> void:
 	_set_join_mode_visible(false)
 	_set_host_code_visible(true)
 	_refresh_host_code_display()
-	if not _cached_public_ip.is_empty():
-		NetworkService.set_host_public_address(_cached_public_ip)
+	if not _public_ip.cached_public_ip.is_empty():
+		NetworkService.set_host_public_address(_public_ip.cached_public_ip)
 	elif NetworkService.is_online_registry_available():
-		_start_public_ip_lookup()
+		_public_ip.start(self)
 	_refresh_status()
 
 
@@ -409,7 +321,7 @@ func _on_session_activated(_index: int) -> void:
 func _join_selected_or_manual() -> void:
 	if _is_hosting or _is_joining:
 		return
-	var session: Dictionary = _get_selected_session()
+	var session: Dictionary = MultiplayerLobbySessions.selected_session(_sessions_list)
 	if not session.is_empty():
 		_connect_to_session(session)
 		return
@@ -508,7 +420,7 @@ func _on_online_lobby_lookup_failed() -> void:
 
 func _on_online_lobby_search_completed(_sessions: Array) -> void:
 	_refresh_sessions_list()
-	if _sessions.is_empty():
+	if _sessions_list.item_count == 0:
 		_status_label.text = tr(MenuKeys.MP_SEARCH_EMPTY)
 	else:
 		_refresh_status()

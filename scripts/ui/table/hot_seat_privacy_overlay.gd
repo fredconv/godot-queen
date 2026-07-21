@@ -20,6 +20,7 @@ var _space_held: bool = false
 
 func _ready() -> void:
 	visible = false
+	set_process(false)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	LocaleAware.bind(self, _refresh_locale)
 
@@ -29,16 +30,16 @@ func show_handoff(player_name: String) -> void:
 	_reset_hold_progress()
 	_refresh_locale()
 	visible = true
+	set_process(true)
 
 
 func close_overlay() -> void:
 	visible = false
+	set_process(false)
 	_reset_hold_progress()
 
 
 func _process(delta: float) -> void:
-	if not visible:
-		return
 	if not _space_held:
 		return
 	_hold_elapsed_sec += delta

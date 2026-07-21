@@ -16,6 +16,7 @@ const DEFAULT_SFX_VOLUME: float = 1.0
 ## les SFX pour que les sons de carte restent audibles par-dessus (ADR-013).
 const DEFAULT_MUSIC_VOLUME: float = 0.35
 const DEFAULT_MUSIC_ENABLED: bool = true
+const DEFAULT_EMOTES_ENABLED: bool = true
 const DEFAULT_LANGUAGE: String = "fr"
 const DEFAULT_TABLE_THEME: StringName = TableThemePaths.THEME_CLASSIC
 const SUPPORTED_LANGUAGES: Array[String] = LocaleCatalog.LOCALES
@@ -25,6 +26,7 @@ signal locale_changed(locale: String)
 var _sfx_volume: float = DEFAULT_SFX_VOLUME
 var _music_volume: float = DEFAULT_MUSIC_VOLUME
 var _music_enabled: bool = DEFAULT_MUSIC_ENABLED
+var _emotes_enabled: bool = DEFAULT_EMOTES_ENABLED
 var _language: String = DEFAULT_LANGUAGE
 var _table_theme: StringName = DEFAULT_TABLE_THEME
 var _loaded: bool = false
@@ -63,6 +65,18 @@ func get_music_enabled() -> bool:
 func set_music_enabled(value: bool) -> void:
 	_ensure_loaded()
 	_music_enabled = value
+	_save_config()
+
+## --- Réactionsctions / emotes table ---
+
+func get_emotes_enabled() -> bool:
+	_ensure_loaded()
+	return _emotes_enabled
+
+
+func set_emotes_enabled(value: bool) -> void:
+	_ensure_loaded()
+	_emotes_enabled = value
 	_save_config()
 
 ## --- Langue ---
@@ -115,6 +129,7 @@ func _ensure_loaded() -> void:
 	_sfx_volume = settings.get("sfx_volume", DEFAULT_SFX_VOLUME)
 	_music_volume = settings.get("music_volume", DEFAULT_MUSIC_VOLUME)
 	_music_enabled = settings.get("music_enabled", DEFAULT_MUSIC_ENABLED)
+	_emotes_enabled = settings.get("emotes_enabled", DEFAULT_EMOTES_ENABLED)
 	_language = normalize_language(settings.get("language", DEFAULT_LANGUAGE))
 	_table_theme = TableThemePaths.normalize_theme_id(settings.get("table_theme", DEFAULT_TABLE_THEME))
 	_apply_locale()
@@ -131,6 +146,7 @@ func _save_config() -> void:
 		"sfx_volume": _sfx_volume,
 		"music_volume": _music_volume,
 		"music_enabled": _music_enabled,
+		"emotes_enabled": _emotes_enabled,
 		"language": _language,
 		"table_theme": _table_theme,
 	}

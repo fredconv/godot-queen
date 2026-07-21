@@ -34,6 +34,7 @@ func _ready() -> void:
 	_panel.pivot_offset = _panel.size * 0.5
 	LocaleAware.bind(self, _refresh_locale)
 	UiFocusNav.chain_horizontal([_btn_replay, _btn_quit])
+	UiStyleFactory.apply_pixel_panel(_panel, UiStyleFactory.pixel_overlay_panel_style(Vector4(20, 16, 20, 16)))
 	_refresh_locale()
 
 
@@ -70,6 +71,7 @@ func _refresh_locale() -> void:
 	_ranking_header.text = tr(DialogKeys.MATCH_RANKING_HEADER)
 	_btn_replay.set_button_text(tr(DialogKeys.MATCH_REPLAY))
 	_btn_quit.set_button_text(tr(DialogKeys.MATCH_QUIT))
+	NinePatchButton.uniform_fit_group([_btn_replay, _btn_quit])
 	if not _last_result.is_empty():
 		_render_result()
 
@@ -109,13 +111,7 @@ func _render_result() -> void:
 
 
 func _play_entrance_animation() -> void:
-	_panel.pivot_offset = _panel.size * 0.5
-	_panel.scale = Vector2(0.86, 0.86)
-	_panel.modulate.a = 0.0
-	var tween: Tween = create_tween().set_parallel(true)
-	tween.tween_property(_panel, "scale", Vector2.ONE, ENTRANCE_DURATION_SEC) \
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(_panel, "modulate:a", 1.0, ENTRANCE_DURATION_SEC * 0.75)
+	UiOffsetAnim.play_dialog_entrance(self, _panel, ENTRANCE_DURATION_SEC)
 
 
 func _start_arrow_pulse(winner_index: int) -> void:

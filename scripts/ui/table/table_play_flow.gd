@@ -11,6 +11,8 @@ static func on_human_card_selected(ctx: TableContext, card_view: Control, card: 
 	if ctx.match_manager.is_match_over():
 		return
 	if not TableDisplay.card_in_list(card, TableDisplay.current_human_legal_plays(ctx)):
+		if card_view.has_method("play_invalid_feedback"):
+			card_view.play_invalid_feedback()
 		return
 
 	var local_seat: int = ctx.get_local_human_seat()
@@ -183,6 +185,8 @@ static func animate_card_play(
 	if not ctx.is_active():
 		return
 	ctx.trick_card_views[player_index] = traveling_card
+	## Ancrage dans le slot : suit sidebar / resize sans désync.
+	TableTrickDisplay.dock_card_in_slot(ctx, player_index, traveling_card)
 	TableFx.refresh_lead_suit_indicator(ctx)
 
 
@@ -207,6 +211,7 @@ static func handle_post_play(ctx: TableContext, result: MatchManager.PlayResult)
 			return
 		ctx.match_manager.start_new_hand()
 		MoonSuspicionManager.on_new_hand(ctx, ctx.match_manager.hand_number)
+		ReactionManager.on_new_hand(ctx)
 		await TableDealing.play_sequence(ctx)
 		if not ctx.is_active():
 			return
@@ -261,7 +266,11 @@ static func _collect_trick_cards(ctx: TableContext, winner_index: int) -> void:
 	var target_center: Vector2 = winner_seat.get_global_transform_with_canvas() * (winner_seat.size / 2.0)
 	var card_views: Array[Control] = []
 	for card_view in ctx.trick_card_views.values():
-		card_views.append(card_view as Control)
+		var view: Control = card_view as Control
+		if not is_instance_valid(view):
+			continue
+		TableTrickDisplay.undock_to_animation_layer(ctx, view)
+		card_views.append(view)
 	await TableAnimations.collect_trick(ctx.host, card_views, target_center)
 	if not ctx.is_active():
 		return
@@ -274,6 +283,8 @@ static func _spawn_traveling_card(ctx: TableContext, card: CardModel, start_glob
 	card_view.face_up = true
 	card_view.front_texture = CardTexturePaths.get_front_texture(card)
 	card_view.scale = Vector2(TableConstants.TRICK_CARD_SCALE, TableConstants.TRICK_CARD_SCALE)
+	if card_view.has_method("set_resting_drop_shadow"):
+		card_view.call("set_resting_drop_shadow", false)
 	ctx.animation_layer.add_child(card_view)
 	var visual_half_size: Vector2 = TableConstants.CARD_BASE_SIZE * TableConstants.TRICK_CARD_SCALE / 2.0
 	card_view.global_position = start_global_center - visual_half_size

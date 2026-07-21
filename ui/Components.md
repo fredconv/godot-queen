@@ -4,9 +4,10 @@
 
 | Composant | Scène / script | Rôle |
 |-----------|----------------|------|
-| **PixelButton** | `scripts/components/ui/pixel_button.gd` (`class_name`) ; scène template archivée | Bouton NinePatch médiéval 32×32, 192×48 |
-| **ButtonTemplate** | `scenes/menus/button_template.tscn` | Bouton 9-slice générique 15×15 (`NinePatchButton`) |
-| **DialogTemplate** | `assets/_archive/scenes/menus/dialog_template.tscn` (hors export) | Panneau dialog 9-slice (`NinePatchPanel`) |
+| **NinePatchButton** (vivant) | `scenes/menus/button_template.tscn` + `nine_patch_button.gd` | Bouton 9-slice menus/dialogs — **pipeline par défaut** |
+| **PixelButton** (legacy) | `pixel_button.gd` ; scène **archivée** | Wood 32×32 — ne plus utiliser pour nouveaux écrans (IDEA-00018) |
+| **DialogTemplate** | `assets/_archive/scenes/menus/dialog_template.tscn` (hors export) | Panneau dialog 9-slice (`NinePatchPanel`) — pas de copie live |
+| **ModalOverlayScreen** | `scripts/components/ui/modal_overlay_screen.gd` | Base overlays menu (Pack A = anim open/close) |
 | **UiOffsetAnim** | `scripts/core/ui/ui_offset_anim.gd` | Entrée/sortie via `offset_transform_scale` (Godot 4.7) |
 | Menu principal | `scenes/menus/main_menu.tscn` | Titre + `button_template` orange (NinePatchButton) |
 | Overlays menu | `settings_screen`, `scores_screen`, `credits_screen`, `profile_setup_screen` | Modales ; thème `pixel_theme` |

@@ -30,6 +30,7 @@ func _refresh_locale() -> void:
 	_hint_label.text = tr(MenuKeys.PROFILE_SETUP_HINT)
 	_name_edit.placeholder_text = tr(MenuKeys.PROFILE_SETUP_PLACEHOLDER)
 	_btn_confirm.set_button_text(tr(MenuKeys.PROFILE_SETUP_CONFIRM))
+	_btn_confirm.fit_to_label()
 
 
 func _on_btn_confirm_pressed() -> void:

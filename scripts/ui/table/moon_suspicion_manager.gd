@@ -234,15 +234,10 @@ static func _build_picker_overlay(ctx: TableContext, suspector_seat: int, result
 	panel.offset_top = -160.0
 	panel.offset_right = 220.0
 	panel.offset_bottom = 160.0
-	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.129, 0.129, 0.157, 0.98)
-	panel_style.border_color = Color(0.831, 0.686, 0.216, 1.0)
-	panel_style.set_border_width_all(3)
-	panel_style.content_margin_left = 16.0
-	panel_style.content_margin_top = 14.0
-	panel_style.content_margin_right = 16.0
-	panel_style.content_margin_bottom = 14.0
-	panel.add_theme_stylebox_override("panel", panel_style)
+	UiStyleFactory.apply_pixel_panel(
+		panel,
+		UiStyleFactory.pixel_banner_panel_style(Vector4(16, 14, 16, 14), 3, 0.98)
+	)
 
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 10)

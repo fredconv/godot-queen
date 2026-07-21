@@ -4,14 +4,14 @@ extends RefCounted
 
 const GRID: int = 8
 
-const MENU_BUTTON_SIZE: Vector2i = Vector2i(192, 48)
-const COMPACT_BUTTON_SIZE: Vector2i = Vector2i(160, 48)
+const MENU_BUTTON_SIZE: Vector2i = Vector2i(192, 64)
+const COMPACT_BUTTON_SIZE: Vector2i = Vector2i(160, 64)
 
 const NINEPATCH_TEXTURE_SIZE: int = 32
 const NINEPATCH_MARGIN: int = 8
 
-const CONTENT_MARGIN_H: int = 16
-const CONTENT_MARGIN_V: int = 8
+const CONTENT_MARGIN_H: int = 24
+const CONTENT_MARGIN_V: int = 12
 const ICON_SIZE: int = 16
 const ICON_TEXT_GAP: int = 8
 

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://b2q05s1kirtcw" path="res://assets/sprites/9_grid_rounded_patch.png" id="2_patch"]
 
 [node name="ButtonTemplate" type="BaseButton"]
-custom_minimum_size = Vector2(192, 48)
+custom_minimum_size = Vector2(192, 64)
 size_flags_horizontal = 4
 script = ExtResource("1_script")
 patch_texture = ExtResource("2_patch")
@@ -34,10 +34,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
 
 [node name="Label" type="Label" parent="MarginContainer"]
 layout_mode = 2
@@ -48,3 +48,5 @@ theme_override_font_sizes/font_size = 12
 text = "Button"
 horizontal_alignment = 1
 vertical_alignment = 1
+clip_text = false
+text_overrun_behavior = 0

@@ -9,6 +9,15 @@ offset_right = 56.0
 offset_bottom = 80.0
 script = ExtResource("1_card_view")
 
+[node name="Shadow" type="ColorRect" parent="."]
+visible = false
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 54.0
+offset_bottom = 78.0
+mouse_filter = 2
+color = Color(0.04, 0.06, 0.05, 1)
+
 [node name="Visual" type="Control" parent="."]
 offset_right = 56.0
 offset_bottom = 80.0
@@ -22,12 +31,18 @@ texture_filter = 1
 expand_mode = 1
 stretch_mode = 5
 
+[node name="PlayableRim" type="Panel" parent="Visual"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
 [node name="DisabledOverlay" type="ColorRect" parent="Visual"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color(0.25, 0.25, 0.25, 0.5)
+color = Color(0.18, 0.18, 0.2, 0.55)
 
 [node name="SelectionHighlight" parent="Visual" instance=ExtResource("2_corner_brackets")]
 anchor_right = 1.0

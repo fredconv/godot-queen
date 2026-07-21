@@ -57,8 +57,11 @@ Détail hot seat UI + Lune soupçonnée : [reference.md](reference.md)
 | Fichier | Rôle |
 |---------|------|
 | `disconnect_state.gd` | Timer 30 s par siège |
+| `network_lobby_book.gd` | État lobby + peer↔siège (IDEA-00009) |
+| `network_match_disconnect_coordinator.gd` | Déco/reco/IA (IDEA-00009) |
+| `network_online_bridge.gd` | Registry online (IDEA-00009) |
 | `table_disconnect_flow.gd` | Messages HUD |
-| `network_service.gd` | Orchestration lobby vs in-match |
+| `network_service.gd` | Façade autoload (délègue aux modules ci-dessus) |
 
 **Autoload circulaire** : `NetworkMatchRelay` utilise `_network()` → voir Dépannage dans `reference.md`.
 

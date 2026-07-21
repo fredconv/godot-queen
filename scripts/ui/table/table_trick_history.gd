@@ -39,15 +39,10 @@ static func _create_overlay(ctx: TableContext) -> Control:
 	panel.offset_top = -260.0
 	panel.offset_right = 320.0
 	panel.offset_bottom = 260.0
-	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.129, 0.129, 0.157, 0.98)
-	panel_style.border_color = Color(0.831, 0.686, 0.216, 1.0)
-	panel_style.set_border_width_all(3)
-	panel_style.content_margin_left = 20.0
-	panel_style.content_margin_top = 16.0
-	panel_style.content_margin_right = 20.0
-	panel_style.content_margin_bottom = 16.0
-	panel.add_theme_stylebox_override("panel", panel_style)
+	UiStyleFactory.apply_pixel_panel(
+		panel,
+		UiStyleFactory.pixel_banner_panel_style(Vector4(20, 16, 20, 16), 3, 0.98)
+	)
 
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 12)

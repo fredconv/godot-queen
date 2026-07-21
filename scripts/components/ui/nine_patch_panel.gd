@@ -1,6 +1,6 @@
 class_name NinePatchPanel
 extends Control
-## Panneau 9-slice pour dialogs / overlays (voir dialog_template.tscn).
+## Panneau 9-slice pour dialogs / overlays (réf. archive `dialog_template.tscn`).
 
 @export var patch_texture: Texture2D = preload("res://assets/sprites/9_grid_Badge_patch.png")
 @export var panel_size: Vector2i = Vector2i(320, 200)

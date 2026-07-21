@@ -135,6 +135,20 @@ func _on_dismiss_finished() -> void:
 func _refresh_locale() -> void:
 	text = tr(TableKeys.TOP_MOON_SUSPICION)
 	add_theme_font_size_override("font_size", LocaleFonts.TOP_BAR_BUTTON_FONT_SIZE)
+	_fit_label_width()
+
+
+func _fit_label_width() -> void:
+	var font: Font = get_theme_font("font")
+	if font == null:
+		font = ThemeDB.fallback_font
+	var font_size: int = get_theme_font_size("font_size")
+	if font_size <= 0:
+		font_size = LocaleFonts.TOP_BAR_BUTTON_FONT_SIZE
+	var text_w: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+	var needed: int = NinePatchButton.snap_width_up(int(ceili(text_w)) + 36)
+	custom_minimum_size.x = float(maxi(needed, 210))
+	custom_minimum_size.y = 52.0
 
 
 func _apply_flat_button_states() -> void:

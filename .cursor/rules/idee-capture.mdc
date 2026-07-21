@@ -1,0 +1,43 @@
+---
+description: Capture d'idées Dame de Pique — INBOX projet (pas d'auto-implémentation)
+globs:
+alwaysApply: true
+---
+
+# Idée capture — Dame de Pique
+
+Complète la rule globale `idee-capture.mdc`.
+
+## Source of truth
+
+[`docs/00_INBOX/INBOX.md`](../../docs/00_INBOX/INBOX.md)
+
+Vues : [`KANBAN.md`](../../docs/00_INBOX/KANBAN.md) · [`BACKLOG_PRIORITY.md`](../../docs/00_INBOX/BACKLOG_PRIORITY.md)  
+Workflow : [`docs/WORKFLOW.md`](../../docs/WORKFLOW.md)  
+Audit qualité : [`docs/QUALITY-AUDIT.md`](../../docs/QUALITY-AUDIT.md)
+
+## Comportement
+
+1. Sur préfixe `idée:` / `suggestion:` / `feature:` / `amélioration:` / `brainstorming:` → **append** `IDEA-XXXX` dans INBOX (statut DOCUMENTED).
+2. Incrémenter **Next ID** dans l’en-tête INBOX.
+3. Régénérer KANBAN.
+4. **Ne pas coder** sauf `implémente:` ou validation explicite.
+5. Ne jamais modifier règles Hearts / IA / équilibrage via une idée polish sans OK.
+
+## Packs polish connus
+
+| Commande | IDEAs |
+|----------|-------|
+| `implémente: Pack A` | 00005, 00006 |
+| `implémente: Pack B` | 00007, 00008 |
+| `implémente: Pack A+B` | 00005–00008 |
+
+## Gate MCP — ne jamais clamer DONE sans preuve runtime
+
+Complète `docs/WORKFLOW.md` § Gate MCP + **Definition of Done (UI)**.
+
+1. `reload_project` après edit filesystem hors MCP
+2. Preuve editor (`CACHE_MODE_IGNORE` + `reload`) + preuve runtime (`play_scene` + `execute_game_script` sync)
+3. **QA visuelle** : screenshots MCP des états clés + inspection débordements / clipping / centrage (pas seulement « le nœud existe »)
+4. Ne pas se fier à `validate_script` seul sur `class_name`
+5. Packs : `implémente: Pack A` / `B` / `A+B`

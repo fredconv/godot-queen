@@ -140,6 +140,36 @@ func rpc_apply_moon_suspicion(event_dict: Dictionary) -> void:
 	await MoonSuspicionManager.apply_network_event(_table_ctx, event)
 
 
+func broadcast_reaction_from_host(seat_index: int, reaction_id: int) -> void:
+	if not _network().is_host():
+		return
+	for peer_id: int in multiplayer.get_peers():
+		rpc_apply_reaction.rpc_id(peer_id, seat_index, reaction_id)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_request_reaction(reaction_id: int) -> void:
+	if not _network().is_host():
+		return
+	var peer_id: int = multiplayer.get_remote_sender_id()
+	var seat_index: int = _network().get_seat_for_peer(peer_id)
+	if seat_index < 0 or _table_ctx == null:
+		return
+	if not ReactionManager.validate_server(_table_ctx, seat_index, reaction_id):
+		return
+	ReactionManager.apply_reaction(_table_ctx, seat_index, reaction_id)
+	broadcast_reaction_from_host(seat_index, reaction_id)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_apply_reaction(seat_index: int, reaction_id: int) -> void:
+	if _network().is_host():
+		return
+	if _table_ctx == null or not _table_ctx.is_active():
+		return
+	ReactionManager.apply_reaction(_table_ctx, seat_index, reaction_id)
+
+
 @rpc("authority", "call_remote", "reliable")
 func rpc_peer_disconnected(seat_index: int, display_name: String) -> void:
 	if _network().is_host():

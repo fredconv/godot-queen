@@ -24,9 +24,15 @@ Fichiers menus, table, sièges, overlay hot seat, TopMenuBar, splash / main_menu
    - Configuration / OptionButton → Recette D
    - Scores / stats → Recette E
    - Bouton Lune → Recette F
-4. Joindre au rapport : screenshot path + erreurs log (ou « aucune »)
+   - Réactions / emotes → Recette G
+4. **QA visuelle obligatoire** (DoD `docs/WORKFLOW.md`) :
+   - `get_game_screenshot` des états clés
+   - Ouvrir les PNG et chercher débordements, clipping, mauvais centrage, chevauchements
+   - Si géométrie testable : assert `get_global_rect` (enfant ⊆ parent)
+5. Joindre au rapport : screenshot path + checklist visuelle + erreurs log
 
-Sans MCP connecté : le dire explicitement ; ne pas inventer un playtest réussi.
+Sans MCP connecté : le dire explicitement ; ne pas inventer un playtest réussi.  
+Sans inspection visuelle des captures : **ne pas** déclarer DONE.
 
 ## Hot seat — non négociable
 

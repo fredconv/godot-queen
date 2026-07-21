@@ -16,6 +16,7 @@ var _ctx: TableContext
 var _confirm_action: ConfirmAction = ConfirmAction.NONE
 var _settings_screen: Control
 var _help_screen: Control
+var _context_shell: ContextShellHost
 
 @onready var _ui_layer: CanvasLayer = $UILayer
 @onready var _player_bottom_hand: Control = $HumanHandArea/PlayerBottomHand
@@ -30,6 +31,7 @@ var _help_screen: Control
 @onready var _hot_seat_overlay: HotSeatPrivacyOverlay = $HotSeatLayer/HotSeatPrivacyOverlay
 @onready var _moon_suspicion_button: MoonSuspicionActionButton = $UILayer/MoonSuspicionButton
 @onready var _trick_area: Control = $TrickArea
+@onready var _player_seats: Control = $PlayerSeats
 @onready var _background_color: ColorRect = $Background/ColorFill
 @onready var _background_texture: TextureRect = $Background/TextureFill
 @onready var _seats: Array[PlayerSeat] = [
@@ -47,9 +49,13 @@ var _help_screen: Control
 
 
 func _ready() -> void:
+	UiThemeCatalog.ensure_project_theme_enriched()
 	_ctx = _build_context()
 	TableFx.apply_table_theme(_ctx)
 	TableFx.setup(_ctx)
+	_ensure_table_vignette()
+	_ensure_context_shell()
+	_ensure_trick_slot_markers()
 	_top_menu_bar.menu_pressed.connect(_on_top_menu_bar_menu_pressed)
 	_top_menu_bar.scores_pressed.connect(_on_top_menu_bar_scores_pressed)
 	_top_menu_bar.tricks_pressed.connect(_on_top_menu_bar_tricks_pressed)
@@ -66,6 +72,86 @@ func _ready() -> void:
 	LocaleAware.bind(self, _on_locale_changed)
 	TableLocale.refresh_seat_names(_ctx)
 	call_deferred("_start_new_match")
+
+
+func _ensure_table_vignette() -> void:
+	if has_node("VignetteOverlay"):
+		return
+	var vignette := ColorRect.new()
+	vignette.name = "VignetteOverlay"
+	vignette.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vignette.z_index = 0
+	var shader: Shader = load("res://assets/shaders/ui_vignette.gdshader") as Shader
+	if shader != null:
+		var mat := ShaderMaterial.new()
+		mat.shader = shader
+		mat.set_shader_parameter("intensity", 0.28)
+		mat.set_shader_parameter("softness", 0.85)
+		vignette.material = mat
+	else:
+		vignette.color = UiPalette.VIGNETTE
+	add_child(vignette)
+	move_child(vignette, _background_texture.get_index() + 1)
+
+
+## Phase a Context Shell : hosts + insets ; bottom bar slot inactif jusqu’à phase d.
+func _ensure_context_shell() -> void:
+	_context_shell = get_node_or_null("ContextShellHost") as ContextShellHost
+	if _context_shell == null:
+		_context_shell = ContextShellHost.new()
+		_context_shell.name = "ContextShellHost"
+		_context_shell.z_index = 5
+		add_child(_context_shell)
+		## Au-dessus des régions de jeu, sous UILayer (CanvasLayer).
+		move_child(_context_shell, _animation_layer.get_index() + 1)
+	_context_shell.bottom_bar_slot_active = false
+	if not _context_shell.layout_applied.is_connected(_on_context_shell_layout_applied):
+		_context_shell.layout_applied.connect(_on_context_shell_layout_applied)
+	_context_shell.bind_play_regions([
+		_player_seats,
+		_trick_area,
+		_human_hand_area,
+		_animation_layer,
+	])
+
+
+func get_context_shell() -> ContextShellHost:
+	return _context_shell
+
+
+func _on_context_shell_layout_applied(insets: Vector4) -> void:
+	if _ctx == null:
+		return
+	ReactionManager.apply_shell_insets(_ctx, insets)
+	## Différé : laisser Godot appliquer les nouveaux offsets avant resync.
+	call_deferred("_sync_after_shell_layout")
+
+
+func _sync_after_shell_layout() -> void:
+	if _ctx == null or not is_inside_tree():
+		return
+	TableTrickDisplay.sync_card_positions(_ctx)
+	TableFx.refresh_lead_suit_indicator(_ctx)
+
+
+func _ensure_trick_slot_markers() -> void:
+	for slot: Control in _trick_slots:
+		if slot == null or slot.get_node_or_null("SlotMarker") != null:
+			continue
+		var marker := Panel.new()
+		marker.name = "SlotMarker"
+		marker.set_anchors_preset(Control.PRESET_FULL_RECT)
+		marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var style := StyleBoxFlat.new()
+		style.draw_center = true
+		style.bg_color = Color(0.02, 0.08, 0.04, 0.12)
+		style.border_color = Color(UiPalette.GOLD.r, UiPalette.GOLD.g, UiPalette.GOLD.b, 0.22)
+		style.set_border_width_all(1)
+		style.set_corner_radius_all(0)
+		marker.add_theme_stylebox_override("panel", style)
+		slot.add_child(marker)
+		slot.move_child(marker, 0)
 
 
 func _exit_tree() -> void:

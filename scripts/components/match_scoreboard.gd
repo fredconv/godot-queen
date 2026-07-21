@@ -15,6 +15,13 @@ var _last_cumulative_scores: Array = []
 
 func _ready() -> void:
 	LocaleAware.bind(self, _refresh_locale)
+	UiThemeCatalog.ensure_project_theme_enriched()
+	var panel: PanelContainer = get_node_or_null("Panel") as PanelContainer
+	if panel != null:
+		UiStyleFactory.apply_pixel_panel(panel, UiStyleFactory.pixel_banner_panel_style(Vector4(12, 10, 12, 10), 2, 0.94))
+		UiThemeCatalog.apply_variation(panel, UiThemeCatalog.V_SCORE_PANEL)
+	if _title_label != null:
+		UiThemeCatalog.apply_variation(_title_label, UiThemeCatalog.V_SECTION_TITLE)
 
 
 func update_display(hand_number: int, player_names: Array, cumulative_scores: Array) -> void:
@@ -46,6 +53,12 @@ func _render_display() -> void:
 
 	for entry in ranked:
 		var player_index: int = entry["index"]
+		if _entries.get_child_count() > 0:
+			var sep := ColorRect.new()
+			sep.custom_minimum_size = Vector2(0, 1)
+			sep.color = Color(UiPalette.GOLD.r, UiPalette.GOLD.g, UiPalette.GOLD.b, 0.25)
+			sep.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			_entries.add_child(sep)
 		var row := ScoreBarRow.new()
 		row.configure(
 			_last_player_names[player_index],

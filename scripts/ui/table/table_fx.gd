@@ -59,17 +59,10 @@ static func _setup_lead_suit_indicator(ctx: TableContext) -> void:
 	panel.visible = false
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.z_index = 50
-	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.05, 0.06, 0.08, 0.82)
-	panel_style.content_margin_left = 12.0
-	panel_style.content_margin_top = 6.0
-	panel_style.content_margin_right = 12.0
-	panel_style.content_margin_bottom = 6.0
-	panel_style.corner_radius_top_left = 4
-	panel_style.corner_radius_top_right = 4
-	panel_style.corner_radius_bottom_right = 4
-	panel_style.corner_radius_bottom_left = 4
-	panel.add_theme_stylebox_override("panel", panel_style)
+	UiStyleFactory.apply_pixel_panel(
+		panel,
+		UiStyleFactory.pixel_compact_panel_style(Vector4(12, 6, 12, 6))
+	)
 	ctx.lead_suit_indicator = Label.new()
 	ctx.lead_suit_indicator.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	ctx.lead_suit_indicator.add_theme_font_size_override("font_size", LocaleFonts.LEAD_SUIT_FONT_SIZE)

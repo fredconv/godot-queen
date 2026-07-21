@@ -57,6 +57,7 @@ func _refresh_locale() -> void:
 	_players_label.text = tr(MenuKeys.HOT_SEAT_PLAYERS)
 	_btn_start.set_button_text(tr(MenuKeys.HOT_SEAT_START))
 	_btn_back.set_button_text(tr(CommonKeys.BACK))
+	NinePatchButton.uniform_fit_group([_btn_start, _btn_back])
 	for seat_index in range(HeartsRules.PLAYER_COUNT):
 		_name_labels[seat_index].text = tr(MenuKeys.HOT_SEAT_PLAYER) % (seat_index + 1)
 

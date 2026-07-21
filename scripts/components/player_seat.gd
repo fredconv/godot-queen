@@ -73,8 +73,11 @@ enum SeatOrientation { TOP, BOTTOM, LEFT, RIGHT }
 
 @export var score: int = 0:
 	set(value):
+		var previous: int = score
 		score = value
 		_refresh_labels()
+		if previous != value:
+			_play_score_pop()
 
 @export var heart_penalty: int = 0:
 	set(value):
@@ -117,6 +120,8 @@ enum SeatOrientation { TOP, BOTTOM, LEFT, RIGHT }
 @onready var _avatar: Control = $InfoBox/AvatarPlaceholder/Avatar
 
 var _turn_pulse_tween: Tween
+var _score_pop_tween: Tween
+var _score_pop_enabled: bool = false
 
 
 func _ready() -> void:
@@ -131,6 +136,7 @@ func _ready() -> void:
 	_hand_back_row.resized.connect(_on_hand_back_container_resized)
 	_hand_back_column.resized.connect(_on_hand_back_container_resized)
 	resized.connect(_on_seat_resized)
+	_score_pop_enabled = true
 
 
 func _on_seat_resized() -> void:
@@ -215,6 +221,25 @@ func _refresh_labels() -> void:
 	_name_label.text = player_name
 	_score_label.text = GameCopy.seat_score_parens(score)
 	_heart_label.text = GameCopy.seat_hearts_count(heart_penalty)
+
+
+## Flash or discret sur le score (Pack C / IDEA-00016) — sobre, pas de clignotement.
+func _play_score_pop() -> void:
+	if not _score_pop_enabled or _score_label == null:
+		return
+	UiOffsetAnim.kill_tween(_score_pop_tween)
+	UiOffsetAnim.enable_on(_score_label)
+	_score_label.offset_transform_scale = Vector2.ONE
+	_score_label.add_theme_color_override("font_color", UiPalette.GOLD_BRIGHT)
+	_score_pop_tween = create_tween()
+	_score_pop_tween.tween_property(_score_label, "offset_transform_scale", Vector2(1.12, 1.12), 0.1) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_score_pop_tween.tween_property(_score_label, "offset_transform_scale", Vector2.ONE, 0.16) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	_score_pop_tween.tween_callback(func() -> void:
+		if is_instance_valid(_score_label):
+			_score_label.remove_theme_color_override("font_color")
+	)
 
 ## Place la pile de cartes contre le bord de la table (haut/bas/gauche/droite
 ## selon l'orientation) et le bloc avatar/nom/score entre cette pile et le

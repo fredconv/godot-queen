@@ -53,11 +53,101 @@ func _ready() -> void:
 	_multiplayer_lobby_screen.closed.connect(_on_overlay_closed)
 	LocaleAware.bind(self, _refresh_locale)
 	PlayerProfileService.profile_changed.connect(_refresh_player_label)
+	UiThemeCatalog.ensure_project_theme_enriched()
+	_ensure_button_stack_panel()
+	_ensure_vignette()
 	_refresh_locale()
 	_setup_intro_state()
 	_apply_menu_button_styles()
 	AudioService.enable_music_for_home_screen()
 	call_deferred("_after_ready")
+
+
+func _ensure_button_stack_panel() -> void:
+	var column: VBoxContainer = $CenterContainer/MenuColumn as VBoxContainer
+	if column == null:
+		return
+	var existing: PanelContainer = column.get_node_or_null("ButtonStackPanel") as PanelContainer
+	if existing != null:
+		UiStyleFactory.apply_pixel_panel(existing, UiStyleFactory.menu_button_stack_panel_style())
+		return
+	var stack: VBoxContainer = column.get_node_or_null("ButtonStack") as VBoxContainer
+	if stack == null:
+		return
+	var index: int = stack.get_index()
+	var panel := PanelContainer.new()
+	panel.name = "ButtonStackPanel"
+	UiStyleFactory.apply_pixel_panel(panel, UiStyleFactory.menu_button_stack_panel_style())
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_top", 12)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_bottom", 12)
+	var inner := VBoxContainer.new()
+	inner.add_theme_constant_override("separation", 10)
+	var line_top := _make_gold_rule()
+	var line_bottom := _make_gold_rule()
+	column.remove_child(stack)
+	inner.add_child(line_top)
+	inner.add_child(stack)
+	inner.add_child(line_bottom)
+	margin.add_child(inner)
+	panel.add_child(margin)
+	column.add_child(panel)
+	column.move_child(panel, index)
+
+
+func _make_gold_rule() -> ColorRect:
+	var rule := ColorRect.new()
+	rule.custom_minimum_size = Vector2(0, 2)
+	rule.color = Color(UiPalette.GOLD.r, UiPalette.GOLD.g, UiPalette.GOLD.b, 0.55)
+	rule.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return rule
+
+
+func _ensure_vignette() -> void:
+	if has_node("VignetteOverlay"):
+		return
+	var vignette := ColorRect.new()
+	vignette.name = "VignetteOverlay"
+	vignette.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vignette.color = Color(1, 1, 1, 1)
+	var shader: Shader = load("res://assets/shaders/ui_vignette.gdshader") as Shader
+	if shader != null:
+		var mat := ShaderMaterial.new()
+		mat.shader = shader
+		mat.set_shader_parameter("intensity", 0.52)
+		mat.set_shader_parameter("softness", 0.68)
+		vignette.material = mat
+	else:
+		vignette.color = UiPalette.VIGNETTE
+	## Au-dessus du fond, sous le menu (avant CenterContainer).
+	add_child(vignette)
+	move_child(vignette, _dark_overlay.get_index() + 1)
+
+
+func _apply_menu_button_styles() -> void:
+	for button: BaseButton in _menu_buttons:
+		var menu_button := button as NinePatchButton
+		if menu_button != null:
+			menu_button.ensure_opaque_background(MENU_BUTTON_FILL, UiPalette.GOLD, 0)
+	## Premier bouton = accent primaire (bordure or plus marquée au repos).
+	if _btn_new_game != null:
+		_btn_new_game.ensure_opaque_background(
+			Color(0.08, 0.18, 0.1, 1.0),
+			UiPalette.GOLD_BRIGHT,
+			0
+		)
+	## Quit = danger.
+	if _btn_quit != null:
+		_btn_quit.ensure_opaque_background(
+			Color(0.2, 0.07, 0.07, 1.0),
+			UiPalette.DANGER_BORDER,
+			0
+		)
+		_btn_quit.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
 
 func _setup_intro_state() -> void:
@@ -69,13 +159,6 @@ func _setup_intro_state() -> void:
 	_set_menu_interactive(false)
 
 
-func _apply_menu_button_styles() -> void:
-	for button: BaseButton in _menu_buttons:
-		var menu_button := button as NinePatchButton
-		if menu_button != null:
-			menu_button.ensure_opaque_background(MENU_BUTTON_FILL)
-
-
 func _refresh_locale() -> void:
 	_title_label.text = tr(MenuKeys.TITLE)
 	_btn_new_game.set_button_text(tr(MenuKeys.NEW_GAME))
@@ -84,6 +167,7 @@ func _refresh_locale() -> void:
 	_btn_settings.set_button_text(tr(MenuKeys.SETTINGS))
 	_btn_credits.set_button_text(tr(MenuKeys.CREDITS))
 	_btn_quit.set_button_text(tr(MenuKeys.QUIT))
+	NinePatchButton.uniform_fit_group(_menu_buttons)
 	_refresh_player_label()
 
 

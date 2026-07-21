@@ -1,18 +1,15 @@
 # STATUS — Dame de Pique
 
-**Derniere mise a jour:** 2026-07-17 (merged `feat/simulation-batch` → `main` ; A1/A4 différés)
+**Derniere mise a jour:** 2026-07-21 (Context Shell phase a — DESKTOP)
 
 | Element | Statut |
 |---------|--------|
 | Emplacement CreativeOS | OK — `projects/Games/DameDePique` |
-| Branche active | `main` (pre-1.0 S0–S4 merged) |
-| `project.godot` / main scene | OK — `bootstrap.tscn` |
-| Godot | 4.7.1-stable |
-| Addon `gdUnit4` | OK (activé) |
-| Addon `godot_mcp` | OK (activé) — MCP Pro connecté |
-| Tests GdUnit | Base solide (unit + intégration) |
-| Solo / Hot seat / LAN | Jouable |
-| Audit pré-1.0 | `docs/AUDIT-PRE-1.0.md` — S0 ✅ S1 ✅ S3 ✅ S4 ✅ (A1/A4 différés) |
+| Branche active | `main` |
+| Focus courant | **Context Shell** 00023–00025 — phase **a** OK ; suite b→h |
+| Réactions / polish UI | 00022 / 00021 DONE |
+| Tests GdUnit | Layout shell 9/9 + suite existante |
+| Handoff | `handoff.md` à jour 2026-07-21 |
 
 ## Important — chemin Godot
 

@@ -9,5 +9,5 @@ const PLAIN_PATCH: String = "res://assets/sprites/9_grid_patch.png"
 const PATCH_TEXTURE_SIZE: int = 15
 const PATCH_MARGIN: int = 5
 
-const BUTTON_DEFAULT_SIZE: Vector2i = Vector2i(192, 48)
+const BUTTON_DEFAULT_SIZE: Vector2i = Vector2i(192, 64)
 const DIALOG_DEFAULT_SIZE: Vector2i = Vector2i(320, 200)

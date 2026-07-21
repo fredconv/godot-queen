@@ -32,8 +32,19 @@
 ## Priorite immediate
 
 - [x] Merge `feat/simulation-batch` → `main` (2026-07-17, FF + push)
+- [x] 2026-07-21 — Audit qualité + INBOX/backlog (`docs/QUALITY-AUDIT.md`, `docs/00_INBOX/`)
+- [x] Hygiene SAFE — skill NinePatch, dialog_template orphelin, gate `_process` hot-seat
+- [x] **Pack A+B** — modales animées + boutons/top bar pixel (IDEA-00005…00008) — MCP OK
+- [x] **IDEA-00009** — factoriser `network_service` (LobbyBook / Disconnect / OnlineBridge) — MCP + GdUnit OK
+- [x] **Pack C** — banners StyleBox + overlays pixel + score pop (00011/12/16) — MCP + GdUnit OK
+- [x] **P0 IDEA-00021** — Polish visuel natif (L1–L9 + pass menus visibles) — DONE
+- [x] **IDEA-00010** — découpe `multiplayer_lobby_screen` (sessions / invite / public IP) — DONE
+- [x] **IDEA-00022** — Réactions table — DONE
+- [x] **Context Shell phase a** — layout hosts + insets + dock pli — DONE (2026-07-21)
+- [ ] **Context Shell** phases b→h (TogglePanel, bottom bar, Focus, MCP doc)
+- [ ] Capturer living doc Focus Mode / Table seule (brief validé)
+- [ ] Optionnel : IDEA-00014 kill tweens carte si bug observé
 - [ ] ROADMAP étape 8 — icône store, mobile/safe area (A4), polish audio restant
-- [ ] Post-1.0 : A1 factorisation `network_service` / lobby / `player_seat`
 
 Note : S2 (I3) a été absorbé dans S1.
 

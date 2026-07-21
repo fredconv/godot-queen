@@ -155,30 +155,48 @@ Button
             └── Label
 ```
 
-Implémentation actuelle : `scenes/components/ui/pixel_button.tscn` + `scripts/components/ui/pixel_button.gd` (`class_name PixelButton`).
+### Pipeline **vivant** (menus, dialogs, lobbies)
 
-Constantes : `scripts/core/ui/ui_button_layout.gd` (`UiButtonLayout`).
+| Élément | Chemin |
+|---------|--------|
+| Scène | `scenes/menus/button_template.tscn` |
+| Script | `scripts/components/ui/nine_patch_button.gd` (`class_name NinePatchButton`) |
+| Patch | `assets/sprites/9_grid_rounded_patch.png` (hover = modulate, pas texture dédiée) |
 
-Textures NinePatch 32×32 : `assets/sprites/ui/ninepatch/btn_wood_32*.png` (marges patch = 8 px).
+### Legacy **PixelButton** (ne plus utiliser pour nouveaux écrans)
+
+| Élément | Chemin |
+|---------|--------|
+| Script | `scripts/components/ui/pixel_button.gd` (`class_name PixelButton`) |
+| Scène | **archivée** → `assets/_archive/scenes/` (`pixel_button.tscn`) |
+| Textures wood 32×32 | `assets/sprites/ui/ninepatch/btn_wood_32*.png` |
+
+Constantes layout : `scripts/core/ui/ui_button_layout.gd` (`UiButtonLayout`).
+
+HUD table (`top_menu_bar`) : boutons **Theme** `pixel_theme.tres` (StyleBoxFlat) — pas NinePatch 48 px (hauteur barre).
 
 ## Tailles standard (ce projet)
 
 | Preset | Taille | Usage |
 |--------|--------|-------|
-| `MENU` | 192×48 | Menu principal, libellés FR longs |
-| `COMPACT` | 160×48 | Actions secondaires |
+| `MENU` | 192×64 | Menu principal — marges 24×12, air hors bordure or |
+| `COMPACT` | 160×64 | Actions secondaires |
 
 Grille : **8 px** (`UiButtonLayout.GRID`).
 
 ## Workflow agent
 
-1. **Réutiliser** `pixel_button.tscn` — ne pas recréer un bouton ad hoc.
+1. **Réutiliser** `button_template.tscn` (`NinePatchButton`) — ne pas recréer un bouton ad hoc.
 2. Instancier dans la scène ; connecter le signal `pressed`.
 3. Texte via `set_button_text()` (i18n) — jamais dans le PNG.
-4. Icône via `set_button_icon(AtlasTexture)` — region fixe, `icon_max` 16 px.
-5. Nouveau skin NinePatch : exporter 32×32 (coins 8 px), 3 états (normal/hover/pressed), mettre à jour `UiButtonLayout` paths.
+   Après refresh locale d’un **groupe** de boutons : `NinePatchButton.uniform_fit_group([...])`
+   (élargit sur grille 8 pour que le label le plus long ne dépasse pas).
+   Overlay centré : `sync_centered_panel_half_width(panel, buttons)`.
+4. Icône : HBox + TextureRect dans le template si besoin — jamais dans le fond NinePatch.
+5. Nouveau skin NinePatch : préférer patch existant ; **pas** d’asset externe sans validation. Hover/pressed via modulate + `UiOffsetAnim` (scale ≤ 1.05).
 6. Vérifier `project.godot` : `default_texture_filter=0`, snap 2D activé.
 7. Documenter dans `ui/Components.md` si nouveau preset ou variante.
+8. **Ne pas** réintroduire `pixel_button.tscn` hors archive sans décision explicite (IDEA-00018).
 
 ## Anti-patterns (ce projet)
 

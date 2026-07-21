@@ -10,6 +10,7 @@ MN_SETTINGS_TITLE,Configuration,Settings,Einstellungen,Configuración,Configura�
 MN_SETTINGS_SFX_VOLUME,Volume SFX,SFX volume,SFX-Lautstärke,Volumen SFX,Volume SFX,音效音量
 MN_SETTINGS_MUSIC_VOLUME,Volume musique,Music volume,Musiklautstärke,Volumen música,Volume música,音乐音量
 MN_SETTINGS_MUSIC_ENABLED,Musique activée,Music enabled,Musik aktiviert,Música activada,Música ativada,启用音乐
+MN_SETTINGS_EMOTES_ENABLED,Réactions activées,Reactions enabled,Reaktionen aktiviert,Reacciones activadas,Reações ativadas,启用表情反应
 MN_SETTINGS_TABLE_THEME,Thème table,Table theme,Tischthema,Tema de mesa,Tema da mesa,桌面主题
 MN_SETTINGS_LANGUAGE,Langue,Language,Sprache,Idioma,Idioma,语言
 MN_SETTINGS_LANG_FR,Français,French,Französisch,Francés,Francês,法语
@@ -37,6 +38,13 @@ MN_GAME_MODE_TITLE,Mode de jeu,Game mode,Spielmodus,Modo de juego,Modo de jogo,�
 MN_GAME_MODE_SOLO,Solo,Solo,Solo,Solo,Solo,单人
 MN_GAME_MODE_HOT_SEAT,Partage d'appareil,Hot seat,Gerät teilen,Dispositivo compartido,Compartilhar aparelho,同机多人
 MN_GAME_MODE_ONLINE,En ligne,Online,Online,En línea,Online,在线
+MN_GAME_MODE_SOLO_DESC,Contre 3 IA,Vs 3 AI,Gegen 3 KIs,Contra 3 IA,Contra 3 IAs,对战 3 个 AI
+MN_GAME_MODE_HOT_SEAT_DESC,Plusieurs joueurs sur cet appareil,Several players on this device,Mehrere Spieler auf diesem Gerät,Varios jugadores en este dispositivo,Vários jogadores neste aparelho,多人对战同机
+MN_GAME_MODE_ONLINE_DESC,Réseau local (LAN),Local network (LAN),Lokales Netzwerk (LAN),Red local (LAN),Rede local (LAN),局域网 (LAN)
+MN_SETTINGS_SECTION_AUDIO,Audio,Audio,Audio,Audio,Áudio,音频
+MN_SETTINGS_SECTION_DISPLAY,Affichage,Display,Anzeige,Pantalla,Exibição,显示
+MN_SETTINGS_SECTION_PROFILE,Profil,Profile,Profil,Perfil,Perfil,个人资料
+MN_SETTINGS_SECTION_DATA,Données et statistiques,Data & statistics,Daten & Statistik,Datos y estadísticas,Dados e estatísticas,数据与统计
 MN_HOT_SEAT_TITLE,Partage d'appareil,Hot seat,Gerät teilen,Dispositivo compartido,Compartilhar aparelho,同机多人
 MN_HOT_SEAT_PLAYERS,Nombre de joueurs,Number of players,Spieleranzahl,Número de jugadores,Número de jogadores,玩家数量
 MN_HOT_SEAT_PLAYER,Joueur %d,Player %d,Spieler %d,Jugador %d,Jogador %d,玩家 %d

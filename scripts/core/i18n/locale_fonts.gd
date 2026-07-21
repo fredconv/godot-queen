@@ -31,6 +31,7 @@ static func apply_for_locale(locale: String) -> void:
 	var theme: Theme = load(PIXEL_THEME_PATH) as Theme
 	if theme != null:
 		theme.default_font = ui_font
+		UiThemeCatalog.enrich_theme(theme)
 
 
 static func _build_ui_font(ui_font_file: FontFile, locale: String) -> Font:

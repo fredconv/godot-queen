@@ -49,9 +49,10 @@ Priorité : **toujours préférer un skill projet** s'il existe pour Dame de piq
 |-------|---------|------------------|
 | **dame-de-pique-ai-gameplay** | [SKILL.md](.cursor/skills/dame-de-pique-ai-gameplay/SKILL.md) | IA adverses, Lune, suspicion, personnalités, confiance, messages table, `AdaptiveAiStrategy`, simulation équilibre |
 | **dame-de-pique-multiplayer** | [SKILL.md](.cursor/skills/dame-de-pique-multiplayer/SKILL.md) | Modes solo/hot seat/LAN, host autoritaire, snapshots, `SeatSetup`, phases A–G |
-| **godot-pixel-ui-button** | [SKILL.md](.cursor/skills/godot-pixel-ui-button/SKILL.md) | Boutons NinePatch, menus, HUD pixel art, `button_template.tscn` |
+| **godot-pixel-ui-button** | [SKILL.md](.cursor/skills/godot-pixel-ui-button/SKILL.md) | Boutons NinePatch **vivants** = `button_template.tscn` / `NinePatchButton` (pas `pixel_button` archivé) |
 | **godot-performance-dame-de-pique** | [SKILL.md](.cursor/skills/godot-performance-dame-de-pique/SKILL.md) | Perf 2D cartes/UI, preload, profilage (pas physique 3D) |
 | **context7-mcp** | [SKILL.md](.cursor/skills/context7-mcp/SKILL.md) | API Godot 4.7 / GDScript — doc à jour via MCP Context7 |
+| **dame-de-pique-mcp-playtest** | [SKILL.md](.cursor/skills/dame-de-pique-mcp-playtest/SKILL.md) | Playtests MCP + **QA visuelle** (DoD UI) avant DONE |
 
 ---
 
@@ -59,6 +60,7 @@ Priorité : **toujours préférer un skill projet** s'il existe pour Dame de piq
 
 | Fonctionnalité | Skills / docs |
 |----------------|---------------|
+| Idées / polish / backlog | `docs/00_INBOX/INBOX.md` + `docs/WORKFLOW.md` + rule `idee-capture.mdc` — audit : `docs/QUALITY-AUDIT.md` |
 | IA, chasse Lune, contre-Lune, agressivité | `dame-de-pique-ai-gameplay` + règle `ai-gameplay.mdc` + ADR-023 dans `docs/DECISIONS.md` |
 | Messages « devient agressif » / « pense que… vise la Lune » | `dame-de-pique-ai-gameplay` → section Messages |
 | Fin de manche / fin de partie (dialogs) | `godot-pixel-ui-button` + `localization` (perso) + `dialogs.csv` |
@@ -123,6 +125,7 @@ Liste complète GodotPrompter : `~/.cursor/skills/` (60+ skills).
 |---------|--------|
 | [godot.mdc](.cursor/rules/godot.mdc) | **Toujours** — architecture, stack, conventions repo |
 | [context7.mdc](.cursor/rules/context7.mdc) | Doc Godot via MCP |
+| [idee-capture.mdc](.cursor/rules/idee-capture.mdc) | Capture idées → INBOX ; packs polish A/B |
 | [ai-gameplay.mdc](.cursor/rules/ai-gameplay.mdc) | Fichiers `scripts/ai/**`, tests Lune/IA, simulation |
 | [multiplayer.mdc](.cursor/rules/multiplayer.mdc) | Fichiers `scripts/network/**`, hot seat, lobby, docs MULTIPLAYER |
 

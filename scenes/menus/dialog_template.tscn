@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://c2jd4pgxeceil"]
+[gd_scene format=3 uid="uid://dtywq1juww355"]
 
 [ext_resource type="Script" uid="uid://cjo0e1aqebv8l" path="res://scripts/components/ui/nine_patch_panel.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://b1liq0iqhnvwx" path="res://assets/sprites/9_grid_Badge_patch.png" id="2_patch"]

@@ -179,4 +179,105 @@ Appliquer à tout helper `_discard_banner` (ex. `table_ai_announcement.gd`).
 
 ---
 
-*Dernière mise à jour : 2026-07-17 — pre-1.0 S0–S4 merge `main`, DOC_OK (sim stats, MCP unused, StatsStore preload, NinePatch).*
+## MCP validation — disk ≠ editor cache ; `validate_script` ≠ preuve
+
+**Symptôme** : agent annonce « fix validé » alors que Godot joue encore l’ancien script ; ou `validate_script` échoue avec `Class "X" hides a global script class`.
+
+**Cause** :
+1. Édition hors MCP (Write/StrReplace Cursor) → filesystem à jour, cache éditeur stale.
+2. `validate_script` recompile une copie temporaire qui **collisionne** avec le `class_name` déjà enregistré → faux négatif.
+
+**Fix / gate obligatoire** (voir `docs/WORKFLOW.md` § Gate MCP) :
+1. `reload_project` après edit disque
+2. `ResourceLoader.load(..., CACHE_MODE_IGNORE)` + `script.reload() == OK` + assert sur le source
+3. `play_scene` + `execute_game_script` **synchrone** (pas d’`await` — crash MCP)
+4. Preuve runtime explicite (ex. `is_processing()` false→true→false)
+5. `get_editor_errors` / `stop_scene`
+
+**Exemple validé 2026-07-21** : `HotSeatPrivacyOverlay` gate `_process` — runtime :
+`after_ready_processing=false` → `after_show=true` → `after_close=false`.
+
+**Vigilance** : ne jamais écrire « DONE / validé » dans INBOX ou au user sans cette preuve MCP.
+
+---
+
+## Shader `.gdshader` — commentaire `##` invalide
+
+**Symptôme** : `Tokenizer: Unknown character #35: '#'` + `Shader compilation failed` au chargement (ex. vignette menu).
+
+**Cause** : le langage shader Godot accepte `//` et `/* */`, **pas** les commentaires GDScript `##` / `#`.
+
+**Fix** : commentaires `//` uniquement dans `assets/shaders/*.gdshader`.
+
+**Fichiers** : `assets/shaders/ui_vignette.gdshader` (IDEA-00021 L9)
+
+---
+
+## Cartes — ombre ColorRect « step » sur la carte éclairée
+
+**Symptôme** : dans l’éventail, dégradé en marches grises qui « dépasse » sur la carte jouable (blanche), surtout sous les cartes grisées devant.
+
+**Cause** : chaque `CardView` avait un `ColorRect` ombre semi-opaque (α≈0,35) dessiné **avant** la texture mais **par-dessus** les cartes derrière (ordre z de l’éventail). Empilement d’alpha + filtre Nearest = bandes.
+
+**Fix** : pas d’ombre au repos en main (`resting_drop_shadow = false`) ; ombre soft seulement au survol/sélection ; pli isolé = ombre repos légère (`set_resting_drop_shadow(true)`).
+
+**Fichiers** : `scripts/components/card_view.gd`, `scenes/components/card_view.tscn`, `table_play_flow.gd`
+
+---
+
+## Réactions — bulle invisible si enfant de l’avatar
+
+**Symptôme** : `ReactionBubble` spawn (chemin valide, `visible`, alpha 1) mais absente des screenshots MCP / peu lisible.
+
+**Cause** : parenté sous `PlayerSeats/.../Avatar` → dessinée **sous** `HumanHandArea` / overlays (ordre du tree). Petite taille (48 px) facile à rater.
+
+**Fix** : parenter sur `ctx.animation_layer` (comme bannières IA) ; position via centre avatar → coords locales du layer ; taille ~56×64.
+
+**Fichiers** : `scripts/ui/table/reaction_manager.gd`, `scripts/reactions/reaction_bubble.gd`  
+**Preuve** : `.mcp_audit/reactions_09_normal_above_avatar.png`
+
+---
+
+## MCP / DoD — existence ≠ qualité visuelle (palette réactions)
+
+**Symptôme** : feature marquée DONE (picker + bulle MCP) alors que les 4 icônes débordent / sont mal centrées dans la palette.
+
+**Cause workflow** :
+1. Gate MCP vérifiait présence runtime + screenshot **plein écran** sans checklist pixel (débordement, centrage, clipping).
+2. Layout : `PRESET_CENTER` + `position` fixe + `content_margin` StyleBox (8 px) sur cellules 40×40 → icône 28 px hors zone utile.
+3. Description auto d’image / focus « bulle visible » ont masqué le défaut palette.
+
+**Fix code** : `CenterContainer` + `clip_contents` + marges StyleBox 0 + assert `assert_icons_fit_cells()`.
+
+**Fix process** : DoD visuelle obligatoire dans `docs/WORKFLOW.md` ; Recette G + checklist dans skill `dame-de-pique-mcp-playtest` ; rule `dame-de-pique-mcp-loop`.
+
+**Vigilance** : screenshot ≠ Done ; lire le PNG + assert géométrie quand le layout est critique.  
+**Complément** : zoomer la zone touchée (crop) — une palette centrée peut **sortir du viewport** à droite (icônes « coupées ») sans que `encloses(cell)` échoue.
+
+---
+
+## Context Shell — ne pas nommer `focus_mode` sur un Control
+
+**Symptôme** : parse error au play de la table — `Member "focus_mode" redefined (original in native class 'Control')` + signature `set_focus_mode` incompatible.
+
+**Cause** : propriété produit « mode Focus » (chrome réduit) homonyme de `Control.focus_mode` (navigation clavier).
+
+**Fix** : renommer en `shell_focus` / `set_shell_focus` / `shell_focus_changed` sur `ContextShellHost`.
+
+**Vigilance** : avant tout `@export` / setter sur un `Control`, vérifier collision avec l’API native (focus, size, scale, visible, etc.).
+
+---
+
+## Context Shell — insets asymétriques écrasent TrickArea centré
+
+**Symptôme** : à l’ouverture sidebar, emplacements de pli se chevauchent / zone de pli illisible.
+
+**Cause** : `TrickArea` ancré `0.5/0.5` avec offsets ±165 ; appliquer `offset_right -= sidebar_w` sans toucher `offset_left` réduit la largeur (330 → 50 px).
+
+**Fix** : `ContextShellLayout.apply_insets_to_offsets` — pour ancres égales au centre, décaler les deux offsets de `(left_inset - right_inset) / 2` (taille conservée, recentrage dans la zone de jeu).
+
+**Vigilance** : ne pas traiter tous les play regions comme full-rect ; tester MCP ouvert/fermé (taille TrickArea + overlap vs play_right). Cartes du pli = enfants des slots après atterrissage (pas seulement `global_position` sur `AnimationLayer`).
+
+---
+
+*Dernière mise à jour : 2026-07-21 — dock cartes pli dans slots.*

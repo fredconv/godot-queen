@@ -118,14 +118,44 @@ Assert : pas de boutons MUSIQUE / SUIVANT visibles (I2 — audio dans Configurat
 
 **Pass si :** pas de panneau « LUNE SOUPÇONNÉE » dès le premier pli.
 
+## Recette G — Réactions / palette (IDEA-00022)
+
+1. `play_scene` `res://scenes/table/table.tscn`
+2. Attendre `ReactionPicker` ; clic toggle (bas-droite)
+3. Screenshot palette ouverte → `res://.mcp_audit/reactions_palette.png`
+4. **QA visuelle** (ouvrir le PNG **et** un crop zoomé de la zone) :
+   - 4 icônes centrées dans leurs cellules
+   - aucun débordement hors panel / hors cellule / **hors viewport**
+   - bordures or intactes ; marges lisibles
+5. Assert géométrie (sync, après ≥1 frame) : `picker.assert_icons_fit_cells() == true` + `viewport.encloses(palette_rect)`
+6. Sélectionner une réaction → bulle visible près du siège humain (`AnimationLayer`)
+7. Screenshot bulle → `res://.mcp_audit/reactions_bubble.png`
+8. Vérifier cooldown (overlay sur toggle)
+
+**Pass si :** palette production-ready + bulle lisible + assert géométrie OK.
+
+## QA visuelle (DoD) — avant tout « DONE » UI
+
+Voir `docs/WORKFLOW.md` § Definition of Done (UI).
+
+Procédure minimale :
+
+1. Capturer les **états clés** du composant (fermé / ouvert / disabled / cooldown…)
+2. **Lire** chaque PNG (Read tool) — chercher débordements, clipping, mauvais centrage, chevauchements
+3. Si layout grid/boutons : assert `get_global_rect` enfant ⊆ parent
+4. Corriger immédiatement tout défaut ; rejouer ; ne pas marquer DONE sur « nœud présent »
+
+**Incident 2026-07-21** : palette réactions validée MCP (existence + bulle) mais icônes débordantes non inspectées pixel-level → DoD visuelle rendue obligatoire.
+
 ## Rapport obligatoire
 
 ```
-MCP Playtest — [A splash | B hot-seat | C bar | D settings | E scores | F moon]
+MCP Playtest — [A splash | B hot-seat | C bar | D settings | E scores | F moon | G reactions]
 - project_path: …
 - branch attendue: main
 - connected: oui/non
 - résultats: PASS/FAIL par assert
+- visual_qa: PASS/FAIL + défauts notés
 - screenshots: chemins res://.mcp_audit/…
 - errors: extrait log
 - next: …
@@ -136,7 +166,8 @@ MCP Playtest — [A splash | B hot-seat | C bar | D settings | E scores | F moon
 - Un seul runtime : pas de host+client LAN simultanés via MCP
 - Règles Hearts / scoring → GdUnit (`tests/unit`), pas MCP
 - Ne pas committer `.mcp_audit/*.png` sauf demande explicite
+- Description auto d’image ≠ substitut à l’inspection humaine agent (Read PNG + assert géométrie)
 
 ## Après fix UI/table
 
-Appliquer la rule `dame-de-pique-mcp-loop` : rejouer la recette touchée avant de déclarer OK.
+Appliquer la rule `dame-de-pique-mcp-loop` : rejouer la recette touchée + QA visuelle avant de déclarer OK.

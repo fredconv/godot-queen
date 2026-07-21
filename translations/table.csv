@@ -161,6 +161,11 @@ TB_HOT_SEAT_PASS_TITLE,Passez l'appareil à %s,Pass the device to %s,Gerät an %
 TB_HOT_SEAT_PASS_HINT,Maintenez ESPACE pendant 1,5 seconde pour continuer.,Hold SPACE for 1.5 seconds to continue.,Leertaste 1,5 Sekunden gedrückt halten.,Mantén ESPACIO 1,5 segundos para continuar.,Mantenha ESPAÇO por 1,5 segundos para continuar.,按住空格 1.5 秒以继续。
 TB_HOT_SEAT_HOLD_PROGRESS,Maintenez ESPACE… %d %%,Hold SPACE… %d %%,Leertaste halten… %d %%,Mantén ESPACIO… %d %%,Mantenha ESPAÇO… %d %%,按住空格… %d %%
 TB_TOP_MOON_SUSPICION,LUNE SOUPÇONNÉE,SUSPECT MOON,VERDÄCHTIGE LUNE,LUNA SOSPECHADA,LUA SUSPEITA,怀疑冲月
+TB_REACTION_TOOLTIP,Réactions,Reactions,Reaktionen,Reacciones,Reações,表情反应
+TB_REACTION_SMILE,Amical,Friendly,Freundlich,Amistoso,Amigável,友好
+TB_REACTION_TAUNT,Nargueur,Taunt,Spott,Provocación,Provocação,嘲讽
+TB_REACTION_SCREAM,Cri,Panic,Panik,Pánico,Pânico,惊叫
+TB_REACTION_SUSPICIOUS,Suspicieux,Suspicious,Misstrauisch,Suspicaz,Suspeito,怀疑
 TB_MOON_SUSPICION_PICKER_TITLE,Qui soupçonnez-vous de tenter la Lune ?,Who do you suspect of shooting the moon?,Wer versucht deiner Meinung nach die Lune?,¿A quién sospechas de intentar la Luna?,Quem você suspeita de tentar a Lua?,你怀疑谁在冲月？
 TB_MOON_SUSPICION_PICKER_CANCEL,Annuler,Cancel,Abbrechen,Cancelar,Cancelar,取消
 TB_MOON_SUSPICION_ALERT,%s soupçonne %s de tenter la Lune !,%s suspects %s of shooting the moon!,%s verdächtigt %s eine Lune zu versuchen!,%s sospecha que %s intenta la Luna!,%s suspeita que %s está tentando a Lua!,%s 怀疑 %s 在冲月！
