@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/components/match_scoreboard.gd" id="1_scoreboard"]
+[ext_resource type="Theme" path="res://resources/themes/royal_salon_theme.tres" id="2_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.129, 0.129, 0.157, 0.88)
@@ -19,23 +20,32 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [node name="MatchScoreboard" type="Control"]
-offset_right = 248.0
-offset_bottom = 148.0
+offset_right = 260.0
+offset_bottom = 160.0
 mouse_filter = 2
 script = ExtResource("1_scoreboard")
+theme = ExtResource("2_theme")
 
 [node name="Panel" type="PanelContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+theme_type_variation = &"ScorePanel"
 
-[node name="Margin" type="VBoxContainer" parent="Panel"]
-theme_override_constants/separation = 4
+[node name="Margin" type="MarginContainer" parent="Panel"]
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
 
-[node name="TitleLabel" type="Label" parent="Panel/Margin"]
+[node name="Content" type="VBoxContainer" parent="Panel/Margin"]
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/Content"]
 theme_override_colors/font_color = Color(0.831, 0.686, 0.216, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 7
+horizontal_alignment = 1
+clip_text = true
 text = "Partie — manche 1 / 100 pts"
 
-[node name="Entries" type="VBoxContainer" parent="Panel/Margin"]
-theme_override_constants/separation = 5
+[node name="Entries" type="VBoxContainer" parent="Panel/Margin/Content"]
+theme_override_constants/separation = 7

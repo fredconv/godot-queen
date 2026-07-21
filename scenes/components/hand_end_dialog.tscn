@@ -1,8 +1,21 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/components/hand_end_dialog.gd" id="1_hand_end"]
 [ext_resource type="PackedScene" path="res://scenes/components/player_avatar.tscn" id="2_avatar"]
 [ext_resource type="PackedScene" uid="uid://bns58tswniro6" path="res://scenes/menus/button_template.tscn" id="3_button"]
+[ext_resource type="Theme" path="res://resources/themes/royal_salon_theme.tres" id="4_theme"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scores"]
+bg_color = Color(0.015, 0.085, 0.06, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.62, 0.46, 0.14, 0.72)
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backdrop"]
 bg_color = Color(0, 0, 0, 0.62)
@@ -13,6 +26,7 @@ anchor_bottom = 1.0
 mouse_filter = 1
 visible = false
 script = ExtResource("1_hand_end")
+theme = ExtResource("4_theme")
 
 [node name="Backdrop" type="Panel" parent="."]
 anchor_right = 1.0
@@ -24,30 +38,37 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -230.0
-offset_top = -160.0
-offset_right = 230.0
-offset_bottom = 160.0
+offset_left = -270.0
+offset_top = -195.0
+offset_right = 270.0
+offset_bottom = 195.0
+theme_type_variation = &"RoyalMainPanel"
 
 [node name="Content" type="VBoxContainer" parent="Panel"]
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
+
+[node name="HeaderBreathingRoom" type="Control" parent="Panel/Content"]
+custom_minimum_size = Vector2(0, 12)
+mouse_filter = 2
 
 [node name="TitleLabel" type="Label" parent="Panel/Content"]
 theme_override_colors/font_color = Color(0.95, 0.82, 0.45, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 15
 horizontal_alignment = 1
 text = "Manche terminée"
 
 [node name="WinnerRow" type="HBoxContainer" parent="Panel/Content"]
 alignment = 1
-theme_override_constants/separation = 12
+theme_override_constants/separation = 18
 
 [node name="WinnerAvatar" parent="Panel/Content/WinnerRow" instance=ExtResource("2_avatar")]
-custom_minimum_size = Vector2(56, 56)
+custom_minimum_size = Vector2(80, 80)
 
 [node name="WinnerNameLabel" type="Label" parent="Panel/Content/WinnerRow"]
+custom_minimum_size = Vector2(320, 60)
 theme_override_colors/font_color = Color(0.831, 0.686, 0.216, 1)
-autowrap_mode = 2
+theme_override_font_sizes/font_size = 11
+horizontal_alignment = 1
 vertical_alignment = 1
 text = "Joueur remporte la manche !"
 
@@ -55,8 +76,11 @@ text = "Joueur remporte la manche !"
 horizontal_alignment = 1
 text = "Manche : 0 pts  |  Total partie : 0 pts"
 
-[node name="ScoresList" type="VBoxContainer" parent="Panel/Content"]
-theme_override_constants/separation = 4
+[node name="ScoresBox" type="PanelContainer" parent="Panel/Content"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_scores")
+
+[node name="ScoresList" type="VBoxContainer" parent="Panel/Content/ScoresBox"]
+theme_override_constants/separation = 7
 
 [node name="BtnContinue" parent="Panel/Content" instance=ExtResource("3_button")]
 layout_mode = 2

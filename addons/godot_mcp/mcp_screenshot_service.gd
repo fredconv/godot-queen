@@ -4,6 +4,7 @@ extends Node
 
 const REQUEST_PATH := "user://mcp_screenshot_request"
 const SCREENSHOT_PATH := "user://mcp_screenshot.png"
+const SCREENSHOT_TEMP_PATH := "user://mcp_screenshot.tmp.png"
 
 
 func _ready() -> void:
@@ -31,4 +32,14 @@ func _take_screenshot() -> void:
 	if image == null:
 		return
 
-	image.save_png(SCREENSHOT_PATH)
+	# Write to a temporary path first. The editor process polls for
+	# SCREENSHOT_PATH and could otherwise try to load the PNG while it is only
+	# partially written, producing a misleading red "Error opening file" line.
+	if FileAccess.file_exists(SCREENSHOT_TEMP_PATH):
+		DirAccess.remove_absolute(SCREENSHOT_TEMP_PATH)
+	var save_error := image.save_png(SCREENSHOT_TEMP_PATH)
+	if save_error != OK:
+		return
+	if FileAccess.file_exists(SCREENSHOT_PATH):
+		DirAccess.remove_absolute(SCREENSHOT_PATH)
+	DirAccess.rename_absolute(SCREENSHOT_TEMP_PATH, SCREENSHOT_PATH)

@@ -73,6 +73,7 @@ func _ready() -> void:
 	_public_ip.lookup_succeeded.connect(_on_public_ip_lookup_succeeded)
 	MultiplayerLobbySessions.apply_list_contrast(_sessions_list)
 	_apply_lobby_button_chrome()
+	_apply_lobby_button_icons()
 	LocaleAware.bind(self, _refresh_locale)
 
 
@@ -83,6 +84,13 @@ func _apply_lobby_button_chrome() -> void:
 			button.ensure_opaque_background(FILL, UiPalette.GOLD, 0)
 	if _btn_back != null:
 		_btn_back.ensure_opaque_background(Color(0.07, 0.09, 0.1, 1.0), UiPalette.GOLD, 0)
+
+
+func _apply_lobby_button_icons() -> void:
+	_btn_host.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.INVITE), 34)
+	_btn_join.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.ONLINE), 34)
+	_btn_start.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.CROWN), 34)
+	_btn_back.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.EXIT), 30)
 
 
 func _before_open() -> void:

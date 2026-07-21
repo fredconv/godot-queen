@@ -34,8 +34,20 @@ func _ready() -> void:
 	_panel.pivot_offset = _panel.size * 0.5
 	LocaleAware.bind(self, _refresh_locale)
 	UiFocusNav.chain_horizontal([_btn_replay, _btn_quit])
-	UiStyleFactory.apply_pixel_panel(_panel, UiStyleFactory.pixel_overlay_panel_style(Vector4(20, 16, 20, 16)))
+	UiThemeCatalog.apply_variation(_panel, UiThemeCatalog.V_MODAL_PANEL)
+	_install_signature_icons()
 	_refresh_locale()
+
+
+func _install_signature_icons() -> void:
+	var decor_row: HBoxContainer = $Panel/Content/DecorRow as HBoxContainer
+	if decor_row != null and decor_row.get_node_or_null("CrownIcon") == null:
+		var crown := UiIconCatalog.make_icon_rect(UiIconCatalog.Icon.CROWN, Vector2i(34, 34))
+		crown.name = "CrownIcon"
+		decor_row.add_child(crown)
+		decor_row.move_child(crown, 1)
+	_btn_replay.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.PLAYING_CARDS), 30)
+	_btn_quit.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.EXIT), 30)
 
 
 func show_result(
@@ -55,7 +67,7 @@ func show_result(
 	_render_result()
 	visible = true
 	_play_entrance_animation()
-	_start_arrow_pulse(winner_index)
+	_stop_arrow_pulse()
 	UiFocusNav.grab_first([_btn_replay, _btn_quit])
 
 
@@ -87,7 +99,6 @@ func _render_result() -> void:
 
 	for arrow in _arrows_by_player:
 		(arrow as Control).visible = false
-	(_arrows_by_player[winner_index] as Control).visible = true
 
 	_winner_avatar.set("character_index", character_ids[winner_index])
 	_winner_name_label.text = DialogCopy.match_winner_line(player_names[winner_index])
@@ -102,12 +113,6 @@ func _render_result() -> void:
 		cumulative_scores,
 		winner_index
 	)
-	for child in _scores_list.get_children():
-		var row: Label = child as Label
-		if row == null:
-			continue
-		row.add_theme_font_size_override("font_size", LocaleFonts.MENU_SCORE_FONT_SIZE)
-		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 
 func _play_entrance_animation() -> void:

@@ -30,8 +30,10 @@ func _ready() -> void:
 	super._ready()
 	_ensure_sections()
 	_ensure_emotes_toggle()
+	_ensure_title_emblem()
 	_apply_control_variations()
 	_apply_settings_button_chrome()
+	_btn_back.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.EXIT), 30)
 	_language_option.add_theme_constant_override("icon_max_width", 24)
 	_sfx_slider.value_changed.connect(_on_sfx_slider_changed)
 	_music_slider.value_changed.connect(_on_music_slider_changed)
@@ -53,6 +55,16 @@ func _ready() -> void:
 		_btn_back,
 	])
 	UiFocusNav.chain_vertical(focus_chain)
+
+
+func _ensure_title_emblem() -> void:
+	var vbox := $Panel/Margin/VBox as VBoxContainer
+	if vbox.get_node_or_null("SettingsEmblem") != null:
+		return
+	var emblem := UiIconCatalog.make_icon_rect(UiIconCatalog.Icon.SETTINGS, Vector2i(52, 52))
+	emblem.name = "SettingsEmblem"
+	vbox.add_child(emblem)
+	vbox.move_child(emblem, _title_label.get_index())
 	LocaleAware.bind(self, _refresh_locale)
 
 

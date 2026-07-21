@@ -30,7 +30,7 @@ const LEGACY_ICON_SETTINGS: Rect2i = Rect2i(603, 592, 144, 128)
 @onready var _btn_menu: Button = $Margin/Bar/RightButtons/BtnMenu
 @onready var _btn_settings: Button = $Margin/Bar/RightButtons/BtnSettings
 
-const PIXEL_THEME: Theme = preload("res://resources/themes/pixel_theme.tres")
+const PIXEL_THEME: Theme = preload("res://resources/themes/royal_salon_theme.tres")
 
 var _music_enabled: bool = true
 var _text_buttons: Array[Button] = []
@@ -55,6 +55,7 @@ func _ready() -> void:
 	]
 	_apply_bar_background_style()
 	_apply_compact_button_styles()
+	_apply_navigation_icons()
 	_ensure_bar_separators()
 	UiFocusNav.chain_horizontal(_all_buttons)
 	LocaleAware.bind(self, refresh_locale)
@@ -65,18 +66,8 @@ func _apply_bar_background_style() -> void:
 	var bg: Panel = $Background as Panel
 	if bg == null:
 		return
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.22, 0.15, 0.09, 1.0)
-	style.border_color = UiPalette.GOLD
-	style.border_width_bottom = 3
-	style.border_width_top = 1
-	style.border_width_left = 0
-	style.border_width_right = 0
-	style.set_corner_radius_all(0)
-	style.shadow_color = Color(0, 0, 0, 0.45)
-	style.shadow_size = 4
-	style.shadow_offset = Vector2(0, 2)
-	bg.add_theme_stylebox_override("panel", style)
+	bg.remove_theme_stylebox_override("panel")
+	bg.theme_type_variation = &"HudBarPanel"
 
 
 func _ensure_bar_separators() -> void:
@@ -94,8 +85,8 @@ func _ensure_bar_separators() -> void:
 func _make_separator(node_name: String) -> ColorRect:
 	var sep := ColorRect.new()
 	sep.name = node_name
-	sep.custom_minimum_size = Vector2(2, 28)
-	sep.color = Color(UiPalette.GOLD.r, UiPalette.GOLD.g, UiPalette.GOLD.b, 0.4)
+	sep.custom_minimum_size = Vector2(1, 24)
+	sep.color = Color(UiPalette.GOLD.r, UiPalette.GOLD.g, UiPalette.GOLD.b, 0.28)
 	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sep.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	return sep
@@ -186,25 +177,25 @@ func _apply_compact_button_styles() -> void:
 
 
 func _apply_flat_button_states(btn: Button) -> void:
-	## Style pixel premium : coins 0, bordure or, états hover/pressed/focus distincts.
-	UiThemeCatalog.apply_variation(btn, UiThemeCatalog.V_SMALL_HUD_BUTTON)
-	btn.add_theme_stylebox_override("normal", UiStyleFactory.pixel_bar_button_style(
-		UiPalette.BTN_BG, UiPalette.PANEL_BORDER, 2
-	))
-	btn.add_theme_stylebox_override("hover", UiStyleFactory.pixel_bar_button_style(
-		UiPalette.BTN_BG_HOVER, UiPalette.GOLD_BRIGHT, 2
-	))
-	btn.add_theme_stylebox_override("pressed", UiStyleFactory.pixel_bar_button_style(
-		UiPalette.BTN_BG_PRESSED, UiPalette.GOLD, 2
-	))
-	btn.add_theme_stylebox_override("focus", UiStyleFactory.pixel_bar_focus_style())
-	btn.add_theme_stylebox_override("disabled", UiStyleFactory.pixel_bar_button_style(
-		Color(0.08, 0.1, 0.09, 0.7), Color(0.4, 0.4, 0.35, 1.0), 1
-	))
-	btn.add_theme_color_override("font_color", UiPalette.CREAM)
-	btn.add_theme_color_override("font_hover_color", UiPalette.GOLD_BRIGHT)
-	btn.add_theme_color_override("font_pressed_color", UiPalette.GOLD)
-	btn.add_theme_color_override("font_focus_color", UiPalette.GOLD_BRIGHT)
+	## Royal Salon states live in the authored Theme.
+	btn.theme_type_variation = &"HudNavButton"
+
+
+func _apply_navigation_icons() -> void:
+	_set_nav_icon(_btn_help, UiIconCatalog.Icon.RULES)
+	_set_nav_icon(_btn_scores, UiIconCatalog.Icon.TROPHY)
+	_set_nav_icon(_btn_tricks, UiIconCatalog.Icon.PLAYING_CARDS)
+	_set_nav_icon(_btn_new, UiIconCatalog.Icon.FOCUS_SPADE)
+	_set_nav_icon(_btn_menu, UiIconCatalog.Icon.SETTINGS)
+
+
+func _set_nav_icon(btn: Button, icon_id: UiIconCatalog.Icon) -> void:
+	if btn == null:
+		return
+	btn.icon = UiIconCatalog.texture(icon_id)
+	btn.add_theme_constant_override("icon_max_width", 20)
+	btn.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	btn.expand_icon = true
 
 
 func _on_btn_hamburger_pressed() -> void:

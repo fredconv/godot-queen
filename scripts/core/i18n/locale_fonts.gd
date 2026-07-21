@@ -4,7 +4,7 @@ extends RefCounted
 
 
 const UI_FONT_PATH: String = "res://assets/fonts/PressStart2P-Regular.ttf"
-const PIXEL_THEME_PATH: String = "res://resources/themes/pixel_theme.tres"
+const PIXEL_THEME_PATH: String = "res://resources/themes/royal_salon_theme.tres"
 
 const DEFAULT_FONT_SIZE: int = 11
 const SEAT_FONT_SIZE: int = 8

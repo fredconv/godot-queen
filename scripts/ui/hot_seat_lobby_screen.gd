@@ -33,6 +33,8 @@ func _ready() -> void:
 	focus_chain.append(_btn_start)
 	focus_chain.append(_btn_back)
 	UiFocusNav.chain_vertical(focus_chain)
+	_btn_start.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.CROWN), 34)
+	_btn_back.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.EXIT), 30)
 	LocaleAware.bind(self, _refresh_locale)
 
 

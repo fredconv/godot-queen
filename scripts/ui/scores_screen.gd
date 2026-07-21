@@ -10,8 +10,26 @@ extends ModalOverlayScreen
 
 func _ready() -> void:
 	super._ready()
+	_ensure_trophy_emblem()
 	UiFocusNav.chain_vertical([_btn_back])
 	LocaleAware.bind(self, _refresh_locale)
+
+
+func _ensure_trophy_emblem() -> void:
+	var vbox := $Panel/Margin/VBox as VBoxContainer
+	if vbox == null or vbox.get_node_or_null("TrophyEmblem") != null:
+		return
+	var emblem := TextureRect.new()
+	emblem.name = "TrophyEmblem"
+	emblem.custom_minimum_size = Vector2(64, 64)
+	emblem.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	emblem.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	emblem.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	emblem.texture = UiIconCatalog.texture(UiIconCatalog.Icon.TROPHY)
+	emblem.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	emblem.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	vbox.add_child(emblem)
+	vbox.move_child(emblem, _title_label.get_index())
 
 
 func _before_open() -> void:

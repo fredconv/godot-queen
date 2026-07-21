@@ -5,7 +5,7 @@ Version : V01
 Created : 2026-07-21
 Last Updated : 2026-07-21
 Status : Active
-Next ID : IDEA-00026
+Next ID : IDEA-00028
 ```
 
 **Purpose:** Flux append-only d’idées. L’agent = **Project Manager IA** — voir [`../WORKFLOW.md`](../WORKFLOW.md).
@@ -26,6 +26,7 @@ Next ID : IDEA-00026
 
 | ID | Title | Status | Next Action |
 |----|-------|--------|-------------|
+| **00026** | **Art pass illustré & sprites UI** | WAITING_USER_VALIDATION — passe V1 complète | validation visuelle humaine |
 | **00023–00025** | **Context Shell** | READY — phase a layout | implémenter shell |
 | **00022** | **Réactions table** | DONE (MCP + GdUnit) | playtest humain optionnel |
 | 00021 | Polish visuel natif | DONE | — |
@@ -56,6 +57,43 @@ Next ID : IDEA-00026
 ---
 
 ## DOCUMENTED — PRIORITÉ
+
+## IDEA-00027 — 2026-07-21 — UI Royal Salon Professional Redesign
+
+- **Statut:** IN_PROGRESS — autonomie validée jusqu'au point global 80–90 %
+- **Decision:** Moodboard accepté comme cible de qualité et langage visuel ; migration générale autorisée de manière autonome jusqu'au point global 80–90 %.
+- **Architecture clarification:** autorisation explicite de remplacer les mauvaises abstractions UI. Compatibilité historique temporaire seulement ; cible finale sans double système, sans anciens overrides ni composants obsolètes.
+- **Origin:** moodboard et mission détaillée fournis dans le chat utilisateur.
+- **Motivation:** Faire évoluer l'interface de la passe V1 vers un système pixel-art commercial cohérent, modulaire, thémable, responsive et maintenable.
+- **Impact:** ★★★★★
+- **Complexité:** ★★★★★ — chantier multi-lots, assets, Theme, responsive et QA multi-résolutions.
+- **Priorité proposée:** P0 UI après validation du brief.
+- **Epic:** UI/Polish · Mobile · Tooling
+- **Depends on:** fondations 00021 et passe illustrée 00026 ; cohabitation à coordonner avec Context Shell 00023–00025.
+- **Brief:** [`../ui/ROYAL_SALON_REDESIGN_BRIEF.md`](../ui/ROYAL_SALON_REDESIGN_BRIEF.md)
+- **Next:** poursuivre R1–R16 de manière autonome ; préparer le point global à 80–90 %.
+- **Authorization:** utilisateur autorise la poursuite sans validation lot par lot ; prochain point attendu lorsque boutons, menus, boxes, panels et états principaux atteignent environ 80–90 %.
+- **Progress:** checkpoint visuel estimé à ~85 %. Theme authored Royal Salon actif ; plateau unifié bois–or–émeraude v2 intégré ; boutons, menu principal, configuration et choix de mode contrôlés ; sièges avec médaillons/cartouches ; barre et tiroir des scores migrés ; fins de manche et de partie refondues ; règles aérées ; lobbies normalisés ; captures MCP live multi-écrans conservées dans `.mcp_audit/`. Restent principalement les états peu fréquents, la QA responsive multi-format et les dernières retouches d'alignement.
+
+
+## IDEA-00026 — 2026-07-21 — Art pass illustré et kit de sprites UI Dame de Pique
+
+- **Statut:** WAITING_USER_VALIDATION
+- **Decision:** Accepted — ordre validé par utilisateur : kit commun → table → scores/modes → lobbies → réglages/règles/crédits → menu
+- **Origin:** chat utilisateur après audit visuel complet
+- **Motivation:** Réconcilier l’identité forte du splash (tripot médiéval pixel-art) avec les overlays et la table encore trop techniques/plats, au moyen d’un petit kit d’assets cohérent et réutilisable.
+- **Implémentation V1:** atlas transparent 4×4 (16 pictogrammes), catalogue partagé, boutons iconifiés, médaillons de sièges, ornement de table et emblèmes d’écrans. Intégré dans l’ordre validé sur table, scores/modes, lobbies, réglages/règles/crédits puis menu principal.
+- **Validation technique:** scripts compilés, lancement du projet sans erreur bloquante, contrôle MCP en 1280×720 de chaque famille d’écrans ; correction du z-index des icônes pour empêcher toute traversée des modales.
+- **Preuves:** `.mcp_audit/idea_00026_main_menu_icons_v1.png`, `idea_00026_table_pass_v1_settled.png`, `idea_00026_game_mode_icons_v2.png`, `idea_00026_hotseat_lobby_v1.png`, `idea_00026_online_lobby_v1.png`, `idea_00026_rules_v2.png`, `idea_00026_credits_v1.png`, `idea_00026_settings_emblem_v1.png`, `idea_00026_scores_trophy_v1.png`.
+- **Impact:** ★★★★★
+- **Complexité:** ★★★★☆
+- **Priorité proposée:** P0
+- **Epic:** UI/Polish (+ Table/Feel)
+- **Depends on:** IDEA-00021 ; Theme pixel ; Context Shell 00023–00025
+- **Living Documents:** `ui/DesignSystem.md` · `docs/ui/VISUAL_POLISH_NATIVE_PLAN.md`
+- **Next Action:** Phase 1 — atlas commun, catalogue partagé et validation d’import ; puis table/sièges.
+- **Ready checklist:** [x] Documenté [x] Impacts [x] Direction validée [x] Pas de blocker [x] Depends OK [x] Changement de contrainte PNG explicitement accepté
+- **Notes:** Cette décision remplace, pour cet art pass, la contrainte « aucun nouveau PNG externe » de 00021. Assets générés non destructifs et versionnés ; import Lossless/Nearest ; atlas préféré aux textures isolées.
 
 ## IDEA-00025 — 2026-07-21 — Pattern Toggle / Sliding Panel (standard UI)
 

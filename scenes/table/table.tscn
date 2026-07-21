@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://crsly8ch4p0nn" path="res://scripts/ui/table.gd" id="1_table"]
 [ext_resource type="PackedScene" path="res://scenes/components/top_menu_bar.tscn" id="2_topbar"]
 [ext_resource type="PackedScene" path="res://scenes/components/player_seat.tscn" id="3_seat"]
-[ext_resource type="Theme" uid="uid://ddhm44lokfxyx" path="res://resources/themes/pixel_theme.tres" id="4_pixel_theme"]
+[ext_resource type="Theme" uid="uid://ddhm44lokfxyx" path="res://resources/themes/royal_salon_theme.tres" id="4_pixel_theme"]
 [ext_resource type="PackedScene" path="res://scenes/components/confirm_dialog.tscn" id="5_confirm_dialog"]
 [ext_resource type="PackedScene" path="res://scenes/components/match_end_dialog.tscn" id="6_match_end_dialog"]
 [ext_resource type="PackedScene" path="res://scenes/components/match_scoreboard.tscn" id="7_scoreboard"]
@@ -11,6 +11,12 @@
 [ext_resource type="PackedScene" path="res://scenes/menus/scores_screen.tscn" id="9_scores"]
 [ext_resource type="PackedScene" path="res://scenes/table/hot_seat_privacy_overlay.tscn" id="12_hot_seat"]
 [ext_resource type="Script" uid="uid://hqmkvji5f0qg" path="res://scripts/ui/table/moon_suspicion_action_button.gd" id="13_moon_btn"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/dame_de_pique/common_icon_atlas_v1.png" id="14_icon_atlas"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_table_ornament"]
+atlas = ExtResource("14_icon_atlas")
+region = Rect2(941, 941, 313, 313)
+filter_clip = true
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
 bg_color = Color(1, 1, 1, 0.08)
@@ -66,9 +72,9 @@ mouse_filter = 2
 anchors_preset = 0
 anchor_right = 1.0
 offset_left = 24.0
-offset_top = 18.0
+offset_top = 58.0
 offset_right = -24.0
-offset_bottom = 182.0
+offset_bottom = 222.0
 orientation = 0
 player_name = "Adversaire 1"
 character_id = 1
@@ -104,11 +110,13 @@ hand_card_count = 8
 
 [node name="SeatBottom" parent="PlayerSeats" unique_id=1287139185 instance=ExtResource("3_seat")]
 anchors_preset = 0
+anchor_left = 0.5
 anchor_top = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 268.0
+offset_left = -372.0
 offset_top = -160.0
-offset_right = 392.0
+offset_right = -248.0
 offset_bottom = -16.0
 player_name = "Vous"
 hand_card_count = 0
@@ -125,6 +133,26 @@ offset_top = -150.0
 offset_right = 165.0
 offset_bottom = 150.0
 mouse_filter = 2
+
+[node name="TableOrnament" type="TextureRect" parent="TrickArea"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -116.0
+offset_top = -44.0
+offset_right = 116.0
+offset_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture_filter = 1
+modulate = Color(0.77, 0.59, 0.18, 0.2)
+texture = SubResource("AtlasTexture_table_ornament")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="TrickCardTop" type="Panel" parent="TrickArea" unique_id=13124460]
 layout_mode = 1

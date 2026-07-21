@@ -138,6 +138,11 @@ func _sync_after_shell_layout() -> void:
 	if _ctx == null or not is_inside_tree():
 		return
 	TableTrickDisplay.sync_card_positions(_ctx)
+	# L'éventail est construit à partir de la largeur utile. Le reconstruire
+	# après ouverture/fermeture du tiroir garde la main et le siège humain dans
+	# le même référentiel, y compris après qu'une carte a été jouée.
+	if _ctx.match_manager != null and not _ctx.hand_card_views.is_empty():
+		TableHumanHand.rebuild(_ctx)
 	TableFx.refresh_lead_suit_indicator(_ctx)
 
 

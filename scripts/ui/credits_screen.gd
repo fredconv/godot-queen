@@ -8,11 +8,21 @@ extends ModalOverlayScreen
 
 func _ready() -> void:
 	super._ready()
+	_ensure_title_emblem()
 	_body_label.add_theme_color_override("default_color", Color(0.961, 0.941, 0.902, 1.0))
 	_body_label.add_theme_color_override("font_link_color", Color(0.55, 0.82, 1.0, 1.0))
 	_body_label.meta_clicked.connect(_on_meta_clicked)
 	UiFocusNav.chain_vertical([_btn_back])
+	_btn_back.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.EXIT), 30)
 	LocaleAware.bind(self, _refresh_locale)
+
+
+func _ensure_title_emblem() -> void:
+	var vbox := $Panel/Margin/VBox as VBoxContainer
+	var emblem := UiIconCatalog.make_icon_rect(UiIconCatalog.Icon.CREDITS, Vector2i(52, 52))
+	emblem.name = "CreditsEmblem"
+	vbox.add_child(emblem)
+	vbox.move_child(emblem, _title_label.get_index())
 
 
 func _before_open() -> void:

@@ -17,6 +17,12 @@ Vue priorité (ne remplace pas [`INBOX.md`](INBOX.md)).
 | 1 | 00014 | Tween kill cartes | si bug anim observé |
 | 2 | 00013 | @export_range | hygiene faible |
 
+## PROPOSED — validation requise
+
+| Ordre | ID | Titre | Condition |
+|------:|----|-------|-----------|
+| 1 | 00027 | UI Royal Salon Professional Redesign | valider brief et vertical slice R1–R10 |
+
 **Livré :** Packs A–C · 00009 · **00021** · **00010**
 
 ---
@@ -32,6 +38,7 @@ Vue priorité (ne remplace pas [`INBOX.md`](INBOX.md)).
 | Epic | Focus |
 |------|--------|
 | UI/Polish | ✅ 00021 |
+| UI/Polish — Royal Salon | 00027 proposé |
 | Multiplayer | ✅ 00010 |
 | Table/Feel | 00014 optionnel |
 | Mobile | 00019 |

@@ -135,7 +135,7 @@ func _make_cell(reaction_id: int) -> Button:
 	cell.pressed.connect(_on_cell_pressed.bind(reaction_id))
 	_apply_cell_style(cell)
 	## Marges explicites : fiable dans un Button (pas un Container).
-	var pad: int = int((CELL_SIZE - FACE_SIZE) / 2)
+	var pad: int = floori(float(CELL_SIZE - FACE_SIZE) / 2.0)
 	var holder := MarginContainer.new()
 	holder.name = "Pad"
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE

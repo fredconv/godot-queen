@@ -11,6 +11,8 @@ Source : INBOX.md
 
 | ID | Title | Status |
 |----|-------|--------|
+| **00027** | **UI Royal Salon Professional Redesign** | IN_PROGRESS — exécution autonome jusqu'à 80–90 % |
+| **00026** | **Art pass illustré & sprites UI** | WAITING_USER_VALIDATION — passe V1 complète |
 | **00023–00025** | **Context Shell** | READY — phase **b** (coordination) |
 | — | Backlog optionnel | 00014 / 00013 / ROADMAP mobile |
 

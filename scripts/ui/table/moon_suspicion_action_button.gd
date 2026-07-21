@@ -3,7 +3,7 @@ extends Button
 ## Bouton d'action « Lune soupçonnée » ancré en bas à droite de la table.
 
 
-const PIXEL_THEME: Theme = preload("res://resources/themes/pixel_theme.tres")
+const PIXEL_THEME: Theme = preload("res://resources/themes/royal_salon_theme.tres")
 
 const DISMISS_POP_SCALE: float = 1.14
 const DISMISS_END_SCALE: float = 0.22

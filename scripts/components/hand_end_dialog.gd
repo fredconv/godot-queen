@@ -12,7 +12,7 @@ signal continue_requested
 @onready var _winner_avatar: Control = $Panel/Content/WinnerRow/WinnerAvatar
 @onready var _winner_name_label: Label = $Panel/Content/WinnerRow/WinnerNameLabel
 @onready var _winner_detail_label: Label = $Panel/Content/WinnerDetailLabel
-@onready var _scores_list: VBoxContainer = $Panel/Content/ScoresList
+@onready var _scores_list: VBoxContainer = $Panel/Content/ScoresBox/ScoresList
 @onready var _btn_continue: NinePatchButton = $Panel/Content/BtnContinue
 
 var _last_result: Dictionary = {}
@@ -22,7 +22,8 @@ var _entrance_tween: Tween = null
 func _ready() -> void:
 	LocaleAware.bind(self, _refresh_locale)
 	UiFocusNav.chain_vertical([_btn_continue])
-	UiStyleFactory.apply_pixel_panel(_panel, UiStyleFactory.pixel_overlay_panel_style(Vector4(20, 16, 20, 16)))
+	UiThemeCatalog.apply_variation(_panel, UiThemeCatalog.V_MODAL_PANEL)
+	_btn_continue.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.PLAYING_CARDS), 30)
 	_refresh_locale()
 
 

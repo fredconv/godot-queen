@@ -23,6 +23,7 @@ func _ready() -> void:
 	_ensure_mode_descriptions()
 	_ensure_back_separator()
 	_apply_mode_button_chrome()
+	_apply_mode_button_icons()
 	UiFocusNav.chain_vertical([_btn_solo, _btn_hot_seat, _btn_online, _btn_back])
 	LocaleAware.bind(self, _refresh_locale)
 	UiThemeCatalog.apply_variation(_title_label, UiThemeCatalog.V_TITLE_LABEL)
@@ -36,6 +37,13 @@ func _apply_mode_button_chrome() -> void:
 		button.ensure_opaque_background(FILL, UiPalette.GOLD, 0)
 	if _btn_back != null:
 		_btn_back.ensure_opaque_background(Color(0.07, 0.09, 0.1, 1.0), UiPalette.GOLD, 0)
+
+
+func _apply_mode_button_icons() -> void:
+	_btn_solo.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.PROFILE), 34)
+	_btn_hot_seat.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.PLAYING_CARDS), 34)
+	_btn_online.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.ONLINE), 34)
+	_btn_back.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.EXIT), 30)
 
 
 func _ensure_mode_descriptions() -> void:

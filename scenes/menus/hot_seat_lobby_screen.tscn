@@ -35,10 +35,10 @@ offset_right = 260.0
 offset_bottom = 180.0
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
 
 [node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
 theme_override_constants/separation = 10

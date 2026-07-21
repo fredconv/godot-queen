@@ -2,6 +2,10 @@ class_name UiStyleFactory
 extends RefCounted
 ## Fabrique de styles UIBundleFree : AtlasTexture (region) + 9-slice sans déformation d'icônes.
 
+const ROYAL_PANEL_MAIN := "res://assets/sprites/ui/royal_salon/panel_main_v1.png"
+const ROYAL_PANEL_SCORE := "res://assets/sprites/ui/royal_salon/panel_score_v1.png"
+const ROYAL_PANEL_COMPACT := "res://assets/sprites/ui/royal_salon/panel_compact_v1.png"
+
 
 static func atlas_region(sheet_path: String, region: Rect2i) -> AtlasTexture:
 	var atlas := AtlasTexture.new()
@@ -160,78 +164,40 @@ static func pixel_bar_focus_style() -> StyleBoxFlat:
 ## Panneaux / banners table — StyleBoxFlat pixel (coins 0, bordure or).
 static func pixel_banner_panel_style(
 	content_margin: Vector4 = Vector4(24, 16, 24, 16),
-	border_width: int = 3,
-	bg_alpha: float = 0.94
-) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(UiPalette.PANEL_BG.r, UiPalette.PANEL_BG.g, UiPalette.PANEL_BG.b, bg_alpha)
-	style.border_color = UiPalette.PANEL_BORDER
-	style.set_border_width_all(border_width)
-	style.set_corner_radius_all(0)
+	_border_width: int = 3,
+	_bg_alpha: float = 0.94
+) -> StyleBoxTexture:
+	var style := texture_style(ROYAL_PANEL_SCORE, content_margin, Vector4(24, 16, 24, 15))
 	style.content_margin_left = content_margin.x
 	style.content_margin_top = content_margin.y
 	style.content_margin_right = content_margin.z
 	style.content_margin_bottom = content_margin.w
-	style.shadow_color = Color(0, 0, 0, 0.55)
-	style.shadow_size = 4
-	style.shadow_offset = Vector2(0, 3)
 	return style
 
 
 static func pixel_overlay_panel_style(
 	content_margin: Vector4 = Vector4(16, 14, 16, 14)
-) -> StyleBoxFlat:
-	## Modales : cadre or franc + ombre nette (lisible vs splash).
-	var style := pixel_banner_panel_style(content_margin, 3, 0.97)
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.97)
-	style.border_color = UiPalette.GOLD_BRIGHT
-	style.shadow_size = 8
-	style.shadow_offset = Vector2(0, 5)
-	style.shadow_color = Color(0, 0, 0, 0.65)
-	return style
+) -> StyleBoxTexture:
+	return texture_style(ROYAL_PANEL_MAIN, content_margin, Vector4(16, 39, 16, 14))
 
 
 static func pixel_compact_panel_style(
 	content_margin: Vector4 = Vector4(12, 8, 12, 8),
-	bg_color: Color = Color(0.05, 0.06, 0.08, 0.82)
-) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = bg_color
-	style.border_color = UiPalette.PANEL_BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(0)
-	style.content_margin_left = content_margin.x
-	style.content_margin_top = content_margin.y
-	style.content_margin_right = content_margin.z
-	style.content_margin_bottom = content_margin.w
-	style.shadow_color = Color(0, 0, 0, 0.5)
-	style.shadow_size = 3
-	style.shadow_offset = Vector2(0, 2)
-	return style
+	_bg_color: Color = Color(0.05, 0.06, 0.08, 0.82)
+) -> StyleBoxTexture:
+	return texture_style(ROYAL_PANEL_COMPACT, content_margin, Vector4(24, 12, 24, 12))
 
 
 ## Colonne boutons menu principal — panneau bien lisible sur le splash.
-static func menu_button_stack_panel_style() -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.03, 0.05, 0.04, 0.88)
-	style.border_color = UiPalette.GOLD
-	style.set_border_width_all(3)
-	style.set_corner_radius_all(0)
-	style.content_margin_left = 20
-	style.content_margin_top = 18
-	style.content_margin_right = 20
-	style.content_margin_bottom = 18
-	style.shadow_color = Color(0, 0, 0, 0.7)
-	style.shadow_size = 10
-	style.shadow_offset = Vector2(0, 6)
-	return style
+static func menu_button_stack_panel_style() -> StyleBoxTexture:
+	return texture_style(ROYAL_PANEL_MAIN, Vector4(28, 52, 28, 24), Vector4(16, 39, 16, 14))
 
 
 static func apply_pixel_panel(
 	panel: Control,
-	style: StyleBoxFlat = null
+	style: StyleBox = null
 ) -> void:
 	if panel == null:
 		return
-	var box: StyleBoxFlat = style if style != null else pixel_overlay_panel_style()
+	var box: StyleBox = style if style != null else pixel_overlay_panel_style()
 	panel.add_theme_stylebox_override("panel", box)

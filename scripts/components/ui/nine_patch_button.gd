@@ -14,6 +14,12 @@ const SCALE_TWEEN_SEC: float = 0.09
 const SIZE_GRID: int = 8
 ## Bordure chrome max (3×2) + ombre label + air — évite le « collé au cadre ».
 const LABEL_EXTRA_PAD: int = 24
+const ROYAL_NORMAL: Texture2D = preload("res://assets/sprites/ui/royal_salon/button_normal_v1.png")
+const ROYAL_HOVER: Texture2D = preload("res://assets/sprites/ui/royal_salon/button_hover_v1.png")
+const ROYAL_PRESSED: Texture2D = preload("res://assets/sprites/ui/royal_salon/button_pressed_v1.png")
+const ROYAL_SELECTED: Texture2D = preload("res://assets/sprites/ui/royal_salon/button_selected_v1.png")
+const ROYAL_DISABLED: Texture2D = preload("res://assets/sprites/ui/royal_salon/button_disabled_v1.png")
+const ROYAL_PATCH_MARGIN: int = 12
 
 @onready var _nine_patch: NinePatchRect = $NinePatchBackground
 @onready var _label: Label = $MarginContainer/Label
@@ -23,6 +29,7 @@ var _pointer_down: bool = false
 var _scale_tween: Tween = null
 var _opaque_fill: Color = UiPalette.BTN_BG
 var _opaque_border: Color = UiPalette.PANEL_BORDER
+var _button_icon: TextureRect = null
 
 
 func _ready() -> void:
@@ -63,6 +70,36 @@ func set_button_text(value: String) -> void:
 		call_deferred("set_button_text", value)
 		return
 	_label.text = value
+	fit_to_label()
+
+
+func set_button_icon(texture: Texture2D, icon_size: int = 32) -> void:
+	if texture == null:
+		if _button_icon != null:
+			_button_icon.queue_free()
+			_button_icon = null
+		return
+	if _button_icon == null:
+		_button_icon = TextureRect.new()
+		_button_icon.name = "ButtonIcon"
+		_button_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_button_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_button_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_button_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		## Keep the icon in the button's own canvas layer. A positive z-index made
+		## icons from covered menu buttons bleed through modal overlays.
+		_button_icon.z_index = 0
+		add_child(_button_icon)
+	_button_icon.texture = texture
+	_button_icon.set_anchors_preset(Control.PRESET_CENTER_LEFT)
+	var half := float(icon_size) * 0.5
+	_button_icon.offset_left = 16.0
+	_button_icon.offset_top = -half
+	_button_icon.offset_right = 16.0 + float(icon_size)
+	_button_icon.offset_bottom = half
+	if _margin != null:
+		_margin.add_theme_constant_override("margin_left", maxi(UiButtonLayout.CONTENT_MARGIN_H, icon_size + 32))
+		_margin.add_theme_constant_override("margin_right", UiButtonLayout.CONTENT_MARGIN_H)
 	fit_to_label()
 
 
@@ -150,19 +187,12 @@ static func sync_centered_panel_half_width(
 func ensure_opaque_background(
 	fill_color: Color = UiPalette.BTN_BG,
 	border_color: Color = UiPalette.PANEL_BORDER,
-	corner_radius: int = 0
+	_corner_radius: int = 0
 ) -> void:
 	_opaque_fill = fill_color
 	_opaque_border = border_color
-	var panel: Panel = get_node_or_null("OpaqueBackground") as Panel
-	if panel == null:
-		panel = Panel.new()
-		panel.name = "OpaqueBackground"
-		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		add_child(panel)
-		move_child(panel, 0)
-	_apply_opaque_chrome(false, false, corner_radius)
+	## Royal Salon owns the chrome through the 9-slice state textures. This
+	## compatibility method intentionally no longer adds a flat panel.
 
 
 func _apply_opaque_chrome(hovered: bool, as_pressed: bool, corner_radius: int = 0) -> void:
@@ -200,14 +230,14 @@ func _apply_opaque_chrome(hovered: bool, as_pressed: bool, corner_radius: int = 
 
 
 func _configure_nine_patch() -> void:
-	var margin: int = UiNinePatchCatalog.PATCH_MARGIN
-	_nine_patch.texture = patch_texture
+	var margin: int = ROYAL_PATCH_MARGIN
+	_nine_patch.texture = ROYAL_NORMAL
 	_nine_patch.patch_margin_left = margin
 	_nine_patch.patch_margin_top = margin
 	_nine_patch.patch_margin_right = margin
 	_nine_patch.patch_margin_bottom = margin
-	_nine_patch.axis_stretch_horizontal = NinePatchRect.AXIS_STRETCH_MODE_TILE_FIT
-	_nine_patch.axis_stretch_vertical = NinePatchRect.AXIS_STRETCH_MODE_TILE_FIT
+	_nine_patch.axis_stretch_horizontal = NinePatchRect.AXIS_STRETCH_MODE_STRETCH
+	_nine_patch.axis_stretch_vertical = NinePatchRect.AXIS_STRETCH_MODE_STRETCH
 	_nine_patch.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 
@@ -222,7 +252,8 @@ func _update_visual_state() -> void:
 		return
 	var target_scale: Vector2 = Vector2.ONE
 	if disabled:
-		_nine_patch.modulate = Color(0.68, 0.68, 0.68, 1.0)
+		_nine_patch.texture = ROYAL_DISABLED
+		_nine_patch.modulate = Color.WHITE
 		if _label:
 			_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 1.0))
 			_label.add_theme_constant_override("shadow_offset_y", 0)
@@ -230,7 +261,8 @@ func _update_visual_state() -> void:
 		_tween_to_scale(Vector2.ONE)
 		return
 	if _pointer_down:
-		_nine_patch.modulate = Color(0.88, 0.86, 0.82, 1.0)
+		_nine_patch.texture = ROYAL_PRESSED
+		_nine_patch.modulate = Color.WHITE
 		if _label:
 			_label.add_theme_color_override("font_color", UiPalette.GOLD)
 			_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
@@ -239,7 +271,8 @@ func _update_visual_state() -> void:
 		_apply_opaque_chrome(false, true)
 		target_scale = PRESSED_SCALE
 	elif is_hovered() or has_focus():
-		_nine_patch.modulate = Color(1.18, 1.12, 1.02, 1.0)
+		_nine_patch.texture = ROYAL_SELECTED if has_focus() else ROYAL_HOVER
+		_nine_patch.modulate = Color.WHITE
 		if _label:
 			_label.add_theme_color_override("font_color", UiPalette.GOLD_BRIGHT)
 			_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
@@ -248,6 +281,7 @@ func _update_visual_state() -> void:
 		_apply_opaque_chrome(true, false)
 		target_scale = HOVER_SCALE
 	else:
+		_nine_patch.texture = ROYAL_NORMAL
 		_nine_patch.modulate = Color(1.0, 1.0, 1.0, 1.0)
 		if _label:
 			_label.add_theme_color_override("font_color", UiPalette.CREAM)

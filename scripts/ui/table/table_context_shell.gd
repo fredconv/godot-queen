@@ -58,19 +58,18 @@ static func _ensure_toggle_button(ctx: TableContext, shell: ContextShellHost) ->
 		return
 	var btn := Button.new()
 	btn.name = String(TOGGLE_NAME)
+	btn.theme = load(LocaleFonts.PIXEL_THEME_PATH) as Theme
 	btn.focus_mode = Control.FOCUS_ALL
-	btn.custom_minimum_size = Vector2(40, 72)
-	btn.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
-	btn.offset_left = -40.0
-	btn.offset_top = -36.0
+	btn.theme_type_variation = UiThemeCatalog.V_SMALL_HUD_BUTTON
+	btn.custom_minimum_size = Vector2(34, 44)
+	btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	btn.offset_left = -34.0
+	btn.offset_top = 92.0
 	btn.offset_right = 0.0
-	btn.offset_bottom = 36.0
+	btn.offset_bottom = 136.0
 	btn.z_index = 20
-	btn.add_theme_stylebox_override("normal", UiStyleFactory.medieval_menu_button_normal())
-	btn.add_theme_stylebox_override("hover", UiStyleFactory.medieval_menu_button_hover())
-	btn.add_theme_stylebox_override("pressed", UiStyleFactory.medieval_menu_button_pressed())
 	btn.add_theme_color_override("font_color", UiPalette.GOLD)
-	btn.add_theme_font_size_override("font_size", 18)
+	btn.add_theme_font_size_override("font_size", 14)
 	btn.pressed.connect(toggle_sidebar.bind(ctx))
 	ui_layer.add_child(btn)
 	ctx.shell_toggle_button = btn
@@ -78,8 +77,10 @@ static func _ensure_toggle_button(ctx: TableContext, shell: ContextShellHost) ->
 
 
 static func _position_toggle_for_shell(btn: Control, sidebar_open: bool) -> void:
-	var inset: float = ContextShellLayout.SIDEBAR_WIDTH_OPEN if sidebar_open else 0.0
-	btn.offset_left = -40.0 - inset
+	# La languette vit à l'extérieur du tiroir/panneau : elle ne masque ni les
+	# scores ni la pile de cartes de l'adversaire droit.
+	var inset: float = ContextShellLayout.SIDEBAR_WIDTH_OPEN if sidebar_open else 6.0
+	btn.offset_left = -34.0 - inset
 	btn.offset_right = 0.0 - inset
 
 
@@ -89,7 +90,7 @@ static func _refresh_toggle_visual(ctx: TableContext, sidebar_open: bool) -> voi
 		return
 	_position_toggle_for_shell(btn, sidebar_open)
 	btn.text = "◀" if sidebar_open else "▶"
-	btn.tooltip_text = "Fermer le panneau" if sidebar_open else "Ouvrir le panneau"
+	btn.tooltip_text = ""
 
 
 static func _capture_scoreboard_home(ctx: TableContext) -> void:
@@ -122,11 +123,13 @@ static func _sync_scoreboard_dock(ctx: TableContext, sidebar_open: bool) -> void
 		board.visible = true
 		board.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 		board.offset_left = SCOREBOARD_MARGIN
-		board.offset_top = SCOREBOARD_MARGIN + 8.0
+		# Sous la barre supérieure : aucun chevauchement avec NOUVEAU / MENU.
+		board.offset_top = 72.0
 		board.offset_right = -SCOREBOARD_MARGIN
-		board.offset_bottom = SCOREBOARD_MARGIN + 160.0
+		board.offset_bottom = 232.0
 	else:
 		_restore_scoreboard_home(ctx)
+		board.visible = false
 
 
 static func _restore_scoreboard_home(ctx: TableContext) -> void:

@@ -59,6 +59,7 @@ func _ready() -> void:
 	_refresh_locale()
 	_setup_intro_state()
 	_apply_menu_button_styles()
+	_apply_menu_button_icons()
 	AudioService.enable_music_for_home_screen()
 	call_deferred("_after_ready")
 
@@ -148,6 +149,15 @@ func _apply_menu_button_styles() -> void:
 			0
 		)
 		_btn_quit.modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+
+func _apply_menu_button_icons() -> void:
+	_btn_new_game.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.PLAYING_CARDS), 34)
+	_btn_rules.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.RULES), 32)
+	_btn_scores.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.TROPHY), 32)
+	_btn_settings.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.SETTINGS), 32)
+	_btn_credits.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.CREDITS), 32)
+	_btn_quit.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.EXIT), 32)
 
 
 func _setup_intro_state() -> void:

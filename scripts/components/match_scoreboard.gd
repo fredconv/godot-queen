@@ -5,8 +5,8 @@ extends Control
 
 const MATCH_GOAL_POINTS: int = 100
 
-@onready var _title_label: Label = $Panel/Margin/TitleLabel
-@onready var _entries: VBoxContainer = $Panel/Margin/Entries
+@onready var _title_label: Label = $Panel/Margin/Content/TitleLabel
+@onready var _entries: VBoxContainer = $Panel/Margin/Content/Entries
 
 var _last_hand_number: int = 1
 var _last_player_names: Array = []
@@ -18,7 +18,6 @@ func _ready() -> void:
 	UiThemeCatalog.ensure_project_theme_enriched()
 	var panel: PanelContainer = get_node_or_null("Panel") as PanelContainer
 	if panel != null:
-		UiStyleFactory.apply_pixel_panel(panel, UiStyleFactory.pixel_banner_panel_style(Vector4(12, 10, 12, 10), 2, 0.94))
 		UiThemeCatalog.apply_variation(panel, UiThemeCatalog.V_SCORE_PANEL)
 	if _title_label != null:
 		UiThemeCatalog.apply_variation(_title_label, UiThemeCatalog.V_SECTION_TITLE)

@@ -2,7 +2,7 @@ class_name ScoreBarRow
 extends HBoxContainer
 ## Une ligne du panneau de score : nom, barre de progression et total cumulé.
 
-const NAME_MIN_WIDTH: float = 82.0
+const NAME_MIN_WIDTH: float = 76.0
 const SCORE_MIN_WIDTH: float = 28.0
 const BAR_HEIGHT: float = 12.0
 const BAR_TRACK_COLOR: Color = Color(0.18, 0.18, 0.22, 1.0)
@@ -60,7 +60,7 @@ func _build_nodes() -> void:
 	_name_label.custom_minimum_size = Vector2(NAME_MIN_WIDTH, 0.0)
 	_name_label.clip_text = true
 	_name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	_name_label.add_theme_font_size_override("font_size", 11)
+	_name_label.add_theme_font_size_override("font_size", 8)
 	add_child(_name_label)
 
 	_bar_track = Control.new()
@@ -82,7 +82,7 @@ func _build_nodes() -> void:
 	_score_label = Label.new()
 	_score_label.custom_minimum_size = Vector2(SCORE_MIN_WIDTH, 0.0)
 	_score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_score_label.add_theme_font_size_override("font_size", 11)
+	_score_label.add_theme_font_size_override("font_size", 8)
 	_score_label.add_theme_color_override("font_color", SCORE_COLOR)
 	add_child(_score_label)
 

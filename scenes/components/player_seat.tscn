@@ -1,14 +1,22 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/components/player_seat.gd" id="1_player_seat"]
 [ext_resource type="PackedScene" path="res://scenes/components/corner_brackets.tscn" id="2_corner_brackets"]
 [ext_resource type="PackedScene" path="res://scenes/components/player_avatar.tscn" id="3_player_avatar"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/dame_de_pique/common_icon_atlas_v1.png" id="4_icon_atlas"]
+[ext_resource type="Theme" path="res://resources/themes/royal_salon_theme.tres" id="5_royal_theme"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_seat_medallion"]
+atlas = ExtResource("4_icon_atlas")
+region = Rect2(941, 627, 313, 314)
+filter_clip = true
 
 [node name="PlayerSeat" type="Control"]
 custom_minimum_size = Vector2(160, 150)
 offset_right = 160.0
 offset_bottom = 150.0
 script = ExtResource("1_player_seat")
+theme = ExtResource("5_royal_theme")
 
 [node name="HandBackRow" type="Control" parent="."]
 anchor_right = 1.0
@@ -31,16 +39,53 @@ alignment = 1
 custom_minimum_size = Vector2(64, 64)
 size_flags_horizontal = 4
 
+[node name="SeatMedallion" type="TextureRect" parent="InfoBox/AvatarPlaceholder"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture_filter = 1
+texture = SubResource("AtlasTexture_seat_medallion")
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(0.82, 0.82, 0.82, 0.92)
+
 [node name="Avatar" parent="InfoBox/AvatarPlaceholder" instance=ExtResource("3_player_avatar")]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = 0.0
 offset_bottom = 0.0
 
+[node name="InfoCartouche" type="Panel" parent="InfoBox/AvatarPlaceholder"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -56.0
+offset_top = -6.0
+offset_right = 56.0
+offset_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"PlayerCartoucheRaw"
+
 [node name="TurnHighlight" parent="InfoBox/AvatarPlaceholder" instance=ExtResource("2_corner_brackets")]
 anchor_right = 1.0
 anchor_bottom = 1.0
 visible = false
+bracket_color = Color(0.945, 0.706, 0.188, 1)
+bracket_length = 12.0
+bracket_thickness = 2.0
 
 [node name="NameLabel" type="Label" parent="InfoBox"]
 horizontal_alignment = 1

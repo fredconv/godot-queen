@@ -23,6 +23,10 @@ var _tween: Tween
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
+	# Ce contrôle est créé à l'exécution. Forcer immédiatement son rectangle
+	# évite que ses enfants centrés utilisent une taille transitoire de 0 px.
+	position = Vector2.ZERO
+	set_deferred("size", get_viewport_rect().size)
 	_panel = PanelContainer.new()
 	_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_panel.offset_left = -200.0

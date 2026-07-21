@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/components/top_menu_bar.gd" id="1_top_menu_bar"]
+[ext_resource type="Theme" path="res://resources/themes/royal_salon_theme.tres" id="2_royal_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
 bg_color = Color(0.294, 0.212, 0.125, 1)
@@ -12,11 +13,12 @@ anchor_right = 1.0
 offset_bottom = 56.0
 custom_minimum_size = Vector2(0, 56)
 script = ExtResource("1_top_menu_bar")
+theme = ExtResource("2_royal_theme")
 
 [node name="Background" type="Panel" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_background")
+theme_type_variation = &"RoyalCompactPanelRaw"
 
 [node name="Margin" type="MarginContainer" parent="."]
 anchor_right = 1.0

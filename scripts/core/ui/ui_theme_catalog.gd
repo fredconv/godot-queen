@@ -59,7 +59,8 @@ static func apply_variation(control: Control, variation: StringName) -> void:
 
 static func ensure_project_theme_enriched() -> Theme:
 	var theme: Theme = load(LocaleFonts.PIXEL_THEME_PATH) as Theme
-	enrich_theme(theme)
+	## IDEA-00027 compatibility shim: Royal Salon is authored in the Theme
+	## resource. Do not overwrite it with the legacy procedural flat styles.
 	return theme
 
 
@@ -102,7 +103,7 @@ static func _register_button_variation(
 	theme.set_font_size("font_size", variation, UiPalette.MENU_BUTTON_SIZE)
 
 
-static func _register_panel_variation(theme: Theme, variation: StringName, style: StyleBoxFlat) -> void:
+static func _register_panel_variation(theme: Theme, variation: StringName, style: StyleBox) -> void:
 	theme.add_type(variation)
 	theme.set_type_variation(variation, &"PanelContainer")
 	theme.set_stylebox("panel", variation, style)
