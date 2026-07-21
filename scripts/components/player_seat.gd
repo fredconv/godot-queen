@@ -29,8 +29,13 @@ const CARD_BACK_SCALE_SIDE: float = 2.2
 ## cartes (`hand_card_count` par défaut) reste dans l'empreinte des sièges de
 ## `table.tscn` sans déborder.
 const HAND_BACK_VISIBLE_STRIP: float = 16.0
+const TOP_HAND_VISIBLE_STRIP: float = 9.0
 ## Marge entre le bord de la pile de dos de carte et le bord du siège.
 const HAND_STACK_PADDING: float = 4.0
+## Les mains adverses entrent visuellement sous le rebord : on conserve les
+## valeurs/rangs visibles tout en libérant le tapis central pour le pli.
+const TOP_HAND_VISIBLE_DEPTH: float = 92.0
+const SIDE_HAND_VISIBLE_DEPTH: float = 122.0
 ## Espace entre la pile de dos de carte et le bloc avatar/nom/score.
 const HAND_INFO_GAP: float = 4.0
 ## Distance (px) entre le haut du siège TOP et le haut du bloc avatar/nom/score
@@ -42,15 +47,15 @@ const HAND_INFO_GAP: float = 4.0
 ## fixe le haut de l'avatar en dessous du haut du siège pour garantir cela.
 const TOP_INFO_BOX_OFFSET: float = 50.0
 ## Largeur réservée à la pile de dos (jusqu'à 13 cartes empilées).
-const TOP_HAND_STACK_MAX_WIDTH: float = 320.0
-const TOP_INFO_BOX_WIDTH: float = 128.0
+const TOP_HAND_STACK_MAX_WIDTH: float = 220.0
+const TOP_INFO_BOX_WIDTH: float = 154.0
 ## Siège humain sans pile de dos : bloc avatar ancré en bas à droite du siège.
-const BOTTOM_INFO_BOX_WIDTH: float = 124.0
-const BOTTOM_INFO_BOX_HEIGHT: float = 98.0
+const BOTTOM_INFO_BOX_WIDTH: float = 154.0
+const BOTTOM_INFO_BOX_HEIGHT: float = 136.0
 ## Marge sous le bloc avatar/nom/score pour éviter le rognage en bas d'écran.
 const BOTTOM_INFO_BOX_BOTTOM_OFFSET: float = 14.0
 ## Largeur du bloc avatar pour les sièges latéraux (évite le chevauchement avec la pile).
-const SIDE_INFO_BOX_WIDTH: float = 112.0
+const SIDE_INFO_BOX_WIDTH: float = 154.0
 const SIDE_HAND_INFO_GAP: float = 14.0
 ## Rotation (degrés) des dos de carte des piles latérales : les cartes sont
 ## couchées (bord long horizontal) plutôt que debout, avec leur ancien bord
@@ -112,9 +117,9 @@ enum SeatOrientation { TOP, BOTTOM, LEFT, RIGHT }
 @onready var _hand_back_row: Control = $HandBackRow
 @onready var _hand_back_column: Control = $HandBackColumn
 @onready var _info_box: VBoxContainer = $InfoBox
-@onready var _name_label: Label = $InfoBox/NameLabel
-@onready var _score_label: Label = $InfoBox/ScoreRow/ScoreLabel
-@onready var _heart_label: Label = $InfoBox/ScoreRow/HeartPenaltyLabel
+@onready var _name_label: Label = $InfoBox/AvatarPlaceholder/NameLabel
+@onready var _score_label: Label = $InfoBox/AvatarPlaceholder/ScoreRow/ScoreLabel
+@onready var _heart_label: Label = $InfoBox/AvatarPlaceholder/ScoreRow/HeartPenaltyLabel
 @onready var _avatar_placeholder: Control = $InfoBox/AvatarPlaceholder
 @onready var _turn_highlight: Control = $InfoBox/AvatarPlaceholder/TurnHighlight
 @onready var _avatar: Control = $InfoBox/AvatarPlaceholder/Avatar
@@ -128,6 +133,8 @@ func _ready() -> void:
 	if player_name.is_empty():
 		player_name = GameCopy.default_seat_name()
 	_layout_seat()
+	_hand_back_row.clip_contents = true
+	_hand_back_column.clip_contents = true
 	LocaleAware.bind(self, _refresh_locale)
 	_refresh_locale()
 	_refresh_hand_back()
@@ -273,7 +280,7 @@ func _layout_seat() -> void:
 			_hand_back_row.offset_left = hand_left
 			_hand_back_row.offset_top = 0.0
 			_hand_back_row.offset_right = hand_right
-			_hand_back_row.offset_bottom = thickness
+			_hand_back_row.offset_bottom = minf(thickness, TOP_HAND_VISIBLE_DEPTH)
 			_info_box.anchor_left = 0.0
 			_info_box.anchor_top = 0.0
 			_info_box.anchor_right = 0.0
@@ -300,12 +307,12 @@ func _layout_seat() -> void:
 				_info_box.offset_bottom = -BOTTOM_INFO_BOX_BOTTOM_OFFSET
 		SeatOrientation.LEFT:
 			_hand_back_column.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
-			_hand_back_column.offset_right = thickness
+			_hand_back_column.offset_right = minf(thickness, SIDE_HAND_VISIBLE_DEPTH)
 			_info_box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			_info_box.offset_left = thickness + SIDE_HAND_INFO_GAP
+			_info_box.offset_left = minf(thickness, SIDE_HAND_VISIBLE_DEPTH) + SIDE_HAND_INFO_GAP
 		SeatOrientation.RIGHT:
 			_hand_back_column.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
-			_hand_back_column.offset_left = -thickness
+			_hand_back_column.offset_left = -minf(thickness, SIDE_HAND_VISIBLE_DEPTH)
 			_info_box.anchor_left = 0.0
 			_info_box.anchor_top = 0.0
 			_info_box.anchor_right = 0.0
@@ -380,7 +387,7 @@ func _hand_back_layout(container_size: Vector2, back_scale: float, back_rotation
 	# Bande visible fixe en pixels écran (indépendante de l'échelle) : garde
 	# une pile condensée de largeur prévisible même quand `back_scale` change,
 	# plutôt que de laisser la pile totale grandir avec l'échelle.
-	var visible_strip: float = HAND_BACK_VISIBLE_STRIP
+	var visible_strip: float = TOP_HAND_VISIBLE_STRIP if orientation == SeatOrientation.TOP else HAND_BACK_VISIBLE_STRIP
 	var horizontal_stack: bool = _is_horizontal_stack()
 	var step: float = visible_strip
 	var stack_extent: float = visual_size.x + step * maxf(count - 1, 0.0) if horizontal_stack \
@@ -389,8 +396,21 @@ func _hand_back_layout(container_size: Vector2, back_scale: float, back_rotation
 	var centers: Array[Vector2] = []
 	for i in count:
 		var along_stack: float = start_offset + (visual_size.x if horizontal_stack else visual_size.y) / 2.0 + step * i
-		var center: Vector2 = Vector2(container_size.x / 2.0 + along_stack, container_size.y / 2.0) if horizontal_stack \
-			else Vector2(container_size.x / 2.0, container_size.y / 2.0 + along_stack)
+		var center: Vector2
+		if horizontal_stack:
+			# TOP : conserver le bord inférieur tourné vers le tapis et rogner
+			# exclusivement la partie qui part sous la barre supérieure.
+			var inward_y: float = container_size.y - visual_size.y / 2.0
+			center = Vector2(container_size.x / 2.0 + along_stack, inward_y)
+		else:
+			# LEFT/RIGHT : même principe, en miroir. Le bord intérieur de la
+			# carte reste complet ; seul le bord extérieur quitte l'écran.
+			var inward_x: float = (
+				container_size.x - visual_size.x / 2.0
+				if orientation == SeatOrientation.LEFT
+				else visual_size.x / 2.0
+			)
+			center = Vector2(inward_x, container_size.y / 2.0 + along_stack)
 		centers.append(center)
 	return {"centers": centers, "visual_size": visual_size}
 

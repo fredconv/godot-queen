@@ -3,9 +3,9 @@ extends RefCounted
 ## Calcul des insets Context Shell (pas de Tween, pas de métier Hearts).
 
 
-const SIDEBAR_WIDTH_OPEN: float = 280.0
-const BOTTOM_BAR_HEIGHT_FULL: float = 56.0
-const BOTTOM_BAR_HEIGHT_COMPACT: float = 44.0
+const SIDEBAR_WIDTH_OPEN: float = 304.0
+const BOTTOM_BAR_HEIGHT_FULL: float = 76.0
+const BOTTOM_BAR_HEIGHT_COMPACT: float = 48.0
 ## Largeur sous laquelle la bottom bar passe en compact (pas hide).
 const COMPACT_VIEWPORT_WIDTH: float = 900.0
 

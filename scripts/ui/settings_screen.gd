@@ -24,6 +24,8 @@ var _section_display: Label
 var _section_profile: Label
 var _section_data: Label
 var _emotes_toggle: CheckButton
+var _settings_scroll: ScrollContainer
+var _settings_vbox: VBoxContainer
 
 
 func _ready() -> void:
@@ -33,6 +35,7 @@ func _ready() -> void:
 	_ensure_title_emblem()
 	_apply_control_variations()
 	_apply_settings_button_chrome()
+	_ensure_responsive_scroll()
 	_btn_back.set_button_icon(UiIconCatalog.texture(UiIconCatalog.Icon.EXIT), 30)
 	_language_option.add_theme_constant_override("icon_max_width", 24)
 	_sfx_slider.value_changed.connect(_on_sfx_slider_changed)
@@ -55,16 +58,58 @@ func _ready() -> void:
 		_btn_back,
 	])
 	UiFocusNav.chain_vertical(focus_chain)
+	get_viewport().size_changed.connect(_update_responsive_panel_size)
+	_update_responsive_panel_size()
+
+
+func _ensure_responsive_scroll() -> void:
+	var margin := $Panel/Margin as MarginContainer
+	var vbox := margin.get_node_or_null("VBox") as VBoxContainer
+	if margin == null or vbox == null:
+		return
+	_settings_vbox = vbox
+	_settings_vbox.add_theme_constant_override("separation", 10)
+	_settings_vbox.custom_minimum_size.x = 488.0
+	_settings_scroll = ScrollContainer.new()
+	_settings_scroll.name = "SettingsScroll"
+	_settings_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_settings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	_settings_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_settings_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_settings_scroll.custom_minimum_size = Vector2(0.0, 0.0)
+	margin.remove_child(_settings_vbox)
+	margin.add_child(_settings_scroll)
+	_settings_scroll.add_child(_settings_vbox)
+	_settings_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+
+func _update_responsive_panel_size() -> void:
+	var panel := $Panel as Control
+	if panel == null:
+		return
+	var viewport_height: float = get_viewport_rect().size.y
+	var panel_height: float = minf(600.0, maxf(420.0, viewport_height - 48.0))
+	panel.offset_top = -panel_height * 0.5
+	panel.offset_bottom = panel_height * 0.5
 
 
 func _ensure_title_emblem() -> void:
 	var vbox := $Panel/Margin/VBox as VBoxContainer
-	if vbox.get_node_or_null("SettingsEmblem") != null:
+	if vbox.get_node_or_null("SettingsHeader") != null:
 		return
-	var emblem := UiIconCatalog.make_icon_rect(UiIconCatalog.Icon.SETTINGS, Vector2i(52, 52))
+	var title_index: int = _title_label.get_index()
+	var header := HBoxContainer.new()
+	header.name = "SettingsHeader"
+	header.alignment = BoxContainer.ALIGNMENT_CENTER
+	header.add_theme_constant_override("separation", 10)
+	vbox.remove_child(_title_label)
+	vbox.add_child(header)
+	vbox.move_child(header, title_index)
+	var emblem := UiIconCatalog.make_icon_rect(UiIconCatalog.Icon.SETTINGS, Vector2i(40, 40))
 	emblem.name = "SettingsEmblem"
-	vbox.add_child(emblem)
-	vbox.move_child(emblem, _title_label.get_index())
+	header.add_child(emblem)
+	header.add_child(_title_label)
+	_title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	LocaleAware.bind(self, _refresh_locale)
 
 
@@ -106,8 +151,8 @@ func _ensure_sections() -> void:
 	_section_data = _insert_section(vbox, _btn_reset_stats, "SectionData")
 	var panel: Control = $Panel as Control
 	if panel != null:
-		panel.offset_top = -300.0
-		panel.offset_bottom = 300.0
+		panel.offset_top = -270.0
+		panel.offset_bottom = 270.0
 
 
 func _insert_section(vbox: VBoxContainer, before: Node, node_name: String) -> Label:

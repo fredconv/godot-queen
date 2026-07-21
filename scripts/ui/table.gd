@@ -105,7 +105,7 @@ func _ensure_context_shell() -> void:
 		add_child(_context_shell)
 		## Au-dessus des régions de jeu, sous UILayer (CanvasLayer).
 		move_child(_context_shell, _animation_layer.get_index() + 1)
-	_context_shell.bottom_bar_slot_active = false
+	_context_shell.bottom_bar_slot_active = true
 	if not _context_shell.layout_applied.is_connected(_on_context_shell_layout_applied):
 		_context_shell.layout_applied.connect(_on_context_shell_layout_applied)
 	_context_shell.bind_play_regions([
@@ -129,6 +129,10 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_context_shell_layout_applied(insets: Vector4) -> void:
 	if _ctx == null:
 		return
+	# Le grand médaillon supérieur descend davantage que l'ancien avatar.
+	# Décaler le pli dans tous les modes garde sa carte haute hors de la plaque,
+	# avec encore assez d'air avant la main humaine et la barre inférieure.
+	_trick_area.position.y += 32.0
 	ReactionManager.apply_shell_insets(_ctx, insets)
 	## Différé : laisser Godot appliquer les nouveaux offsets avant resync.
 	call_deferred("_sync_after_shell_layout")
@@ -210,11 +214,11 @@ func _dispatch_human_card_selected(card_view: Control, card: CardModel) -> void:
 
 
 func _on_top_menu_bar_scores_pressed() -> void:
-	_scores_screen.open()
+	TableContextShell.open_tab(_ctx, "POINTS")
 
 
 func _on_top_menu_bar_tricks_pressed() -> void:
-	TableTrickHistory.open(_ctx)
+	TableContextShell.open_tab(_ctx, "PLIS")
 
 
 func _on_moon_suspicion_button_pressed() -> void:
@@ -238,7 +242,7 @@ func _on_top_menu_bar_hamburger_pressed() -> void:
 
 
 func _on_top_menu_bar_help_pressed() -> void:
-	_ensure_help_screen().open()
+	TableContextShell.open_tab(_ctx, "AIDE")
 
 
 func _on_top_menu_bar_settings_pressed() -> void:

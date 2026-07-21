@@ -21,6 +21,7 @@ func _ready() -> void:
 		UiThemeCatalog.apply_variation(panel, UiThemeCatalog.V_SCORE_PANEL)
 	if _title_label != null:
 		UiThemeCatalog.apply_variation(_title_label, UiThemeCatalog.V_SECTION_TITLE)
+	resized.connect(_render_display)
 
 
 func update_display(hand_number: int, player_names: Array, cumulative_scores: Array) -> void:
@@ -35,7 +36,11 @@ func _refresh_locale() -> void:
 
 
 func _render_display() -> void:
-	_title_label.text = TableCopy.scoreboard_title(_last_hand_number, MATCH_GOAL_POINTS)
+	_title_label.text = (
+		"MANCHE %d  ·  %d PTS" % [_last_hand_number, MATCH_GOAL_POINTS]
+		if size.x < 240.0
+		else TableCopy.scoreboard_title(_last_hand_number, MATCH_GOAL_POINTS)
+	)
 
 	for child in _entries.get_children():
 		child.queue_free()

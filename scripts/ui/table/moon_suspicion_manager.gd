@@ -191,6 +191,7 @@ static func _create_event(ctx: TableContext, suspector_seat: int, suspected_seat
 	var event := MoonSuspicionEvent.new()
 	event.suspector_seat = suspector_seat
 	event.suspected_seat = suspected_seat
+	event.message_variant = randi_range(0, 4)
 	var manager := _manager(ctx)
 	event.hand_number = manager._hand_number if manager != null else 1
 	return event

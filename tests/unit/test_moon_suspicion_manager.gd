@@ -79,4 +79,11 @@ func test_event_tracks_seen_by_seats() -> void:
 	assert_bool(event.all_humans_seen([0, 1])).is_false()
 	event.mark_seen_by(1)
 	assert_bool(event.all_humans_seen([0, 1])).is_true()
+
+
+func test_event_preserves_random_message_variant_over_network() -> void:
+	var event := MoonSuspicionEvent.new()
+	event.message_variant = 3
+	var restored := MoonSuspicionEvent.from_dict(event.to_dict())
+	assert_int(restored.message_variant).is_equal(3)
 #endregion

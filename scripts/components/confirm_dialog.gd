@@ -19,7 +19,9 @@ var _entrance_tween: Tween = null
 func _ready() -> void:
 	LocaleAware.bind(self, refresh_locale)
 	UiFocusNav.chain_horizontal([_btn_yes, _btn_no])
-	UiStyleFactory.apply_pixel_panel(_panel, UiStyleFactory.pixel_overlay_panel_style(Vector4(20, 16, 20, 16)))
+	# Les moulures pixel dépassent visuellement dans le panneau : conserver une
+	# vraie zone de respiration autour du message dans toutes les langues.
+	UiStyleFactory.apply_pixel_panel(_panel, UiStyleFactory.pixel_overlay_panel_style(Vector4(28, 32, 28, 24)))
 	refresh_locale()
 
 

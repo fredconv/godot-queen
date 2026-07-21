@@ -30,7 +30,7 @@ offset_bottom = 270.0
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
 theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
+theme_override_constants/margin_top = 22
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 

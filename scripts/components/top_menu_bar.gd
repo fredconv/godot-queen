@@ -14,6 +14,7 @@ signal menu_pressed
 signal settings_pressed
 signal music_toggle_pressed
 signal music_next_pressed
+signal music_volume_changed(value: float)
 
 const LEGACY_ICON_HAMBURGER: Rect2i = Rect2i(603, 49, 144, 128)
 const LEGACY_ICON_SETTINGS: Rect2i = Rect2i(603, 592, 144, 128)
@@ -26,6 +27,7 @@ const LEGACY_ICON_SETTINGS: Rect2i = Rect2i(603, 592, 144, 128)
 @onready var _score_label: Label = $Margin/Bar/CenterInfo/ScoreLabel
 @onready var _btn_new: Button = $Margin/Bar/RightButtons/BtnNew
 @onready var _btn_toggle_music: Button = $Margin/Bar/RightButtons/BtnToggleMusic
+@onready var _music_volume: HSlider = $Margin/Bar/RightButtons/MusicVolume
 @onready var _btn_next_music: Button = $Margin/Bar/RightButtons/BtnNextMusic
 @onready var _btn_menu: Button = $Margin/Bar/RightButtons/BtnMenu
 @onready var _btn_settings: Button = $Margin/Bar/RightButtons/BtnSettings
@@ -34,27 +36,30 @@ const PIXEL_THEME: Theme = preload("res://resources/themes/royal_salon_theme.tre
 
 var _music_enabled: bool = true
 var _text_buttons: Array[Button] = []
-var _all_buttons: Array[Button] = []
+var _all_buttons: Array = []
 
 
 func _ready() -> void:
 	theme = PIXEL_THEME
 	UiThemeCatalog.ensure_project_theme_enriched()
-	# Audio (MUSIQUE / SUIVANT) reste dans Configuration — masqué pour alléger la barre en jeu.
-	_btn_toggle_music.visible = false
+	# Commandes essentielles accessibles pendant la partie ; changement de piste reste en Configuration.
+	_btn_help.visible = false
+	_btn_scores.visible = false
+	_btn_tricks.visible = false
+	_btn_hamburger.visible = false
+	_btn_toggle_music.visible = true
 	_btn_next_music.visible = false
-	_text_buttons = [_btn_help, _btn_scores, _btn_tricks, _btn_new, _btn_menu]
+	_text_buttons = [_btn_new, _btn_toggle_music, _btn_menu, _btn_settings]
 	_all_buttons = [
-		_btn_hamburger,
-		_btn_help,
-		_btn_scores,
-		_btn_tricks,
 		_btn_new,
+		_btn_toggle_music,
+		_music_volume,
 		_btn_menu,
 		_btn_settings,
 	]
 	_apply_bar_background_style()
 	_apply_compact_button_styles()
+	UiThemeCatalog.apply_variation(_music_volume, UiThemeCatalog.V_PIXEL_SLIDER)
 	_apply_navigation_icons()
 	_ensure_bar_separators()
 	UiFocusNav.chain_horizontal(_all_buttons)
@@ -121,7 +126,12 @@ func _pulse_turn_label() -> void:
 
 func set_music_enabled_display(enabled: bool) -> void:
 	_music_enabled = enabled
-	_btn_toggle_music.text = TableCopy.music_toggle_label(enabled)
+	_btn_toggle_music.text = "♪ ON" if enabled else "♪ OFF"
+	_btn_toggle_music.button_pressed = not enabled
+
+
+func set_music_volume_display(value: float) -> void:
+	_music_volume.set_value_no_signal(clampf(value, 0.0, 1.0) * 100.0)
 
 
 func refresh_locale() -> void:
@@ -130,9 +140,12 @@ func refresh_locale() -> void:
 	_btn_tricks.text = tr(TableKeys.TOP_TRICKS)
 	_btn_new.text = tr(TableKeys.TOP_NEW)
 	_btn_menu.text = tr(TableKeys.TOP_MENU)
+	_btn_hamburger.text = "PANNEAU"
+	_btn_settings.text = "OPTIONS"
 	_btn_next_music.text = tr(TableKeys.TOP_MUSIC_NEXT)
 	_btn_hamburger.tooltip_text = tr(TableKeys.TOP_TOOLTIP_MENU)
 	_btn_toggle_music.tooltip_text = tr(TableKeys.TOP_TOOLTIP_MUSIC)
+	_music_volume.tooltip_text = tr(TableKeys.TOP_TOOLTIP_MUSIC_VOLUME)
 	_btn_next_music.tooltip_text = tr(TableKeys.TOP_TOOLTIP_MUSIC_NEXT)
 	_btn_settings.tooltip_text = tr(TableKeys.TOP_TOOLTIP_SETTINGS)
 	_turn_label.add_theme_font_size_override("font_size", LocaleFonts.MENU_TURN_FONT_SIZE)
@@ -166,14 +179,15 @@ func _fit_text_button_width(btn: Button) -> void:
 
 func _apply_compact_button_styles() -> void:
 	var bar_height: int = LocaleFonts.TOP_BAR_BUTTON_HEIGHT
-	var icon_size: int = LocaleFonts.TOP_BAR_ICON_BUTTON_SIZE
 	for btn: Button in _text_buttons:
 		btn.custom_minimum_size = Vector2(0, bar_height)
 		_apply_flat_button_states(btn)
-	_btn_hamburger.custom_minimum_size = Vector2(icon_size, bar_height)
-	_btn_settings.custom_minimum_size = Vector2(icon_size, bar_height)
-	UiStyleFactory.configure_legacy_icon_button(_btn_hamburger, LEGACY_ICON_HAMBURGER, 26)
-	UiStyleFactory.configure_legacy_icon_button(_btn_settings, LEGACY_ICON_SETTINGS, 26)
+	_btn_hamburger.custom_minimum_size = Vector2(0, bar_height)
+	_btn_settings.custom_minimum_size = Vector2(0, bar_height)
+	_btn_hamburger.icon = null
+	_btn_hamburger.theme_type_variation = &"HudNavButton"
+	_btn_settings.icon = null
+	_btn_settings.theme_type_variation = &"HudNavButton"
 
 
 func _apply_flat_button_states(btn: Button) -> void:
@@ -232,3 +246,7 @@ func _on_btn_toggle_music_pressed() -> void:
 
 func _on_btn_next_music_pressed() -> void:
 	music_next_pressed.emit()
+
+
+func _on_music_volume_value_changed(value: float) -> void:
+	music_volume_changed.emit(value / 100.0)

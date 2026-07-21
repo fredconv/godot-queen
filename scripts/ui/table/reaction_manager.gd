@@ -39,9 +39,9 @@ static func _ensure_picker(ctx: TableContext) -> void:
 	picker.name = "ReactionPicker"
 	picker.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
 	picker.offset_left = -64.0
-	picker.offset_top = -72.0
+	picker.offset_top = -124.0
 	picker.offset_right = -12.0
-	picker.offset_bottom = -16.0
+	picker.offset_bottom = -72.0
 	_bind_picker_signal(ctx, picker)
 	ui_layer.add_child(picker)
 	if manager != null:
@@ -63,8 +63,10 @@ static func apply_shell_insets(ctx: TableContext, insets: Vector4) -> void:
 		return
 	picker.offset_left = -64.0 - insets.z
 	picker.offset_right = -12.0 - insets.z
-	picker.offset_top = -72.0 - insets.w
-	picker.offset_bottom = -16.0 - insets.w
+	# Le picker occupe la bande libre juste au-dessus de la barre inférieure.
+	# Ne pas cumuler tout l'inset bas, qui le remontait sur la main droite.
+	picker.offset_top = -124.0
+	picker.offset_bottom = -72.0
 
 
 static func _bind_picker_signal(ctx: TableContext, picker: ReactionPicker) -> void:

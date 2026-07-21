@@ -70,6 +70,14 @@ text = "NOUVEAU"
 tooltip_text = "Activer/couper la musique"
 text = "MUSIQUE : ON"
 
+[node name="MusicVolume" type="HSlider" parent="Margin/Bar/RightButtons"]
+custom_minimum_size = Vector2(72, 32)
+min_value = 0.0
+max_value = 100.0
+step = 5.0
+value = 35.0
+tooltip_text = "Volume musique"
+
 [node name="BtnNextMusic" type="Button" parent="Margin/Bar/RightButtons"]
 tooltip_text = "Piste suivante"
 text = "SUIVANT"
@@ -88,6 +96,7 @@ focus_mode = 2
 [connection signal="pressed" from="Margin/Bar/LeftButtons/BtnTricks" to="." method="_on_btn_tricks_pressed"]
 [connection signal="pressed" from="Margin/Bar/RightButtons/BtnNew" to="." method="_on_btn_new_pressed"]
 [connection signal="pressed" from="Margin/Bar/RightButtons/BtnToggleMusic" to="." method="_on_btn_toggle_music_pressed"]
+[connection signal="value_changed" from="Margin/Bar/RightButtons/MusicVolume" to="." method="_on_music_volume_value_changed"]
 [connection signal="pressed" from="Margin/Bar/RightButtons/BtnNextMusic" to="." method="_on_btn_next_music_pressed"]
 [connection signal="pressed" from="Margin/Bar/RightButtons/BtnMenu" to="." method="_on_btn_menu_pressed"]
 [connection signal="pressed" from="Margin/Bar/RightButtons/BtnSettings" to="." method="_on_btn_settings_pressed"]

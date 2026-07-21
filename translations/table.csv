@@ -20,6 +20,7 @@ TB_TOP_MUSIC_OFF,MUSIQUE : OFF,MUSIC: OFF,MUSIK: AUS,MÚSICA: NO,MÚSICA: NÃO,�
 TB_TOP_MUSIC_NEXT,SUIVANT,NEXT,NÄCHSTER,SIGUIENTE,PRÓXIMA,下一首
 TB_TOP_TOOLTIP_MENU,Menu,Menu,Menü,Menú,Menu,菜单
 TB_TOP_TOOLTIP_MUSIC,Activer/couper la musique,Toggle music,Musik ein/aus,Activar/desactivar música,Ativar/desativar música,开关音乐
+TB_TOP_TOOLTIP_MUSIC_VOLUME,Volume de la musique,Music volume,Musiklautstärke,Volumen de música,Volume da música,音乐音量
 TB_TOP_TOOLTIP_MUSIC_NEXT,Piste suivante,Next track,Nächster Titel,Siguiente pista,Próxima faixa,下一曲
 TB_TOP_TOOLTIP_SETTINGS,Réglages,Settings,Einstellungen,Ajustes,Configurações,设置
 TB_HELP_TITLE,Dame de Pique – Règles express,Hearts – Quick Rules,Herz – Kurzregeln,Corazones – Reglas rápidas,Copas – Regras rápidas,红心 – 简要规则
@@ -153,7 +154,11 @@ TB_HELP_RULES_BODY,"[b]But :[/b] avoir le moins de points possible.
 TB_MATCH_START_BANNER,La partie commence !!,The match begins!!,Das Spiel beginnt!!,¡La partida comienza!!,A partida começa!!,对局开始！！
 TB_HAND_START_BANNER,La manche commence !!,The hand begins!!,Der Stich beginnt!!,¡La mano comienza!!,A mão começa!!,本轮开始！！
 TB_AI_STRATEGY_MORE_AGGRESSIVE,%s devient plus agressif.,%s gets more aggressive.,%s wird aggressiver.,%s se vuelve más agresivo.,%s fica mais agressivo.,%s 变得更激进。
-TB_AI_STRATEGY_SUSPECT_MOON,%s pense que %s vise la Lune.,%s thinks %s is aiming for the moon.,%s denkt, %s zielt auf die Dame.,%s cree que %s busca la Luna.,%s acha que %s está a tentar a Lua.,%s 认为 %s 在冲月。
+TB_AI_STRATEGY_SUSPECT_MOON,%s pense que %s vise la Lune.,%s thinks %s is aiming for the moon.,%s denkt dass %s auf den Mond zielt.,%s cree que %s busca la Luna.,%s acha que %s está a tentar a Lua.,%s 认为 %s 在冲月。
+TB_AI_STRATEGY_SUSPECT_MOON_MOVE,%s pense que %s veut déménager.,%s thinks %s wants to move house.,%s glaubt dass %s umziehen will.,%s cree que %s quiere mudarse.,%s acha que %s quer mudar de casa.,%s 认为 %s 想要搬家。
+TB_AI_STRATEGY_SUSPECT_MOON_PREPARE_MOVE,%s pense que %s prépare un déménagement.,%s thinks %s is preparing a move.,%s glaubt dass %s einen Umzug vorbereitet.,%s cree que %s prepara una mudanza.,%s acha que %s prepara uma mudança.,%s 认为 %s 正在准备搬家。
+TB_AI_STRATEGY_SUSPECT_MOON_BIG_MOVE,%s soupçonne %s de tenter le grand déménagement.,%s suspects %s is attempting the big move.,%s verdächtigt %s den großen Umzug zu versuchen.,%s sospecha que %s intenta la gran mudanza.,%s suspeita que %s tenta a grande mudança.,%s 怀疑 %s 正在尝试大搬家。
+TB_AI_STRATEGY_SUSPECT_MOON_ATTEMPT_MOVE,%s pense que %s tente un déménagement.,%s thinks %s is attempting a move.,%s glaubt dass %s einen Umzug versucht.,%s cree que %s intenta una mudanza.,%s acha que %s tenta uma mudança.,%s 认为 %s 正在尝试搬家。
 TB_TRICK_HISTORY_TITLE,Derniers plis,Recent tricks,Letzte Stiche,Últimas manos,Últimos truques,最近墩
 TB_TRICK_HISTORY_EMPTY,Aucun pli terminé dans cette manche.,No completed tricks in this hand yet.,Noch kein abgeschlossener Stich in dieser Hand.,Ninguna mano completada en esta ronda.,Nenhum truque concluído nesta mão.,本轮尚无已完成的墩。
 TB_TRICK_HISTORY_LINE,Pli %d — gagnant : %s (%d pt),Trick %d — winner: %s (%d pts),Stich %d — Gewinner: %s (%d Pkt),Mano %d — ganador: %s (%d pts),Truque %d — vencedor: %s (%d pts),第 %d 墩 — 赢家：%s（%d 分）
@@ -169,6 +174,10 @@ TB_REACTION_SUSPICIOUS,Suspicieux,Suspicious,Misstrauisch,Suspicaz,Suspeito,怀�
 TB_MOON_SUSPICION_PICKER_TITLE,Qui soupçonnez-vous de tenter la Lune ?,Who do you suspect of shooting the moon?,Wer versucht deiner Meinung nach die Lune?,¿A quién sospechas de intentar la Luna?,Quem você suspeita de tentar a Lua?,你怀疑谁在冲月？
 TB_MOON_SUSPICION_PICKER_CANCEL,Annuler,Cancel,Abbrechen,Cancelar,Cancelar,取消
 TB_MOON_SUSPICION_ALERT,%s soupçonne %s de tenter la Lune !,%s suspects %s of shooting the moon!,%s verdächtigt %s eine Lune zu versuchen!,%s sospecha que %s intenta la Luna!,%s suspeita que %s está tentando a Lua!,%s 怀疑 %s 在冲月！
+TB_MOON_SUSPICION_ALERT_MOVE,%s soupçonne %s de vouloir déménager !,%s suspects %s wants to move!,%s glaubt %s will umziehen!,%s sospecha que %s quiere mudarse!,%s suspeita que %s quer se mudar!,%s 怀疑 %s 想要搬家！
+TB_MOON_SUSPICION_ALERT_PREPARE_MOVE,%s soupçonne %s de préparer un déménagement !,%s suspects %s is preparing a move!,%s glaubt %s bereitet einen Umzug vor!,%s sospecha que %s prepara una mudanza!,%s suspeita que %s prepara uma mudança!,%s 怀疑 %s 正在准备搬家！
+TB_MOON_SUSPICION_ALERT_BIG_MOVE,%s soupçonne %s de tenter le grand déménagement !,%s suspects %s is attempting the big move!,%s glaubt %s versucht den großen Umzug!,%s sospecha que %s intenta la gran mudanza!,%s suspeita que %s tenta a grande mudança!,%s 怀疑 %s 正在尝试大搬家！
+TB_MOON_SUSPICION_ALERT_AIM,%s soupçonne %s de viser la Lune !,%s suspects %s is aiming for the moon!,%s glaubt %s zielt auf den Mond!,%s sospecha que %s apunta a la Luna!,%s suspeita que %s está mirando para a Lua!,%s 怀疑 %s 正在瞄准月亮！
 TB_NET_PLAYER_DISCONNECTED,%s déconnecté,%s disconnected,%s getrennt,%s desconectado,%s desconectado,%s 已断开连接
 TB_NET_PLAYER_RECONNECTED,%s reconnecté,%s reconnected,%s wieder verbunden,%s reconectado,%s reconectado,%s 已重新连接
 TB_NET_RECONNECT_COUNTDOWN,Reconnexion de %s dans %d s…,Reconnecting %s in %d s…,Wiederverbindung von %s in %d s…,Reconexión de %s en %d s…,Reconexão de %s em %d s…,%s 将在 %d 秒后重连…

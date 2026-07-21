@@ -29,7 +29,7 @@ static func on_exit(ctx: TableContext) -> void:
 static func refresh_lead_suit_indicator(ctx: TableContext) -> void:
 	if ctx.lead_suit_indicator == null or ctx.match_manager == null:
 		return
-	var panel: Control = ctx.lead_suit_indicator.get_parent()
+	var panel: Control = ctx.lead_suit_indicator.get_parent().get_parent() as Control
 	_sync_lead_suit_indicator_position(ctx, panel)
 	var trick_manager: TrickManager = ctx.match_manager.trick_manager
 	if trick_manager.played_count() == 0 or trick_manager.lead_suit < 0:
@@ -39,7 +39,10 @@ static func refresh_lead_suit_indicator(ctx: TableContext) -> void:
 		return
 	panel.visible = true
 	panel.modulate.a = 1.0
-	ctx.lead_suit_indicator.text = Suit.to_lead_indicator_text(trick_manager.lead_suit)
+	ctx.lead_suit_indicator.text = "%s demandé" % Suit.to_display_name(trick_manager.lead_suit)
+	var icon: TextureRect = panel.get_node_or_null("Content/SuitIcon") as TextureRect
+	if icon != null:
+		icon.texture = SuitIconCatalog.texture(trick_manager.lead_suit)
 	match trick_manager.lead_suit:
 		Suit.HEARTS:
 			ctx.lead_suit_indicator.add_theme_color_override("font_color", Color(0.95, 0.35, 0.4))
@@ -56,17 +59,29 @@ static func refresh_lead_suit_indicator(ctx: TableContext) -> void:
 static func _setup_lead_suit_indicator(ctx: TableContext) -> void:
 	var panel := PanelContainer.new()
 	panel.name = "LeadSuitIndicator"
+	panel.custom_minimum_size = Vector2(260.0, 40.0)
 	panel.visible = false
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.z_index = 50
 	UiStyleFactory.apply_pixel_panel(
 		panel,
-		UiStyleFactory.pixel_compact_panel_style(Vector4(12, 6, 12, 6))
+		UiStyleFactory.pixel_compact_panel_style(Vector4(20, 9, 20, 9))
 	)
+	var content := HBoxContainer.new()
+	content.name = "Content"
+	content.alignment = BoxContainer.ALIGNMENT_CENTER
+	content.add_theme_constant_override("separation", 8)
+	var icon := SuitIconCatalog.make_rect(Suit.CLUBS, Vector2(28, 28))
+	icon.name = "SuitIcon"
+	content.add_child(icon)
 	ctx.lead_suit_indicator = Label.new()
 	ctx.lead_suit_indicator.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ctx.lead_suit_indicator.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	ctx.lead_suit_indicator.add_theme_font_size_override("font_size", LocaleFonts.LEAD_SUIT_FONT_SIZE)
-	panel.add_child(ctx.lead_suit_indicator)
+	ctx.lead_suit_indicator.add_theme_color_override("font_outline_color", Color(0.02, 0.025, 0.02, 0.95))
+	ctx.lead_suit_indicator.add_theme_constant_override("outline_size", 3)
+	content.add_child(ctx.lead_suit_indicator)
+	panel.add_child(content)
 	ctx.animation_layer.add_child(panel)
 	_sync_lead_suit_indicator_position(ctx, panel)
 
@@ -74,7 +89,7 @@ static func _setup_lead_suit_indicator(ctx: TableContext) -> void:
 static func fade_lead_suit_indicator(ctx: TableContext, duration_sec: float) -> void:
 	if ctx.lead_suit_indicator == null:
 		return
-	var panel: Control = ctx.lead_suit_indicator.get_parent()
+	var panel: Control = ctx.lead_suit_indicator.get_parent().get_parent() as Control
 	if panel == null or not panel.visible:
 		return
 	var tween: Tween = ctx.host.create_tween()
@@ -94,7 +109,7 @@ static func _sync_lead_suit_indicator_position(ctx: TableContext, panel: Control
 	var trick_center_global: Vector2 = ctx.trick_area.get_global_rect().get_center()
 	var panel_size: Vector2 = panel.size
 	if panel_size == Vector2.ZERO:
-		panel_size = Vector2(260.0, 36.0)
+		panel_size = Vector2(260.0, 40.0)
 	panel.global_position = trick_center_global - panel_size / 2.0
 
 

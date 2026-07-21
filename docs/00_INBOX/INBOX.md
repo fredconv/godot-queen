@@ -26,8 +26,9 @@ Next ID : IDEA-00028
 
 | ID | Title | Status | Next Action |
 |----|-------|--------|-------------|
-| **00026** | **Art pass illustré & sprites UI** | WAITING_USER_VALIDATION — passe V1 complète | validation visuelle humaine |
-| **00023–00025** | **Context Shell** | READY — phase a layout | implémenter shell |
+| **00027** | **UI Royal Salon Professional Redesign** | TESTED — checkpoint ~90 % | validation visuelle humaine |
+| **00026** | **Art pass illustré & sprites UI** | TESTED — intégré au redesign | validation visuelle humaine |
+| **00023–00025** | **Context Shell** | TESTED — sidebar + bottom bar + tween | validation visuelle humaine |
 | **00022** | **Réactions table** | DONE (MCP + GdUnit) | playtest humain optionnel |
 | 00021 | Polish visuel natif | DONE | — |
 | 00010 | Lobby UI split | DONE (MCP + GdUnit) | playtest LAN optionnel |
@@ -60,7 +61,7 @@ Next ID : IDEA-00028
 
 ## IDEA-00027 — 2026-07-21 — UI Royal Salon Professional Redesign
 
-- **Statut:** IN_PROGRESS — autonomie validée jusqu'au point global 80–90 %
+- **Statut:** TESTED — checkpoint global ~90 %, prêt pour validation humaine
 - **Decision:** Moodboard accepté comme cible de qualité et langage visuel ; migration générale autorisée de manière autonome jusqu'au point global 80–90 %.
 - **Architecture clarification:** autorisation explicite de remplacer les mauvaises abstractions UI. Compatibilité historique temporaire seulement ; cible finale sans double système, sans anciens overrides ni composants obsolètes.
 - **Origin:** moodboard et mission détaillée fournis dans le chat utilisateur.
@@ -71,9 +72,9 @@ Next ID : IDEA-00028
 - **Epic:** UI/Polish · Mobile · Tooling
 - **Depends on:** fondations 00021 et passe illustrée 00026 ; cohabitation à coordonner avec Context Shell 00023–00025.
 - **Brief:** [`../ui/ROYAL_SALON_REDESIGN_BRIEF.md`](../ui/ROYAL_SALON_REDESIGN_BRIEF.md)
-- **Next:** poursuivre R1–R16 de manière autonome ; préparer le point global à 80–90 %.
+- **Next:** validation humaine du checkpoint ; retouches finales éventuelles avant release.
 - **Authorization:** utilisateur autorise la poursuite sans validation lot par lot ; prochain point attendu lorsque boutons, menus, boxes, panels et états principaux atteignent environ 80–90 %.
-- **Progress:** checkpoint visuel estimé à ~85 %. Theme authored Royal Salon actif ; plateau unifié bois–or–émeraude v2 intégré ; boutons, menu principal, configuration et choix de mode contrôlés ; sièges avec médaillons/cartouches ; barre et tiroir des scores migrés ; fins de manche et de partie refondues ; règles aérées ; lobbies normalisés ; captures MCP live multi-écrans conservées dans `.mcp_audit/`. Restent principalement les états peu fréquents, la QA responsive multi-format et les dernières retouches d'alignement.
+- **Progress:** checkpoint visuel estimé à ~90 %. Theme Royal Salon actif ; plateau bois–or–émeraude ; médaillons compacts et recentrés ; top/bottom bars ; sidebar animée et responsive ; onglets Plis/Cartes/Points/Aide visuels et mis à jour en direct ; sprites de couleurs ; réglages scrollables ; dialogues et labels respirants ; variantes de soupçon de Lune. QA MCP 1280×720 effectuée sur états ouvert/fermé et compteurs contrôlés ; 18 tests GdUnit ciblés passés.
 
 
 ## IDEA-00026 — 2026-07-21 — Art pass illustré et kit de sprites UI Dame de Pique

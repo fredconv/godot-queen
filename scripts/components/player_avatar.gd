@@ -31,8 +31,22 @@ var _turn_active: bool = false
 var _fx_tween: Tween
 
 func _ready() -> void:
+	_center_sprite_in_control()
 	_refresh_sprite()
 	set_turn_active(false)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		_center_sprite_in_control()
+
+
+func _center_sprite_in_control() -> void:
+	# Les sièges Royal Salon agrandissent le Control à 80 px alors que la scène
+	# d'origine mesure 64 px. Le Sprite2D doit suivre le centre réel du Control.
+	var sprite := get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	if sprite != null:
+		sprite.position = (size * 0.5).floor()
 
 
 ## Active l'animation idle uniquement quand c'est le tour de ce joueur.

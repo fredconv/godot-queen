@@ -30,10 +30,11 @@ func play(ctx: TableContext, event: MoonSuspicionEvent) -> void:
 	_banner_texture.texture = BANNER_TEXTURE
 	var suspector_name: String = TableSeatDisplayMap.get_logical_display_name(ctx, event.suspector_seat)
 	var suspected_name: String = TableSeatDisplayMap.get_logical_display_name(ctx, event.suspected_seat)
-	_message_label.text = TranslationServer.translate(TableKeys.MOON_SUSPICION_ALERT) % [
+	_message_label.text = GameCopy.moon_suspicion_alert(
 		suspector_name,
-		suspected_name
-	]
+		suspected_name,
+		event.message_variant
+	)
 	_player_avatar.character_index = clampi(event.suspected_seat, 0, PlayerAvatar.CHARACTER_SHEETS.size() - 1)
 	_player_avatar.set_turn_active(true)
 

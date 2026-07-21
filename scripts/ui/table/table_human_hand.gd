@@ -7,7 +7,14 @@ static func clear(ctx: TableContext) -> void:
 	_clear_hand_children(ctx)
 
 
-static func rebuild(ctx: TableContext) -> void:
+static func rebuild(ctx: TableContext, animate_reflow: bool = false) -> void:
+	var previous_positions: Array[Vector2] = []
+	var previous_seat_position := Vector2.ZERO
+	if animate_reflow:
+		for view: Control in ctx.hand_card_views:
+			previous_positions.append(view.global_position)
+		if not ctx.seats.is_empty():
+			previous_seat_position = ctx.seats[0].global_position
 	_clear_hand_children(ctx)
 	ctx.hand_cards = ctx.match_manager.hands[ctx.get_local_human_seat()].cards()
 
@@ -38,6 +45,18 @@ static func rebuild(ctx: TableContext) -> void:
 		ctx.hand_card_views.append(card_view)
 
 	TableDisplay.refresh_human_hand_legality(ctx)
+	_reposition_human_seat(ctx)
+	if animate_reflow and not previous_positions.is_empty():
+		for index: int in mini(previous_positions.size(), ctx.hand_card_views.size()):
+			var view: Control = ctx.hand_card_views[index]
+			var target := view.global_position
+			view.global_position = previous_positions[index]
+			ctx.host.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT).tween_property(view, "global_position", target, 0.24)
+		if not ctx.seats.is_empty():
+			var seat: Control = ctx.seats[0]
+			var seat_target := seat.global_position
+			seat.global_position = previous_seat_position
+			ctx.host.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT).tween_property(seat, "global_position", seat_target, 0.24)
 
 
 static func build_hidden_face_down(ctx: TableContext) -> void:
@@ -68,6 +87,32 @@ static func build_hidden_face_down(ctx: TableContext) -> void:
 		var center: Vector2 = Vector2(start_center_x + step * i, row_y)
 		card_view.position = center - pivot
 		ctx.hand_card_views.append(card_view)
+	_reposition_human_seat(ctx)
+
+
+static func _reposition_human_seat(ctx: TableContext) -> void:
+	if ctx.seats.is_empty() or ctx.hand_card_views.is_empty():
+		return
+	var seat: PlayerSeat = ctx.seats[0]
+	var seat_parent := seat.get_parent() as Control
+	if seat_parent == null:
+		return
+	var min_x: float = INF
+	var min_y: float = INF
+	for card_view: Control in ctx.hand_card_views:
+		var transform := card_view.get_global_transform_with_canvas()
+		for corner: Vector2 in [Vector2.ZERO, Vector2(card_view.size.x, 0), card_view.size, Vector2(0, card_view.size.y)]:
+			var point: Vector2 = transform * corner
+			min_x = minf(min_x, point.x)
+			min_y = minf(min_y, point.y)
+	var seat_size: Vector2 = seat.size
+	if seat_size.x <= 0.0 or seat_size.y <= 0.0:
+		seat_size = seat.custom_minimum_size
+	var desired_global := Vector2(min_x - seat_size.x - 6.0, min_y + 38.0)
+	var bottom_safe: float = ctx.host.get_viewport_rect().size.y - 72.0 - seat_size.y
+	desired_global.y = minf(desired_global.y, bottom_safe)
+	desired_global.x = maxf(desired_global.x, 18.0)
+	seat.position = seat_parent.get_global_transform_with_canvas().affine_inverse() * desired_global
 
 
 static func _clear_hand_children(ctx: TableContext) -> void:

@@ -11,9 +11,9 @@ Source : INBOX.md
 
 | ID | Title | Status |
 |----|-------|--------|
-| **00027** | **UI Royal Salon Professional Redesign** | IN_PROGRESS — exécution autonome jusqu'à 80–90 % |
-| **00026** | **Art pass illustré & sprites UI** | WAITING_USER_VALIDATION — passe V1 complète |
-| **00023–00025** | **Context Shell** | READY — phase **b** (coordination) |
+| **00027** | **UI Royal Salon Professional Redesign** | TESTED — checkpoint ~90 % |
+| **00026** | **Art pass illustré & sprites UI** | TESTED — intégré |
+| **00023–00025** | **Context Shell** | TESTED — shell complet |
 | — | Backlog optionnel | 00014 / 00013 / ROADMAP mobile |
 
 ---
@@ -57,4 +57,4 @@ Source : INBOX.md
 | D Visuel natif | 00021 | DONE |
 | Lobby split | 00010 | DONE |
 | Réactions | 00022 | DONE (MCP + GdUnit) |
-| E Context Shell | 00023 + 00024 + **00025** | READY — phase b en cours |
+| E Context Shell | 00023 + 00024 + **00025** | TESTED (MCP + GdUnit) |

@@ -6,7 +6,9 @@ extends RefCounted
 static func setup_music_controls(ctx: TableContext) -> void:
 	var audio := TableServiceAccess.audio(ctx.host)
 	ctx.top_menu_bar.set_music_enabled_display(audio.get_music_enabled())
+	ctx.top_menu_bar.set_music_volume_display(ConfigService.get_music_volume())
 	ctx.top_menu_bar.music_toggle_pressed.connect(_on_music_toggle_pressed.bind(ctx))
+	ctx.top_menu_bar.music_volume_changed.connect(_on_music_volume_changed.bind(ctx))
 	ctx.top_menu_bar.music_next_pressed.connect(_on_music_next_pressed.bind(ctx))
 
 
@@ -19,3 +21,8 @@ static func _on_music_toggle_pressed(ctx: TableContext) -> void:
 
 static func _on_music_next_pressed(ctx: TableContext) -> void:
 	TableServiceAccess.audio(ctx.host).play_next()
+
+
+static func _on_music_volume_changed(value: float, _ctx: TableContext) -> void:
+	ConfigService.set_music_volume(value)
+	AudioService.refresh_music_volume()

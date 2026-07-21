@@ -6,6 +6,7 @@ extends RefCounted
 var suspector_seat: int = -1
 var suspected_seat: int = -1
 var hand_number: int = 1
+var message_variant: int = 0
 var seen_by_seats: Array[int] = []
 
 
@@ -31,6 +32,7 @@ func to_dict() -> Dictionary:
 		"suspector_seat": suspector_seat,
 		"suspected_seat": suspected_seat,
 		"hand_number": hand_number,
+		"message_variant": message_variant,
 		"seen_by_seats": seen_by_seats.duplicate(),
 	}
 
@@ -40,6 +42,7 @@ static func from_dict(data: Dictionary) -> MoonSuspicionEvent:
 	event.suspector_seat = int(data.get("suspector_seat", -1))
 	event.suspected_seat = int(data.get("suspected_seat", -1))
 	event.hand_number = int(data.get("hand_number", 1))
+	event.message_variant = clampi(int(data.get("message_variant", 0)), 0, 4)
 	var seen: Array = data.get("seen_by_seats", [])
 	for seat_value in seen:
 		event.seen_by_seats.append(int(seat_value))

@@ -20,7 +20,8 @@ static func play(ctx: TableContext, announcement: Dictionary) -> void:
 	var message := GameCopy.ai_strategy_message(
 		player_name,
 		announcement.get("reason_key", ""),
-		target_name
+		target_name,
+		randi_range(0, 4)
 	)
 	var banner: Control = _create_banner(message)
 	ctx.animation_layer.add_child(banner)

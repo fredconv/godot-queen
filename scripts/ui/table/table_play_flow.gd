@@ -164,6 +164,10 @@ static func animate_card_play(
 	card: CardModel,
 	start_center: Vector2
 ) -> void:
+	# Garde défensive : un ancien pli ne doit jamais rester sous le suivant,
+	# même si une animation de collecte a été interrompue par un relayout UI.
+	if ctx.match_manager.trick_manager.played_count() == 1 and not ctx.trick_card_views.is_empty():
+		TableMatchFlow.clear_trick_cards(ctx)
 	var traveling_card: Control = _spawn_traveling_card(ctx, card, start_center)
 	var target_slot: Control = TableSeatDisplayMap.get_trick_slot(ctx, player_index)
 	var target_center: Vector2 = target_slot.get_global_transform_with_canvas() * (target_slot.size / 2.0)
@@ -200,6 +204,8 @@ static func handle_post_play(ctx: TableContext, result: MatchManager.PlayResult)
 	await resolve_trick_sequence(ctx, result.trick_winner, result.match_completed)
 	if not ctx.is_active():
 		return
+	if not TableHotSeat.should_defer_trick_collection(ctx) and not result.match_completed and not ctx.trick_card_views.is_empty():
+		TableMatchFlow.clear_trick_cards(ctx)
 	TableDisplay.refresh_scores(ctx)
 
 	if result.hand_completed:

@@ -41,21 +41,23 @@ func set_action_available(wants_visible: bool, enabled: bool, animate_dismiss: b
 		mouse_filter = Control.MOUSE_FILTER_STOP
 		return
 
+	# L'action reste à sa place dans la barre inférieure : elle est simplement
+	# désactivée tant que les conditions de soupçon ne sont pas réunies.
+	_cancel_dismiss()
+	_apply_rest_layout()
+	show()
 	disabled = true
 	focus_mode = Control.FOCUS_NONE
-	if not is_visible() or _is_dismissing:
-		return
-	if animate_dismiss:
-		_play_dismiss_animation()
-	else:
-		_hide_instant()
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	modulate = Color(0.62, 0.62, 0.62, 0.78)
 
 
 func reset_for_new_hand() -> void:
 	_cancel_dismiss()
 	_apply_rest_layout()
-	hide()
+	show()
 	disabled = true
+	modulate = Color(0.62, 0.62, 0.62, 0.78)
 
 
 func _capture_rest_layout() -> void:
@@ -67,10 +69,11 @@ func _capture_rest_layout() -> void:
 
 
 func _apply_rest_layout() -> void:
-	offset_left = _rest_offset_left
-	offset_top = _rest_offset_top
-	offset_right = _rest_offset_right
-	offset_bottom = _rest_offset_bottom
+	if not get_parent() is Container:
+		offset_left = _rest_offset_left
+		offset_top = _rest_offset_top
+		offset_right = _rest_offset_right
+		offset_bottom = _rest_offset_bottom
 	scale = Vector2.ONE
 	rotation = 0.0
 	modulate = Color.WHITE

@@ -21,6 +21,7 @@ static func refresh_scores(ctx: TableContext) -> void:
 			ctx.seats[player_index].score = hand_scores[player_index]
 			ctx.seats[player_index].heart_penalty = hearts[player_index]
 	refresh_cumulative_scoreboard(ctx)
+	TableContextShell.refresh_bottom_state(ctx)
 
 
 static func refresh_cumulative_scoreboard(ctx: TableContext) -> void:
@@ -59,6 +60,7 @@ static func refresh_turn_ui(ctx: TableContext) -> void:
 	refresh_human_hand_legality(ctx)
 	TableFx.refresh_lead_suit_indicator(ctx)
 	MoonSuspicionManager.refresh_button(ctx)
+	TableContextShell.refresh_bottom_state(ctx)
 
 
 static func refresh_human_hand_legality(ctx: TableContext) -> void:

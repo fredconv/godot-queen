@@ -17,13 +17,13 @@ Vue priorité (ne remplace pas [`INBOX.md`](INBOX.md)).
 | 1 | 00014 | Tween kill cartes | si bug anim observé |
 | 2 | 00013 | @export_range | hygiene faible |
 
-## PROPOSED — validation requise
+## VALIDATION UTILISATEUR
 
 | Ordre | ID | Titre | Condition |
 |------:|----|-------|-----------|
-| 1 | 00027 | UI Royal Salon Professional Redesign | valider brief et vertical slice R1–R10 |
+| 1 | 00027 | UI Royal Salon Professional Redesign | valider le checkpoint visuel ~90 % |
 
-**Livré :** Packs A–C · 00009 · **00021** · **00010**
+**Livré techniquement / testé :** Packs A–C · 00009 · **00021** · **00010** · **00023–00027**
 
 ---
 

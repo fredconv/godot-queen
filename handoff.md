@@ -6,23 +6,22 @@
 ## STATUS
 
 <!-- STATUS:START -->
-**Last updated:** 2026-07-21 (DESKTOP — Context Shell phase a + sync push)  
+**Last updated:** 2026-07-21 (DESKTOP — Royal Salon checkpoint ~90 % + Context Shell complet)
 **Repository:** https://github.com/fredconv/godot-queen (branch `main`)
 
 ### Current Goal
-- Package **Context Shell** (IDEA-00023–00025) : shell avant bottom bar ; jouer table-seule toujours possible.
+- Validation humaine du checkpoint **Royal Salon** (IDEA-00027) et du **Context Shell** (IDEA-00023–00025).
 
 ### Current Status
-- **Phase a livrée** : `ContextShellLayout` + `ContextShellHost` branchés sur la table ; `bottom_bar_slot_active=false` jusqu’à phase d.
-- Insets respectent les ancres (TrickArea centré plus écrasé) ; cartes du pli **dockées** dans les slots après atterrissage.
-- Réactions (00022) DONE ; polish 00021 DONE ; lobby split 00010 DONE.
-- Focus Mode / Table seule (brief long) : à capitaliser en IDEA/living doc si pas encore fait — phase **g** du package.
-- GdUnit layout shell : 9/9 ; smoke MCP sidebar open/close.
+- Context Shell complet : sidebar droite tweenée, bottom bar pleine largeur, onglets Plis/Cartes/Points/Aide et mises à jour live.
+- Royal Salon ~90 % : sprites de couleurs, médaillons, tableaux, réglages/dialogues, aide contextuelle et variantes de Lune.
+- Régression plis protégée par nettoyage défensif ; compteur de cartes dédupliqué et replié par défaut.
+- QA MCP 1280×720 ouverte/fermée ; 18/18 tests GdUnit ciblés passés.
 
 ### TODO
-1. Phase **b** coordination table/shell → **c** TogglePanel sidebar → **d** bottom bar → e–h.
-2. Capturer / livrer living doc **Focus Mode** (ESSENTIAL vs OPTIONAL, snapshot UI, ≠ plein écran système).
-3. Optionnel : IDEA-00014 kill tweens ; ROADMAP étape 8 mobile.
+1. Validation visuelle humaine du checkpoint ~90 %.
+2. Retouches finales issues du playtest, puis release.
+3. Optionnel : ROADMAP mobile et Focus Mode.
 
 ### Decisions
 - Context Shell = un package, modules séparés (pas monolithe).
@@ -31,11 +30,11 @@
 - ReactionPicker flottant ; `shell_focus` (pas `Control.focus_mode`).
 
 ### Known Issues
-- Siège droit serré vs sidebar à ~1000 px play width (responsive phase f).
+- Validation mobile multi-format encore à approfondir.
 - Ne pas committer : PDF multiplayer, `.DS_Store`, `gdunit_unit_result.log`.
 
 ### Next Best Task
-- `implémente: phase b` (coordination) ou **c** TogglePanel — après `git pull` sur l’autre machine.
+- Playtest humain du checkpoint Royal Salon, puis corriger uniquement les écarts observés.
 
 ### Delegatable
 - Laptop : `git pull origin main` ; smoke table + toggle sidebar ; enchaîner phase b/c.
@@ -45,6 +44,24 @@
 
 Entries are append-only. For each handoff, add a dated entry with **Done**, **Discussed**, and
 **TODO**. Preserve all previous entries so either machine can reconstruct the session context.
+
+---
+
+## 2026-07-21 — Royal Salon checkpoint ~90 % + Context Shell complet (DESKTOP)
+
+### Done
+- Refonte table/HUD, médaillons, top/bottom bars, sidebar et onglets contextuels.
+- Sprites des quatre couleurs intégrés ; compteurs dédupliqués et aide stratégique repliée par défaut.
+- Animations sidebar/main/siège coordonnées ; protections de collecte des plis.
+- Réglages et dialogues rendus lisibles/responsives ; textes et infobulles clarifiés.
+- QA MCP 1280×720 et tests ciblés GdUnit 18/18.
+
+### Discussed
+- Moodboard utilisé comme cible qualitative, sans copie à l'identique.
+- Prochain point demandé à 80–90 %, atteint par ce checkpoint.
+
+### TODO
+- Validation visuelle humaine et dernières retouches avant release.
 
 ---
 
